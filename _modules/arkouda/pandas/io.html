@@ -374,32 +374,43 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Input/output utilities for Arkouda.</span>
 
-<span class="sd">The `arkouda.io` module provides a comprehensive interface for reading from and writing to</span>
-<span class="sd">various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting</span>
-<span class="sd">data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.</span>
+<span class="sd">The ``arkouda.io`` module provides an interface for reading from and writing to</span>
+<span class="sd">several file formats including HDF5, Parquet, CSV, and Zarr. It supports</span>
+<span class="sd">importing and exporting data between Arkouda and pandas, checkpointing data,</span>
+<span class="sd">and snapshot/restore functionality for Arkouda server state.</span>
 
-<span class="sd">Core functionality includes:</span>
+<span class="sd">Core functionality includes</span>
+
 <span class="sd">- File format detection and dataset inspection</span>
 <span class="sd">- Reading and writing structured datasets using HDF5 and Parquet</span>
 <span class="sd">- CSV read/write support with header parsing</span>
 <span class="sd">- Zarr format support for chunked array storage</span>
-<span class="sd">- Pandas interop via `import_data` and `export`</span>
-<span class="sd">- Checkpointing (`save_checkpoint`, `load_checkpoint`)</span>
-<span class="sd">- Serialization and deserialization of Arkouda objects (`snapshot`, `restore`)</span>
+<span class="sd">- pandas interoperability via ``import_data`` and ``export``</span>
+<span class="sd">- Checkpointing via ``save_checkpoint`` and ``load_checkpoint``</span>
+<span class="sd">- Serialization and deserialization of Arkouda objects via ``snapshot`` and ``restore``</span>
 <span class="sd">- Dataset tagging for provenance tracking during read operations</span>
-<span class="sd">- Transferring arrays/dataframes between Arkouda server instances (`receive`, `receive_dataframe`)</span>
+<span class="sd">- Transferring arrays and DataFrames between Arkouda server instances</span>
+<span class="sd">  (``receive`` and ``receive_dataframe``)</span>
 
-<span class="sd">Supported data types include `pdarray`, `Strings`, `SegArray`, `Categorical`, `DataFrame`, `Index`,</span>
-<span class="sd">and `MultiIndex`. Many operations also offer compatibility with standard Pandas file formats</span>
-<span class="sd">for interoperability.</span>
+<span class="sd">Supported data types include ``pdarray``, ``Strings``, ``SegArray``,</span>
+<span class="sd">``Categorical``, ``DataFrame``, ``Index``, and ``MultiIndex``. Many operations</span>
+<span class="sd">also support compatibility with standard pandas file formats for interoperability.</span>
 
 <span class="sd">Functions</span>
 <span class="sd">---------</span>
-<span class="sd">- File inspection: `get_filetype`, `ls`, `ls_csv`, `get_datasets`, `get_columns`</span>
-<span class="sd">- Data import/export: `read_hdf`, `read_parquet`, `read_csv`, `read_zarr`, `read`, `to_hdf`,</span>
-<span class="sd">  `to_parquet`, `to_csv`, `to_zarr`, `import_data`, `export`</span>
-<span class="sd">- Snapshotting: `snapshot`, `restore`, `save_checkpoint`, `load_checkpoint`</span>
-<span class="sd">- Advanced features: `update_hdf`, `load`, `load_all`, `read_tagged_data`, `receive`, `receive_dataframe`</span>
+<span class="sd">File inspection</span>
+<span class="sd">    ``get_filetype``, ``ls``, ``ls_csv``, ``get_datasets``, ``get_columns``</span>
+
+<span class="sd">Data import/export</span>
+<span class="sd">    ``read_hdf``, ``read_parquet``, ``read_csv``, ``read_zarr``, ``read``,</span>
+<span class="sd">    ``to_hdf``, ``to_parquet``, ``to_csv``, ``to_zarr``, ``import_data``, ``export``</span>
+
+<span class="sd">Snapshotting</span>
+<span class="sd">    ``snapshot``, ``restore``, ``save_checkpoint``, ``load_checkpoint``</span>
+
+<span class="sd">Advanced features</span>
+<span class="sd">    ``update_hdf``, ``load``, ``load_all``, ``read_tagged_data``,</span>
+<span class="sd">    ``receive``, ``receive_dataframe``</span>
 
 <span class="sd">Examples</span>
 <span class="sd">--------</span>
@@ -407,32 +418,41 @@
 <span class="sd">&gt;&gt;&gt; from arkouda.pandas.io import to_parquet, read_parquet</span>
 <span class="sd">&gt;&gt;&gt; import os.path</span>
 <span class="sd">&gt;&gt;&gt; from pathlib import Path</span>
-<span class="sd">&gt;&gt;&gt; my_path = os.path.join(os.getcwd(), &#39;output&#39;)</span>
+<span class="sd">&gt;&gt;&gt; my_path = os.path.join(os.getcwd(), &quot;output&quot;)</span>
 <span class="sd">&gt;&gt;&gt; Path(my_path).mkdir(parents=True, exist_ok=True)</span>
 
-<span class="sd">Create and save a DataFrame</span>
+<span class="sd">Create and save a DataFrame:</span>
+
 <span class="sd">&gt;&gt;&gt; data = [ak.arange(10), ak.linspace(0, 1, 10)]</span>
-<span class="sd">&gt;&gt;&gt; Path(my_path + &#39;/parquet_data&#39;).mkdir(parents=True, exist_ok=True)</span>
-<span class="sd">&gt;&gt;&gt; to_parquet(data, my_path + &#39;/parquet_data/data.parquet&#39;)</span>
+<span class="sd">&gt;&gt;&gt; Path(my_path + &quot;/parquet_data&quot;).mkdir(parents=True, exist_ok=True)</span>
+<span class="sd">&gt;&gt;&gt; to_parquet(data, my_path + &quot;/parquet_data/data.parquet&quot;)</span>
 
-<span class="sd">Load the DataFrame back</span>
-<span class="sd">&gt;&gt;&gt; data2 = read_parquet(my_path + &#39;/parquet_data/data*&#39;)</span>
+<span class="sd">Load the DataFrame back:</span>
 
-<span class="sd">Save to HDF5</span>
-<span class="sd">&gt;&gt;&gt; ak.to_hdf(data, my_path + &#39;data.hdf5&#39;)</span>
+<span class="sd">&gt;&gt;&gt; data2 = read_parquet(my_path + &quot;/parquet_data/data*&quot;)</span>
 
-<span class="sd">Read from HDF5 with explicit dataset name</span>
-<span class="sd">&gt;&gt;&gt; data3 = ak.read_hdf(my_path + &#39;data*&#39;)</span>
+<span class="sd">Save to HDF5:</span>
 
-<span class="sd">Export to Pandas-compatible Parquet</span>
-<span class="sd">&gt;&gt;&gt; df = ak.DataFrame({&#39;a&#39;: ak.arange(10), &#39;b&#39;: ak.linspace(0, 1, 10)})</span>
-<span class="sd">&gt;&gt;&gt; df2 = ak.export(my_path + &#39;/parquet_data/data.parquet&#39;)</span>
+<span class="sd">&gt;&gt;&gt; ak.to_hdf(data, my_path + &quot;data.hdf5&quot;)</span>
+
+<span class="sd">Read from HDF5 with explicit dataset name:</span>
+
+<span class="sd">&gt;&gt;&gt; data3 = ak.read_hdf(my_path + &quot;data*&quot;)</span>
+
+<span class="sd">Export to pandas-compatible Parquet:</span>
+
+<span class="sd">&gt;&gt;&gt; df = ak.DataFrame({&quot;a&quot;: ak.arange(10), &quot;b&quot;: ak.linspace(0, 1, 10)})</span>
+<span class="sd">&gt;&gt;&gt; df2 = ak.export(my_path + &quot;/parquet_data/data.parquet&quot;)</span>
 
 <span class="sd">See Also</span>
 <span class="sd">--------</span>
-<span class="sd">arkouda.DataFrame, arkouda.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray,</span>
-<span class="sd">arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex</span>
-
+<span class="sd">arkouda.DataFrame</span>
+<span class="sd">arkouda.pdarray</span>
+<span class="sd">arkouda.strings.Strings</span>
+<span class="sd">arkouda.segarray.SegArray</span>
+<span class="sd">arkouda.categorical.Categorical</span>
+<span class="sd">arkouda.index.Index</span>
+<span class="sd">arkouda.index.MultiIndex</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
@@ -1091,7 +1111,7 @@
     <span class="n">strict_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">calc_string_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">tag_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">tag_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Mapping</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
@@ -1109,66 +1129,86 @@
     <span class="p">],</span>
 <span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Read Arkouda objects from HDF5 file/s.</span>
+<span class="sd">    Read Arkouda objects from HDF5 files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filenames : str, List[str]</span>
-<span class="sd">        Filename/s to read objects from</span>
-<span class="sd">    datasets : Optional str, List[str]</span>
-<span class="sd">        datasets to read from the provided files</span>
-<span class="sd">    iterative : bool</span>
-<span class="sd">        Iterative (True) or Single (False) function call(s) to server</span>
-<span class="sd">    strict_types: bool</span>
-<span class="sd">        If True (default), require all dtypes of a given dataset to have the</span>
-<span class="sd">        same precision and sign. If False, allow dtypes of different</span>
+<span class="sd">    filenames : Union[str, List[str]]</span>
+<span class="sd">        Filename or list of filenames to read objects from.</span>
+<span class="sd">    datasets : Optional[Union[str, List[str]]], default=None</span>
+<span class="sd">        Dataset name or list of dataset names to read from the provided</span>
+<span class="sd">        files. If ``None``, all datasets are read.</span>
+<span class="sd">    iterative : bool, default=False</span>
+<span class="sd">        If ``True``, make iterative function calls to the server. If</span>
+<span class="sd">        ``False``, make a single function call to the server.</span>
+<span class="sd">    strict_types : bool, default=True</span>
+<span class="sd">        If ``True``, require all dtypes of a given dataset to have the</span>
+<span class="sd">        same precision and sign. If ``False``, allow dtypes of different</span>
 <span class="sd">        precision and sign across different files. For example, if one</span>
-<span class="sd">        file contains a uint32 dataset and another contains an int64</span>
-<span class="sd">        dataset with the same name, the contents of both will be read</span>
-<span class="sd">        into an int64 pdarray.</span>
-<span class="sd">    allow_errors: bool</span>
-<span class="sd">        Default False, if True will allow files with read errors to be skipped</span>
-<span class="sd">        instead of failing.  A warning will be included in the return containing</span>
-<span class="sd">        the total number of files skipped due to failure and up to 10 filenames.</span>
-<span class="sd">    calc_string_offsets: bool</span>
-<span class="sd">        Default False, if True this will tell the server to calculate the</span>
-<span class="sd">        offsets/segments array on the server versus loading them from HDF5 files.</span>
-<span class="sd">        In the future this option may be set to True as the default.</span>
-<span class="sd">    tag_data: bool</span>
-<span class="sd">        Default False, if True tag the data with the code associated with the filename</span>
-<span class="sd">        that the data was pulled from.</span>
+<span class="sd">        file contains a ``uint32`` dataset and another contains an</span>
+<span class="sd">        ``int64`` dataset with the same name, the contents of both will</span>
+<span class="sd">        be read into an ``int64`` ``pdarray``.</span>
+<span class="sd">    allow_errors : bool, default=False</span>
+<span class="sd">        If ``True``, files with read errors may be skipped instead of</span>
+<span class="sd">        causing the operation to fail. A warning will be included in the</span>
+<span class="sd">        return containing the total number of files skipped due to failure</span>
+<span class="sd">        and up to 10 filenames.</span>
+<span class="sd">    calc_string_offsets : bool, default=False</span>
+<span class="sd">        If ``True``, instruct the server to calculate the offsets or</span>
+<span class="sd">        segments array instead of loading it from HDF5 files. In the</span>
+<span class="sd">        future, this option may become the default.</span>
+<span class="sd">    tag_data : bool, default=False</span>
+<span class="sd">        If ``True``, tag the returned data with the code associated with</span>
+<span class="sd">        the filename from which it was read.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</span>
-<span class="sd">        Dictionary of {datasetName: pdarray, String, SegArray}</span>
+<span class="sd">    Mapping[</span>
+<span class="sd">        str,</span>
+<span class="sd">        Union[</span>
+<span class="sd">            pdarray,</span>
+<span class="sd">            Strings,</span>
+<span class="sd">            SegArray,</span>
+<span class="sd">            Categorical,</span>
+<span class="sd">            DataFrame,</span>
+<span class="sd">            IPv4,</span>
+<span class="sd">            Datetime,</span>
+<span class="sd">            Timedelta,</span>
+<span class="sd">            Index,</span>
+<span class="sd">        ],</span>
+<span class="sd">    ]</span>
+<span class="sd">    Dictionary mapping ``datasetName`` to the loaded object. The values</span>
+<span class="sd">    may be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,</span>
+<span class="sd">    ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.</span>
+<span class="sd">        Dictionary mapping ``datasetName`` to the loaded object. The values</span>
+<span class="sd">        may be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,</span>
+<span class="sd">        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if all datasets are not present in all hdf5 files or if one or</span>
-<span class="sd">        more of the specified files do not exist</span>
+<span class="sd">        Raised if not all datasets are present in all HDF5 files or if one</span>
+<span class="sd">        or more of the specified files do not exist.</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if one or more of the specified files cannot be opened.</span>
-<span class="sd">        If `allow_errors` is true this may be raised if no values are returned</span>
-<span class="sd">        from the server.</span>
+<span class="sd">        If ``allow_errors`` is ``True``, this may also be raised if no</span>
+<span class="sd">        values are returned from the server.</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if we receive an unknown arkouda_type returned from the server</span>
+<span class="sd">        Raised if an unknown Arkouda type is returned from the server.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If filenames is a string, it is interpreted as a shell expression</span>
-<span class="sd">    (a single filename is a valid expression, so it will work) and is</span>
-<span class="sd">    expanded with glob to read all matching files.</span>
+<span class="sd">    If ``filenames`` is a string, it is interpreted as a shell expression.</span>
+<span class="sd">    A single filename is a valid expression, so it will also work. The</span>
+<span class="sd">    expression is expanded with ``glob`` to read all matching files.</span>
 
-<span class="sd">    If iterative == True each dataset name and file names are passed to</span>
-<span class="sd">    the server as independent sequential strings while if iterative == False</span>
-<span class="sd">    all dataset names and file names are passed to the server in a single</span>
-<span class="sd">    string.</span>
+<span class="sd">    If ``iterative=True``, each dataset name and filename is passed to the</span>
+<span class="sd">    server independently in sequence. If ``iterative=False``, all dataset</span>
+<span class="sd">    names and filenames are passed to the server in a single string.</span>
 
-<span class="sd">    If datasets is None, infer the names of datasets from the first file</span>
-<span class="sd">    and read all of them. Use ``get_datasets`` to show the names of datasets</span>
-<span class="sd">    to HDF5 files.</span>
+<span class="sd">    If ``datasets`` is ``None``, dataset names are inferred from the first</span>
+<span class="sd">    file and all datasets are read. Use ``get_datasets`` to show dataset</span>
+<span class="sd">    names in HDF5 files.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1178,12 +1218,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">    Read with file Extension</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&#39;path/name_prefix.h5&#39;)  # doctest: +SKIP</span>
+<span class="sd">    Read a file with an extension:</span>
 
-<span class="sd">    Read Glob Expression</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&#39;path/name_prefix*&#39;)  # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&quot;path/name_prefix.h5&quot;)  # doctest: +SKIP</span>
 
+<span class="sd">    Read files matching a glob expression:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&quot;path/name_prefix*&quot;)  # doctest: +SKIP</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -1255,86 +1296,98 @@
     <span class="p">],</span>
 <span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Read Arkouda objects from Parquet file/s.</span>
+<span class="sd">    Read Arkouda objects from Parquet files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filenames : str, List[str]</span>
-<span class="sd">        Filename/s to read objects from</span>
-<span class="sd">    datasets : Optional str, List[str]</span>
-<span class="sd">        datasets to read from the provided files</span>
-<span class="sd">    iterative : bool</span>
-<span class="sd">        Iterative (True) or Single (False) function call(s) to server</span>
-<span class="sd">    strict_types: bool</span>
-<span class="sd">        If True (default), require all dtypes of a given dataset to have the</span>
-<span class="sd">        same precision and sign. If False, allow dtypes of different</span>
+<span class="sd">    filenames : Union[str, List[str]]</span>
+<span class="sd">        Filename or list of filenames to read objects from.</span>
+<span class="sd">    datasets : Optional[Union[str, List[str]]], default=None</span>
+<span class="sd">        Dataset name or list of dataset names to read from the provided files.</span>
+<span class="sd">        If ``None``, all datasets are read.</span>
+<span class="sd">    iterative : bool, default=False</span>
+<span class="sd">        If ``True``, make iterative function calls to the server. If</span>
+<span class="sd">        ``False``, make a single function call to the server.</span>
+<span class="sd">    strict_types : bool, default=True</span>
+<span class="sd">        If ``True``, require all dtypes of a given dataset to have the</span>
+<span class="sd">        same precision and sign. If ``False``, allow dtypes of different</span>
 <span class="sd">        precision and sign across different files. For example, if one</span>
-<span class="sd">        file contains a uint32 dataset and another contains an int64</span>
-<span class="sd">        dataset with the same name, the contents of both will be read</span>
-<span class="sd">        into an int64 pdarray.</span>
-<span class="sd">    allow_errors: bool</span>
-<span class="sd">        Default False, if True will allow files with read errors to be skipped</span>
-<span class="sd">        instead of failing.  A warning will be included in the return containing</span>
-<span class="sd">        the total number of files skipped due to failure and up to 10 filenames.</span>
-<span class="sd">    tag_data: bool</span>
-<span class="sd">        Default False, if True tag the data with the code associated with the filename</span>
-<span class="sd">        that the data was pulled from.</span>
-<span class="sd">    read_nested: bool</span>
-<span class="sd">        Default True, when True, SegArray objects will be read from the file. When False,</span>
-<span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
-<span class="sd">        If datasets is not None, this will be ignored.</span>
-<span class="sd">    has_non_float_nulls: bool</span>
-<span class="sd">        Deprecated. Please use null_handling.</span>
-<span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
+<span class="sd">        file contains a ``uint32`` dataset and another contains an</span>
+<span class="sd">        ``int64`` dataset with the same name, the contents of both will</span>
+<span class="sd">        be read into an ``int64`` ``pdarray``.</span>
+<span class="sd">    allow_errors : bool, default=False</span>
+<span class="sd">        If ``True``, files with read errors may be skipped instead of</span>
+<span class="sd">        causing the operation to fail. A warning will be included in the</span>
+<span class="sd">        return containing the total number of files skipped due to failure</span>
+<span class="sd">        and up to 10 filenames.</span>
+<span class="sd">    tag_data : bool, default=False</span>
+<span class="sd">        If ``True``, tag the data with the code associated with the</span>
+<span class="sd">        filename from which the data was read.</span>
+<span class="sd">    read_nested : bool, default=True</span>
+<span class="sd">        If ``True``, ``SegArray`` objects are read from the file. If</span>
+<span class="sd">        ``False``, ``SegArray`` objects and other nested Parquet columns</span>
+<span class="sd">        are ignored. If ``datasets`` is not ``None``, this parameter is</span>
+<span class="sd">        ignored.</span>
+<span class="sd">    has_non_float_nulls : bool, default=False</span>
+<span class="sd">        Deprecated. Use ``null_handling`` instead.</span>
+
+<span class="sd">        This flag must be set to ``True`` to read non-float Parquet columns</span>
 <span class="sd">        that contain null values.</span>
-<span class="sd">    null_handling: Optional str</span>
-<span class="sd">        Defaults to &quot;only floats&quot;.</span>
-<span class="sd">        Supported values are &quot;none&quot;, &quot;only floats&quot;, &quot;all&quot;.</span>
-<span class="sd">        If &quot;none&quot;, the data is assumed to be free of nulls.  This results in the</span>
-<span class="sd">        fastest performance. However, if there is nulls in the data, the</span>
-<span class="sd">        behavior is undefined. If &quot;only floats&quot;, only floating point typed</span>
-<span class="sd">        columns may contain nulls. This makes reading other data types faster.</span>
-<span class="sd">        If &quot;all&quot;, any column can contain nulls. This is the most generally</span>
-<span class="sd">        applicable mode, though results in slower performance across the board.</span>
-<span class="sd">    fixed_len: int</span>
-<span class="sd">        Default -1. This value can be set for reading Parquet string columns when the</span>
-<span class="sd">        length of each string is known at runtime. This can allow for skipping byte</span>
-<span class="sd">        calculation, which can have an impact on performance.</span>
+<span class="sd">    null_handling : Optional[str], default=None</span>
+<span class="sd">        Null-handling mode. Supported values are ``&quot;none&quot;``,</span>
+<span class="sd">        ``&quot;only floats&quot;``, and ``&quot;all&quot;``. If ``None``, the default is</span>
+<span class="sd">        ``&quot;only floats&quot;``.</span>
+
+<span class="sd">        If ``&quot;none&quot;``, the data is assumed to contain no nulls. This gives</span>
+<span class="sd">        the best performance, but behavior is undefined if nulls are</span>
+<span class="sd">        present.</span>
+
+<span class="sd">        If ``&quot;only floats&quot;``, only floating-point columns may contain</span>
+<span class="sd">        nulls. This improves performance for other data types.</span>
+
+<span class="sd">        If ``&quot;all&quot;``, any column may contain nulls. This is the most</span>
+<span class="sd">        general mode, but it is slower overall.</span>
+<span class="sd">    fixed_len : int, default=-1</span>
+<span class="sd">        Fixed string length to use when reading Parquet string columns if</span>
+<span class="sd">        the length of each string is known at runtime. This can avoid byte</span>
+<span class="sd">        calculation and may improve performance.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</span>
-<span class="sd">        Dictionary of {datasetName: pdarray, String, or SegArray}</span>
+<span class="sd">    Mapping[str, Union[pdarray, Strings, SegArray, Categorical,</span>
+<span class="sd">        DataFrame, IPv4, Datetime, Timedelta, Index]]</span>
+<span class="sd">        Dictionary mapping ``datasetName`` to the loaded object. The values may</span>
+<span class="sd">        be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,</span>
+<span class="sd">        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if all datasets are not present in all parquet files or if one or</span>
-<span class="sd">        more of the specified files do not exist</span>
+<span class="sd">        Raised if not all datasets are present in all Parquet files or if</span>
+<span class="sd">        one or more of the specified files do not exist.</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if one or more of the specified files cannot be opened.</span>
-<span class="sd">        If `allow_errors` is true this may be raised if no values are returned</span>
-<span class="sd">        from the server.</span>
+<span class="sd">        If ``allow_errors`` is ``True``, this may also be raised if no</span>
+<span class="sd">        values are returned from the server.</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if we receive an unknown arkouda_type returned from the server</span>
+<span class="sd">        Raised if an unknown Arkouda type is returned from the server.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If filenames is a string, it is interpreted as a shell expression</span>
-<span class="sd">    (a single filename is a valid expression, so it will work) and is</span>
-<span class="sd">    expanded with glob to read all matching files.</span>
+<span class="sd">    If ``filenames`` is a string, it is interpreted as a shell expression.</span>
+<span class="sd">    A single filename is a valid expression, so it will also work. The</span>
+<span class="sd">    expression is expanded with ``glob`` to read all matching files.</span>
 
-<span class="sd">    If iterative == True each dataset name and file names are passed to</span>
-<span class="sd">    the server as independent sequential strings while if iterative == False</span>
-<span class="sd">    all dataset names and file names are passed to the server in a single</span>
-<span class="sd">    string.</span>
+<span class="sd">    If ``iterative=True``, each dataset name and filename is passed to the</span>
+<span class="sd">    server independently in sequence. If ``iterative=False``, all dataset</span>
+<span class="sd">    names and filenames are passed to the server in a single string.</span>
 
-<span class="sd">    If datasets is None, infer the names of datasets from the first file</span>
-<span class="sd">    and read all of them. Use ``get_datasets`` to show the names of datasets</span>
-<span class="sd">    to Parquet files.</span>
+<span class="sd">    If ``datasets`` is ``None``, dataset names are inferred from the first</span>
+<span class="sd">    file and all datasets are read. Use ``get_datasets`` to show the names</span>
+<span class="sd">    of datasets in Parquet files.</span>
 
-<span class="sd">    Parquet always recomputes offsets at this time</span>
-<span class="sd">    This will need to be updated once parquets workflow is updated</span>
+<span class="sd">    Parquet currently always recomputes offsets. This note should be</span>
+<span class="sd">    updated when the Parquet workflow changes.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1344,14 +1397,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">    Read without file Extension</span>
-<span class="sd">    load Parquet</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&#39;path/name_prefix.parquet&#39;)  # doctest: +SKIP</span>
+<span class="sd">    Read a Parquet file:</span>
 
-<span class="sd">    Read Glob Expression</span>
-<span class="sd">    Reads Parquet</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&#39;path/name_prefix*&#39;)  # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&quot;path/name_prefix.parquet&quot;)  # doctest: +SKIP</span>
 
+<span class="sd">    Read files matching a glob expression:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&quot;path/name_prefix*&quot;)  # doctest: +SKIP</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -1793,52 +1845,60 @@
     <span class="n">convert_categoricals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Save multiple named pdarrays to Parquet files.</span>
+<span class="sd">    Save multiple named arrays to Parquet files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    columns : dict or list of pdarrays</span>
-<span class="sd">        Collection of arrays to save</span>
+<span class="sd">    columns : Union[Mapping[str, Union[pdarray, Strings, SegArray]],</span>
+<span class="sd">                    List[Union[pdarray, Strings, SegArray]]]</span>
+<span class="sd">        Collection of arrays to save.</span>
 <span class="sd">    prefix_path : str</span>
-<span class="sd">        Directory and filename prefix for output files</span>
-<span class="sd">    names : list of str</span>
-<span class="sd">        Dataset names for the pdarrays</span>
-<span class="sd">    mode : {&quot;truncate&quot;, &quot;append&quot;}</span>
-<span class="sd">        By default, truncate (overwrite) the output files if they exist.</span>
-<span class="sd">        If &#39;append&#39;, attempt to create new dataset in existing files.</span>
-<span class="sd">        &#39;append&#39; is deprecated, please use the multi-column write.</span>
-<span class="sd">    compression : str</span>
-<span class="sd">            Default None.</span>
-<span class="sd">            Provide the compression type to use when writing the file.</span>
-<span class="sd">            Supported values: snappy, gzip, brotli, zstd, lz4</span>
-<span class="sd">        convert_categoricals: bool</span>
-<span class="sd">            Defaults to False</span>
-<span class="sd">            Parquet requires all columns to be the same size and Categoricals</span>
-<span class="sd">            don&#39;t satisfy that requirement.</span>
-<span class="sd">            if set, write the equivalent Strings in place of any Categorical columns.</span>
+<span class="sd">        Directory and filename prefix for the output files.</span>
+<span class="sd">    names : Optional[List[str]], default=None</span>
+<span class="sd">        Dataset names for the arrays when ``columns`` is provided as a list.</span>
+<span class="sd">    mode : Literal[&quot;truncate&quot;, &quot;append&quot;], default=&quot;truncate&quot;</span>
+<span class="sd">        If ``&quot;truncate&quot;``, overwrite any existing output files. If</span>
+<span class="sd">        ``&quot;append&quot;``, attempt to create a new dataset in existing files.</span>
+
+<span class="sd">        ``&quot;append&quot;`` is deprecated. Use the multi-column write instead.</span>
+<span class="sd">    compression : Optional[str], default=None</span>
+<span class="sd">        Compression type to use when writing the file. Supported values</span>
+<span class="sd">        include ``&quot;snappy&quot;``, ``&quot;gzip&quot;``, ``&quot;brotli&quot;``, ``&quot;zstd&quot;``,</span>
+<span class="sd">        and ``&quot;lz4&quot;``.</span>
+<span class="sd">    convert_categoricals : bool, default=False</span>
+<span class="sd">        Parquet requires all columns to have the same size, and</span>
+<span class="sd">        ``Categorical`` objects do not satisfy that requirement. If set</span>
+<span class="sd">        to ``True``, write the equivalent ``Strings`` in place of any</span>
+<span class="sd">        ``Categorical`` columns.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if (1) the lengths of columns and values differ or (2) the mode</span>
-<span class="sd">        is not &#39;truncate&#39; or &#39;append&#39;</span>
+<span class="sd">        Raised if the lengths of ``columns`` and ``names`` differ, or if</span>
+<span class="sd">        ``mode`` is not ``&quot;truncate&quot;`` or ``&quot;append&quot;``.</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">            Raised if a server-side error is thrown saving the pdarray</span>
+<span class="sd">        Raised if a server-side error occurs while saving the arrays.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    to_hdf, load, load_all, read</span>
+<span class="sd">    to_hdf</span>
+<span class="sd">    load</span>
+<span class="sd">    load_all</span>
+<span class="sd">    read</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Creates one file per locale containing that locale&#39;s chunk of each pdarray.</span>
-<span class="sd">    If columns is a dictionary, the keys are used as the Parquet column names.</span>
-<span class="sd">    Otherwise, if no names are supplied, 0-up integers are used. By default,</span>
-<span class="sd">    any existing files at path_prefix will be deleted</span>
-<span class="sd">    (regardless of whether they would be overwritten), unless the user</span>
-<span class="sd">    specifies the &#39;append&#39; mode, in which case arkouda will attempt to add</span>
-<span class="sd">    &lt;columns&gt; as new datasets to existing files. If the wrong number of files</span>
-<span class="sd">    is present or dataset names already exist, a RuntimeError is raised.</span>
+<span class="sd">    Creates one file per locale containing that locale&#39;s chunk of each array.</span>
+
+<span class="sd">    If ``columns`` is a dictionary, its keys are used as the Parquet</span>
+<span class="sd">    column names. Otherwise, if no ``names`` are supplied, integer names</span>
+<span class="sd">    starting at ``0`` are used.</span>
+
+<span class="sd">    By default, any existing files at ``prefix_path`` are deleted</span>
+<span class="sd">    regardless of whether they would be overwritten. If ``mode=&quot;append&quot;``,</span>
+<span class="sd">    Arkouda attempts to add ``columns`` as new datasets to existing files.</span>
+<span class="sd">    If the wrong number of files is present or dataset names already</span>
+<span class="sd">    exist, a ``RuntimeError`` is raised.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1846,12 +1906,13 @@
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(25)</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.arange(25)</span>
 
-<span class="sd">    Save with mapping defining dataset names</span>
-<span class="sd">    &gt;&gt;&gt; ak.to_parquet({&#39;a&#39;: a, &#39;b&#39;: b}, &#39;path/name_prefix&#39;) # doctest: +SKIP</span>
+<span class="sd">    Save with a mapping defining dataset names:</span>
 
-<span class="sd">    Save using names instead of mapping</span>
-<span class="sd">    &gt;&gt;&gt; ak.to_parquet([a, b], &#39;path/name_prefix&#39;, names=[&#39;a&#39;, &#39;b&#39;]) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; ak.to_parquet({&quot;a&quot;: a, &quot;b&quot;: b}, &quot;path/name_prefix&quot;)  # doctest: +SKIP</span>
 
+<span class="sd">    Save using ``names`` instead of a mapping:</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.to_parquet([a, b], &quot;path/name_prefix&quot;, names=[&quot;a&quot;, &quot;b&quot;])  # doctest: +SKIP</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -1949,9 +2010,11 @@
 <span class="sd">    &gt;&gt;&gt; b = ak.arange(25)</span>
 
 <span class="sd">    Save with mapping defining dataset names</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.to_hdf({&#39;a&#39;: a, &#39;b&#39;: b}, &#39;path/name_prefix&#39;) # doctest: +SKIP</span>
 
 <span class="sd">    Save using names instead of mapping</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.to_hdf([a, b], &#39;path/name_prefix&#39;, names=[&#39;a&#39;, &#39;b&#39;]) # doctest: +SKIP</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2245,72 +2308,81 @@
     <span class="p">],</span>
 <span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load a pdarray previously saved with ``pdarray.save()``.</span>
+<span class="sd">    Load objects previously saved with ``pdarray.save()``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path_prefix : str</span>
-<span class="sd">        Filename prefix used to save the original pdarray</span>
-<span class="sd">    file_format : str</span>
-<span class="sd">        &#39;INFER&#39;, &#39;HDF5&#39; or &#39;Parquet&#39;. Defaults to &#39;INFER&#39;. Used to indicate the file type being loaded.</span>
-<span class="sd">        If INFER, this will be detected during processing</span>
-<span class="sd">    dataset : str</span>
-<span class="sd">        Dataset name where the pdarray was saved, defaults to &#39;array&#39;</span>
-<span class="sd">    calc_string_offsets : bool</span>
-<span class="sd">        If True the server will ignore Segmented Strings &#39;offsets&#39; array and derive</span>
-<span class="sd">        it from the null-byte terminators.  Defaults to False currently</span>
-<span class="sd">    column_delim : str</span>
-<span class="sd">        Column delimiter to be used if dataset is CSV. Otherwise, unused.</span>
+<span class="sd">        Filename prefix used when saving the original object.</span>
+<span class="sd">    file_format : str, default=&quot;INFER&quot;</span>
+<span class="sd">        File format to load. One of ``&quot;INFER&quot;``, ``&quot;HDF5&quot;``, or ``&quot;Parquet&quot;``.</span>
+<span class="sd">        If ``&quot;INFER&quot;``, the format will be detected automatically.</span>
+<span class="sd">    dataset : str, default=&quot;array&quot;</span>
+<span class="sd">        Dataset name where the object was saved.</span>
+<span class="sd">    calc_string_offsets : bool, default=False</span>
+<span class="sd">        If ``True``, the server ignores the segmented ``Strings`` ``offsets``</span>
+<span class="sd">        array and derives offsets from null-byte terminators.</span>
+<span class="sd">    column_delim : str, default=&quot;,&quot;</span>
+<span class="sd">        Column delimiter used if the dataset is CSV. Otherwise unused.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]</span>
-<span class="sd">        Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}</span>
-<span class="sd">        with the previously saved pdarrays, Strings, SegArrays, or Categoricals</span>
+<span class="sd">    Mapping[str, Union[pdarray, Strings, SegArray, Categorical,</span>
+<span class="sd">        DataFrame, IPv4, Datetime, Timedelta, Index]]</span>
+<span class="sd">        Dictionary mapping ``datasetName`` to the loaded object. The values may</span>
+<span class="sd">        be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,</span>
+<span class="sd">        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if either path_prefix or dataset is not a str</span>
+<span class="sd">        Raised if either ``path_prefix`` or ``dataset`` is not a ``str``.</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the</span>
-<span class="sd">        path_prefix does not correspond to files accessible to Arkouda</span>
+<span class="sd">        Raised if an invalid ``file_format`` is given, if the dataset is not</span>
+<span class="sd">        present in all HDF5 files, or if ``path_prefix`` does not correspond</span>
+<span class="sd">        to files accessible to Arkouda.</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if the hdf5 files are present but there is an error in opening</span>
-<span class="sd">        one or more of them</span>
+<span class="sd">        Raised if the HDF5 files are present but an error occurs while opening</span>
+<span class="sd">        one or more of them.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    to_parquet, to_hdf, load_all, read</span>
+<span class="sd">    to_parquet</span>
+<span class="sd">    to_hdf</span>
+<span class="sd">    load_all</span>
+<span class="sd">    read</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it</span>
-<span class="sd">    with a .parquet appended to the prefix_path.</span>
-<span class="sd">    Parquet files were previously ALWAYS stored with a ``.parquet`` extension.</span>
+<span class="sd">    If a previously saved Parquet file raises a ``FileNotFoundError``, try</span>
+<span class="sd">    loading it with ``.parquet`` appended to ``path_prefix``. Older versions</span>
+<span class="sd">    of Arkouda always stored Parquet files with a ``.parquet`` extension.</span>
 
-<span class="sd">    ak.load does not support loading a single file.</span>
-<span class="sd">    For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().</span>
+<span class="sd">    ``ak.load`` does not support loading a single file. To load a single HDF5</span>
+<span class="sd">    file without the ``_LOCALE####`` suffix, use ``ak.read()``.</span>
 
-<span class="sd">    CSV files without the Arkouda Header are not supported.</span>
+<span class="sd">    CSV files without the Arkouda header are not supported.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">    Loading from file without extension</span>
-<span class="sd">    &gt;&gt;&gt; obj = ak.load(&#39;path/prefix&#39;) # doctest: +SKIP</span>
+<span class="sd">    Loading from file without extension:</span>
 
-<span class="sd">    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.</span>
-<span class="sd">    The file type is inferred during processing.</span>
+<span class="sd">    &gt;&gt;&gt; obj = ak.load(&quot;path/prefix&quot;)  # doctest: +SKIP</span>
 
-<span class="sd">    Loading with an extension (HDF5)</span>
-<span class="sd">    &gt;&gt;&gt; obj = ak.load(&#39;path/prefix.test&#39;) # doctest: +SKIP</span>
+<span class="sd">    This loads the array from ``numLocales`` files with the name</span>
+<span class="sd">    ``cwd/path/name_prefix_LOCALE####``. The file type is inferred</span>
+<span class="sd">    automatically.</span>
 
-<span class="sd">    Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where</span>
-<span class="sd">    #### is replaced by each locale numbers. Because filetype is inferred during processing,</span>
-<span class="sd">    the extension is not required to be a specific format.</span>
+<span class="sd">    Loading with an extension (HDF5):</span>
 
+<span class="sd">    &gt;&gt;&gt; obj = ak.load(&quot;path/prefix.test&quot;)  # doctest: +SKIP</span>
+
+<span class="sd">    This loads the object from ``numLocales`` files with the name</span>
+<span class="sd">    ``cwd/path/name_prefix_LOCALE####.test`` where ``####`` corresponds</span>
+<span class="sd">    to each locale number. Because the file type is inferred, the</span>
+<span class="sd">    extension does not need to correspond to a specific format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">path_prefix</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -2446,7 +2518,7 @@
     <span class="n">iterative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">strictTypes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">calc_string_offsets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">calc_string_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2470,93 +2542,101 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read datasets from files.</span>
 
-<span class="sd">    File Type is determined automatically.</span>
+<span class="sd">    The file type is determined automatically.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filenames : list or str</span>
-<span class="sd">        Either a list of filenames or shell expression</span>
-<span class="sd">    datasets : list or str or None</span>
-<span class="sd">        (List of) name(s) of dataset(s) to read (default: all available)</span>
-<span class="sd">    iterative : bool</span>
-<span class="sd">        Iterative (True) or Single (False) function call(s) to server</span>
-<span class="sd">    strictTypes: bool</span>
-<span class="sd">        If True (default), require all dtypes of a given dataset to have the</span>
-<span class="sd">        same precision and sign. If False, allow dtypes of different</span>
+<span class="sd">    filenames : Union[str, List[str]]</span>
+<span class="sd">        Either a list of filenames or a shell expression.</span>
+<span class="sd">    datasets : Optional[Union[str, List[str]]], default=None</span>
+<span class="sd">        Name or list of names of datasets to read. If ``None``, all</span>
+<span class="sd">        available datasets are read.</span>
+<span class="sd">    iterative : bool, default=False</span>
+<span class="sd">        If ``True``, make iterative function calls to the server. If</span>
+<span class="sd">        ``False``, make a single function call to the server.</span>
+<span class="sd">    strictTypes : bool, default=True</span>
+<span class="sd">        If ``True``, require all dtypes of a given dataset to have the</span>
+<span class="sd">        same precision and sign. If ``False``, allow dtypes of different</span>
 <span class="sd">        precision and sign across different files. For example, if one</span>
-<span class="sd">        file contains a uint32 dataset and another contains an int64</span>
-<span class="sd">        dataset with the same name, the contents of both will be read</span>
-<span class="sd">        into an int64 pdarray.</span>
-<span class="sd">    allow_errors: bool</span>
-<span class="sd">        Default False, if True will allow files with read errors to be skipped</span>
-<span class="sd">        instead of failing.  A warning will be included in the return containing</span>
-<span class="sd">        the total number of files skipped due to failure and up to 10 filenames.</span>
-<span class="sd">    calc_string_offsets: bool</span>
-<span class="sd">        Default False, if True this will tell the server to calculate the</span>
-<span class="sd">        offsets/segments array on the server versus loading them from HDF5 files.</span>
-<span class="sd">        In the future this option may be set to True as the default.</span>
-<span class="sd">    column_delim : str</span>
-<span class="sd">        Column delimiter to be used if dataset is CSV. Otherwise, unused.</span>
-<span class="sd">    read_nested: bool</span>
-<span class="sd">        Default True, when True, SegArray objects will be read from the file. When False,</span>
-<span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
-<span class="sd">        Ignored if datasets is not None</span>
-<span class="sd">        Parquet Files only.</span>
-<span class="sd">    has_non_float_nulls: bool</span>
-<span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
-<span class="sd">        that contain null values.</span>
-<span class="sd">    fixed_len: int</span>
-<span class="sd">        Default -1. This value can be set for reading Parquet string columns when the</span>
-<span class="sd">        length of each string is known at runtime. This can allow for skipping byte</span>
-<span class="sd">        calculation, which can have an impact on performance.</span>
+<span class="sd">        file contains a ``uint32`` dataset and another contains an</span>
+<span class="sd">        ``int64`` dataset with the same name, the contents of both will</span>
+<span class="sd">        be read into an ``int64`` ``pdarray``.</span>
+<span class="sd">    allow_errors : bool, default=False</span>
+<span class="sd">        If ``True``, files with read errors may be skipped instead of</span>
+<span class="sd">        causing the operation to fail. A warning will be included in the</span>
+<span class="sd">        return containing the total number of files skipped due to failure</span>
+<span class="sd">        and up to 10 filenames.</span>
+<span class="sd">    calc_string_offsets : bool, default=False</span>
+<span class="sd">        If ``True``, instruct the server to calculate the offsets or</span>
+<span class="sd">        segments array instead of loading it from HDF5 files.</span>
+<span class="sd">    column_delim : str, default=&quot;,&quot;</span>
+<span class="sd">        Column delimiter to use if the dataset is CSV. Otherwise unused.</span>
+<span class="sd">    read_nested : bool, default=True</span>
+<span class="sd">        If ``True``, ``SegArray`` objects are read from the file. If</span>
+<span class="sd">        ``False``, ``SegArray`` objects and other nested Parquet columns</span>
+<span class="sd">        are ignored. Ignored if ``datasets`` is not ``None``. Parquet</span>
+<span class="sd">        only.</span>
+<span class="sd">    has_non_float_nulls : bool, default=False</span>
+<span class="sd">        Must be set to ``True`` to read non-float Parquet columns that</span>
+<span class="sd">        contain null values.</span>
+<span class="sd">    fixed_len : int, default=-1</span>
+<span class="sd">        Fixed string length to use when reading Parquet string columns</span>
+<span class="sd">        if the length of each string is known at runtime. This can avoid</span>
+<span class="sd">        byte calculation and may improve performance.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</span>
-<span class="sd">        Dictionary of {datasetName: pdarray, String, or SegArray}</span>
+<span class="sd">    Mapping[str, Union[pdarray, Strings, SegArray, Categorical,</span>
+<span class="sd">        DataFrame, IPv4, Datetime, Timedelta, Index]]</span>
+<span class="sd">        Dictionary mapping ``datasetName`` to the loaded object. The values may</span>
+<span class="sd">        be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,</span>
+<span class="sd">        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        If invalid filetype is detected</span>
+<span class="sd">        Raised if an invalid file type is detected.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    get_datasets, ls, read_parquet, read_hdf</span>
+<span class="sd">    get_datasets</span>
+<span class="sd">    ls</span>
+<span class="sd">    read_parquet</span>
+<span class="sd">    read_hdf</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If filenames is a string, it is interpreted as a shell expression</span>
-<span class="sd">    (a single filename is a valid expression, so it will work) and is</span>
-<span class="sd">    expanded with glob to read all matching files.</span>
+<span class="sd">    If ``filenames`` is a string, it is interpreted as a shell expression.</span>
+<span class="sd">    A single filename is a valid expression, so it will also work. The</span>
+<span class="sd">    expression is expanded with ``glob`` to read all matching files.</span>
 
-<span class="sd">    If iterative == True each dataset name and file names are passed to</span>
-<span class="sd">    the server as independent sequential strings while if iterative == False</span>
-<span class="sd">    all dataset names and file names are passed to the server in a single</span>
-<span class="sd">    string.</span>
+<span class="sd">    If ``iterative=True``, each dataset name and filename is passed to the</span>
+<span class="sd">    server independently in sequence. If ``iterative=False``, all dataset</span>
+<span class="sd">    names and filenames are passed to the server in a single string.</span>
 
-<span class="sd">    If datasets is None, infer the names of datasets from the first file</span>
-<span class="sd">    and read all of them. Use ``get_datasets`` to show the names of datasets</span>
-<span class="sd">    to HDF5/Parquet files.</span>
+<span class="sd">    If ``datasets`` is ``None``, dataset names are inferred from the first</span>
+<span class="sd">    file and all datasets are read. Use ``get_datasets`` to show the names</span>
+<span class="sd">    of datasets in HDF5 or Parquet files.</span>
 
-<span class="sd">    CSV files without the Arkouda Header are not supported.</span>
+<span class="sd">    CSV files without the Arkouda header are not supported.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">    Read with file Extension</span>
-<span class="sd">    load HDF5 - processing determines file type not extension</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix.h5&#39;)  # doctest: +SKIP</span>
+<span class="sd">    Read a file with an extension:</span>
 
-<span class="sd">    Read without file Extension</span>
-<span class="sd">    load Parquet</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix.parquet&#39;) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read(&quot;path/name_prefix.h5&quot;)  # doctest: +SKIP</span>
 
-<span class="sd">    Read Glob Expression</span>
-<span class="sd">    Reads HDF5</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix*&#39;) # doctest: +SKIP</span>
+<span class="sd">    The file type is determined from file contents, not the extension.</span>
 
+<span class="sd">    Read a Parquet file:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = ak.read(&quot;path/name_prefix.parquet&quot;)  # doctest: +SKIP</span>
+
+<span class="sd">    Read files matching a glob expression:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = ak.read(&quot;path/name_prefix*&quot;)  # doctest: +SKIP</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
@@ -2721,59 +2801,64 @@
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strictTypes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">calc_string_offsets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">calc_string_offsets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Read datasets from files and tag each record to the file it was read from.</span>
+<span class="sd">    Read datasets from files and tag each record with the file it was read from.</span>
 
-<span class="sd">    File Type is determined automatically.</span>
+<span class="sd">    The file type is determined automatically.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filenames : list or str</span>
-<span class="sd">        Either a list of filenames or shell expression</span>
-<span class="sd">    datasets : list or str or None</span>
-<span class="sd">        (List of) name(s) of dataset(s) to read (default: all available)</span>
-<span class="sd">    strictTypes: bool</span>
-<span class="sd">        If True (default), require all dtypes of a given dataset to have the</span>
-<span class="sd">        same precision and sign. If False, allow dtypes of different</span>
+<span class="sd">    filenames : Union[str, List[str]]</span>
+<span class="sd">        Either a list of filenames or a shell expression.</span>
+<span class="sd">    datasets : Optional[Union[str, List[str]]], default=None</span>
+<span class="sd">        Dataset name or list of dataset names to read. If ``None``, all</span>
+<span class="sd">        available datasets are read.</span>
+<span class="sd">    strictTypes : bool, default=True</span>
+<span class="sd">        If ``True``, require all dtypes of a given dataset to have the</span>
+<span class="sd">        same precision and sign. If ``False``, allow dtypes of different</span>
 <span class="sd">        precision and sign across different files. For example, if one</span>
-<span class="sd">        file contains a uint32 dataset and another contains an int64</span>
-<span class="sd">        dataset with the same name, the contents of both will be read</span>
-<span class="sd">        into an int64 pdarray.</span>
-<span class="sd">    allow_errors: bool</span>
-<span class="sd">        Default False, if True will allow files with read errors to be skipped</span>
-<span class="sd">        instead of failing.  A warning will be included in the return containing</span>
-<span class="sd">        the total number of files skipped due to failure and up to 10 filenames.</span>
-<span class="sd">    calc_string_offsets: bool</span>
-<span class="sd">        Default False, if True this will tell the server to calculate the</span>
-<span class="sd">        offsets/segments array on the server versus loading them from HDF5 files.</span>
-<span class="sd">        In the future this option may be set to True as the default.</span>
-<span class="sd">    read_nested: bool</span>
-<span class="sd">        Default True, when True, SegArray objects will be read from the file. When False,</span>
-<span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
-<span class="sd">        Ignored if datasets is not `None`</span>
-<span class="sd">        Parquet Files only.</span>
-<span class="sd">    has_non_float_nulls: bool</span>
-<span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
-<span class="sd">        that contain null values.</span>
+<span class="sd">        file contains a ``uint32`` dataset and another contains an</span>
+<span class="sd">        ``int64`` dataset with the same name, the contents of both will</span>
+<span class="sd">        be read into an ``int64`` ``pdarray``.</span>
+<span class="sd">    allow_errors : bool, default=False</span>
+<span class="sd">        If ``True``, files with read errors may be skipped instead of</span>
+<span class="sd">        causing the operation to fail. A warning will be included in the</span>
+<span class="sd">        return containing the total number of files skipped due to failure</span>
+<span class="sd">        and up to 10 filenames.</span>
+<span class="sd">    calc_string_offsets : bool, default=False</span>
+<span class="sd">        If ``True``, instruct the server to calculate the offsets or</span>
+<span class="sd">        segments array instead of loading it from HDF5 files. In the</span>
+<span class="sd">        future, this option may become the default.</span>
+<span class="sd">    read_nested : bool, default=True</span>
+<span class="sd">        If ``True``, ``SegArray`` objects are read from the file. If</span>
+<span class="sd">        ``False``, ``SegArray`` objects and other nested Parquet columns</span>
+<span class="sd">        are ignored. Ignored if ``datasets`` is not ``None``. Parquet only.</span>
+<span class="sd">    has_non_float_nulls : bool, default=False</span>
+<span class="sd">        Must be set to ``True`` to read non-float Parquet columns that</span>
+<span class="sd">        contain null values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Not currently supported for Categorical or GroupBy datasets</span>
+<span class="sd">    This function is not currently supported for ``Categorical`` or</span>
+<span class="sd">    ``GroupBy`` datasets.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">    Read files and return data with tagging corresponding to the Categorical returned</span>
-<span class="sd">    cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`</span>
-<span class="sd">    &gt;&gt;&gt; data, cat = ak.read_tagged_data(&#39;path/name&#39;) # doctest: +SKIP</span>
-<span class="sd">    &gt;&gt;&gt; data # doctest: +SKIP</span>
-<span class="sd">    {&#39;Filname_Codes&#39;: array([0 3 6 9 12]), &#39;col_name&#39;: array([0 0 0 1])}</span>
+<span class="sd">    Read files and return the data along with tagging information:</span>
 
+<span class="sd">    &gt;&gt;&gt; data, cat = ak.read_tagged_data(&quot;path/name&quot;)  # doctest: +SKIP</span>
+
+<span class="sd">    The codes in ``cat`` map each record in ``data`` to the file it came</span>
+<span class="sd">    from. The returned data includes a ``&quot;Filename_Codes&quot;`` array.</span>
+
+<span class="sd">    &gt;&gt;&gt; data  # doctest: +SKIP</span>
+<span class="sd">    {&quot;Filename_Codes&quot;: array([0 3 6 9 12]), &quot;col_name&quot;: array([0 0 0 1])}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 

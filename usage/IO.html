@@ -623,45 +623,50 @@ value, but proceed with caution.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_nested</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_non_float_nulls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/io.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Read datasets from files.</p>
-<p>File Type is determined automatically.</p>
+<p>The file type is determined automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Either a list of filenames or shell expression</p></li>
-<li><p><strong>datasets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
-<li><p><strong>iterative</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Iterative (True) or Single (False) function call(s) to server</p></li>
-<li><p><strong>strictTypes</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True (default), require all dtypes of a given dataset to have the
-same precision and sign. If False, allow dtypes of different
+<li><p><strong>filenames</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Either a list of filenames or a shell expression.</p></li>
+<li><p><strong>datasets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Name or list of names of datasets to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all
+available datasets are read.</p></li>
+<li><p><strong>iterative</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make iterative function calls to the server. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, make a single function call to the server.</p></li>
+<li><p><strong>strictTypes</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
+same precision and sign. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, allow dtypes of different
 precision and sign across different files. For example, if one
-file contains a uint32 dataset and another contains an int64
-dataset with the same name, the contents of both will be read
-into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default False, if True will allow files with read errors to be skipped
-instead of failing.  A warning will be included in the return containing
-the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
-offsets/segments array on the server versus loading them from HDF5 files.
-In the future this option may be set to True as the default.</p></li>
-<li><p><strong>column_delim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default True, when True, SegArray objects will be read from the file. When False,
-SegArray (or other nested Parquet columns) will be ignored.
-Ignored if datasets is not None
-Parquet Files only.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default False. This flag must be set to True to read non-float parquet columns
-that contain null values.</p></li>
-<li><p><strong>fixed_len</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Default -1. This value can be set for reading Parquet string columns when the
-length of each string is known at runtime. This can allow for skipping byte
-calculation, which can have an impact on performance.</p></li>
+file contains a <code class="docutils literal notranslate"><span class="pre">uint32</span></code> dataset and another contains an
+<code class="docutils literal notranslate"><span class="pre">int64</span></code> dataset with the same name, the contents of both will
+be read into an <code class="docutils literal notranslate"><span class="pre">int64</span></code> <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
+<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
+causing the operation to fail. A warning will be included in the
+return containing the total number of files skipped due to failure
+and up to 10 filenames.</p></li>
+<li><p><strong>calc_string_offsets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, instruct the server to calculate the offsets or
+segments array instead of loading it from HDF5 files.</p></li>
+<li><p><strong>column_delim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Column delimiter to use if the dataset is CSV. Otherwise unused.</p></li>
+<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are read from the file. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects and other nested Parquet columns
+are ignored. Ignored if <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>. Parquet
+only.</p></li>
+<li><p><strong>has_non_float_nulls</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to read non-float Parquet columns that
+contain null values.</p></li>
+<li><p><strong>fixed_len</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Fixed string length to use when reading Parquet string columns
+if the length of each string is known at runtime. This can avoid
+byte calculation and may improve performance.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary of {datasetName: pdarray, String, or SegArray}</p>
+<dd class="field-even"><p>DataFrame, IPv4, Datetime, Timedelta, Index]]
+Dictionary mapping <code class="docutils literal notranslate"><span class="pre">datasetName</span></code> to the loaded object. The values may
+be <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">IPv4</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Timedelta</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegArray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPv4</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><code class="xref py py-class docutils literal notranslate"><span class="pre">Datetime</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timedelta</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a>]]</span></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If invalid filetype is detected</p>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if an invalid file type is detected.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -669,30 +674,33 @@ calculation, which can have an impact on performance.</p></li>
 <p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.read_parquet" title="arkouda.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>If filenames is a string, it is interpreted as a shell expression
-(a single filename is a valid expression, so it will work) and is
-expanded with glob to read all matching files.</p>
-<p>If iterative == True each dataset name and file names are passed to
-the server as independent sequential strings while if iterative == False
-all dataset names and file names are passed to the server in a single
-string.</p>
-<p>If datasets is None, infer the names of datasets from the first file
-and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
-to HDF5/Parquet files.</p>
-<p>CSV files without the Arkouda Header are not supported.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">filenames</span></code> is a string, it is interpreted as a shell expression.
+A single filename is a valid expression, so it will also work. The
+expression is expanded with <code class="docutils literal notranslate"><span class="pre">glob</span></code> to read all matching files.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">iterative=True</span></code>, each dataset name and filename is passed to the
+server independently in sequence. If <code class="docutils literal notranslate"><span class="pre">iterative=False</span></code>, all dataset
+names and filenames are passed to the server in a single string.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, dataset names are inferred from the first
+file and all datasets are read. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names
+of datasets in HDF5 or Parquet files.</p>
+<p>CSV files without the Arkouda header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Read with file Extension
-load HDF5 - processing determines file type not extension
-&gt;&gt;&gt; x = ak.read(‘path/name_prefix.h5’)  # doctest: +SKIP</p>
-<p>Read without file Extension
-load Parquet
-&gt;&gt;&gt; x = ak.read(‘path/name_prefix.parquet’) # doctest: +SKIP</p>
-<p>Read Glob Expression
-Reads HDF5
-&gt;&gt;&gt; x = ak.read(‘path/name_prefix*’) # doctest: +SKIP</p>
+<p>Read a file with an extension:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The file type is determined from file contents, not the extension.</p>
+<p>Read a Parquet file:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.parquet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read files matching a glob expression:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <p>For convenience, multiple datasets can be read in to create a dictionary of pdarrays.</p>

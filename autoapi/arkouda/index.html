@@ -661,7 +661,7 @@ to Python users.</p>
 <td><p>Return a list containing the names of all objects in the symbol table.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(→ Union[Mapping[str, ...)</p></td>
-<td><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
+<td><p>Load objects previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.load_all" title="arkouda.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(→ Mapping[str, ...)</p></td>
 <td><p>Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p></td>
@@ -691,13 +691,13 @@ to Python users.</p>
 <td><p>Read CSV file(s) into Arkouda objects.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[Mapping[str, ...)</p></td>
-<td><p>Read Arkouda objects from HDF5 file/s.</p></td>
+<td><p>Read Arkouda objects from HDF5 files.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_parquet" title="arkouda.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[Mapping[str, ...)</p></td>
-<td><p>Read Arkouda objects from Parquet file/s.</p></td>
+<td><p>Read Arkouda objects from Parquet files.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_tagged_data" title="arkouda.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
-<td><p>Read datasets from files and tag each record to the file it was read from.</p></td>
+<td><p>Read datasets from files and tag each record with the file it was read from.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_zarr" title="arkouda.read_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_zarr</span></code></a>(store_path, ndim, dtype)</p></td>
 <td><p>Read a Zarr store from disk into a pdarray.</p></td>
@@ -727,7 +727,7 @@ to Python users.</p>
 <td><p>Save multiple named pdarrays to HDF5 files.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.to_parquet" title="arkouda.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(→ None)</p></td>
-<td><p>Save multiple named pdarrays to Parquet files.</p></td>
+<td><p>Save multiple named arrays to Parquet files.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.to_zarr" title="arkouda.to_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code></a>(store_path, arr, chunk_shape)</p></td>
 <td><p>Write a pdarray to disk as a Zarr store.</p></td>
@@ -10145,33 +10145,36 @@ Return details of registry objects. Currently includes object type for any objec
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.load">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'INFER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">arkouda.client_dtypes.IPv4</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><span class="pre">arkouda.numpy.timeclass.Datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><span class="pre">arkouda.numpy.timeclass.Timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.load" title="Link to this definition">¶</a></dt>
-<dd><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p>
+<dd><p>Load objects previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_prefix</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Filename prefix used to save the original pdarray</p></li>
-<li><p><strong>file_format</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – ‘INFER’, ‘HDF5’ or ‘Parquet’. Defaults to ‘INFER’. Used to indicate the file type being loaded.
-If INFER, this will be detected during processing</p></li>
-<li><p><strong>dataset</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Dataset name where the pdarray was saved, defaults to ‘array’</p></li>
-<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True the server will ignore Segmented Strings ‘offsets’ array and derive
-it from the null-byte terminators.  Defaults to False currently</p></li>
-<li><p><strong>column_delim</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
+<li><p><strong>path_prefix</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Filename prefix used when saving the original object.</p></li>
+<li><p><strong>file_format</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;INFER&quot;</em>) – File format to load. One of <code class="docutils literal notranslate"><span class="pre">&quot;INFER&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;HDF5&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;Parquet&quot;</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">&quot;INFER&quot;</span></code>, the format will be detected automatically.</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;array&quot;</em>) – Dataset name where the object was saved.</p></li>
+<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the server ignores the segmented <code class="docutils literal notranslate"><span class="pre">Strings</span></code> <code class="docutils literal notranslate"><span class="pre">offsets</span></code>
+array and derives offsets from null-byte terminators.</p></li>
+<li><p><strong>column_delim</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;</em><em>,</em><em>&quot;</em>) – Column delimiter used if the dataset is CSV. Otherwise unused.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
-with the previously saved pdarrays, Strings, SegArrays, or Categoricals</p>
+<dd class="field-even"><p>DataFrame, IPv4, Datetime, Timedelta, Index]]
+Dictionary mapping <code class="docutils literal notranslate"><span class="pre">datasetName</span></code> to the loaded object. The values may
+be <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">IPv4</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Timedelta</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mapping[<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str">str</a>, <a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a>, <a class="reference internal" href="#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>]]</p>
+<dd class="field-odd"><p>Mapping[<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str">str</a>, <a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a>, <a class="reference internal" href="#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>,</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either path_prefix or dataset is not a str</p></li>
-<li><p><strong>ValueError</strong> – Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
-path_prefix does not correspond to files accessible to Arkouda</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if the hdf5 files are present but there is an error in opening
-one or more of them</p></li>
+<li><p><strong>TypeError</strong> – Raised if either <code class="docutils literal notranslate"><span class="pre">path_prefix</span></code> or <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p></li>
+<li><p><strong>ValueError</strong> – Raised if an invalid <code class="docutils literal notranslate"><span class="pre">file_format</span></code> is given, if the dataset is not
+present in all HDF5 files, or if <code class="docutils literal notranslate"><span class="pre">path_prefix</span></code> does not correspond
+to files accessible to Arkouda.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the HDF5 files are present but an error occurs while opening
+one or more of them.</p></li>
 </ul>
 </dd>
 </dl>
@@ -10180,25 +10183,31 @@ one or more of them</p></li>
 <p><a class="reference internal" href="#arkouda.to_parquet" title="arkouda.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>, <a class="reference internal" href="#arkouda.to_hdf" title="arkouda.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>, <a class="reference internal" href="#arkouda.load_all" title="arkouda.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.read" title="arkouda.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
-with a .parquet appended to the prefix_path.
-Parquet files were previously ALWAYS stored with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> extension.</p>
-<p>ak.load does not support loading a single file.
-For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().</p>
-<p>CSV files without the Arkouda Header are not supported.</p>
+<p>If a previously saved Parquet file raises a <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>, try
+loading it with <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> appended to <code class="docutils literal notranslate"><span class="pre">path_prefix</span></code>. Older versions
+of Arkouda always stored Parquet files with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> extension.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ak.load</span></code> does not support loading a single file. To load a single HDF5
+file without the <code class="docutils literal notranslate"><span class="pre">_LOCALE####</span></code> suffix, use <code class="docutils literal notranslate"><span class="pre">ak.read()</span></code>.</p>
+<p>CSV files without the Arkouda header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Loading from file without extension
-&gt;&gt;&gt; obj = ak.load(‘path/prefix’) # doctest: +SKIP</p>
-<p>Loads the array from numLocales files with the name <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####</span></code>.
-The file type is inferred during processing.</p>
-<p>Loading with an extension (HDF5)
-&gt;&gt;&gt; obj = ak.load(‘path/prefix.test’) # doctest: +SKIP</p>
-<p>Loads the object from numLocales files with the name <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####.test</span></code> where
-#### is replaced by each locale numbers. Because filetype is inferred during processing,
-the extension is not required to be a specific format.</p>
+<p>Loading from file without extension:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;path/prefix&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This loads the array from <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> files with the name
+<code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####</span></code>. The file type is inferred
+automatically.</p>
+<p>Loading with an extension (HDF5):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;path/prefix.test&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This loads the object from <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> files with the name
+<code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####.test</span></code> where <code class="docutils literal notranslate"><span class="pre">####</span></code> corresponds
+to each locale number. Because the file type is inferred, the
+extension does not need to correspond to a specific format.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -10533,47 +10542,52 @@ retrieving information about the objects in names</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.read">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_nested</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_non_float_nulls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">arkouda.client_dtypes.IPv4</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><span class="pre">arkouda.numpy.timeclass.Datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><span class="pre">arkouda.numpy.timeclass.Timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_nested</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_non_float_nulls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">arkouda.client_dtypes.IPv4</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><span class="pre">arkouda.numpy.timeclass.Datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><span class="pre">arkouda.numpy.timeclass.Timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read" title="Link to this definition">¶</a></dt>
 <dd><p>Read datasets from files.</p>
-<p>File Type is determined automatically.</p>
+<p>The file type is determined automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<em>list</em><em> or </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Either a list of filenames or shell expression</p></li>
-<li><p><strong>datasets</strong> (<em>list</em><em> or </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
-<li><p><strong>iterative</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
-<li><p><strong>strictTypes</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
-same precision and sign. If False, allow dtypes of different
+<li><p><strong>filenames</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – Either a list of filenames or a shell expression.</p></li>
+<li><p><strong>datasets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – Name or list of names of datasets to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all
+available datasets are read.</p></li>
+<li><p><strong>iterative</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make iterative function calls to the server. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, make a single function call to the server.</p></li>
+<li><p><strong>strictTypes</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
+same precision and sign. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, allow dtypes of different
 precision and sign across different files. For example, if one
-file contains a uint32 dataset and another contains an int64
-dataset with the same name, the contents of both will be read
-into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
-instead of failing.  A warning will be included in the return containing
-the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
-offsets/segments array on the server versus loading them from HDF5 files.
-In the future this option may be set to True as the default.</p></li>
-<li><p><strong>column_delim</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
-SegArray (or other nested Parquet columns) will be ignored.
-Ignored if datasets is not None
-Parquet Files only.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False. This flag must be set to True to read non-float parquet columns
-that contain null values.</p></li>
-<li><p><strong>fixed_len</strong> (<em>int</em>) – Default -1. This value can be set for reading Parquet string columns when the
-length of each string is known at runtime. This can allow for skipping byte
-calculation, which can have an impact on performance.</p></li>
+file contains a <code class="docutils literal notranslate"><span class="pre">uint32</span></code> dataset and another contains an
+<code class="docutils literal notranslate"><span class="pre">int64</span></code> dataset with the same name, the contents of both will
+be read into an <code class="docutils literal notranslate"><span class="pre">int64</span></code> <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
+<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
+causing the operation to fail. A warning will be included in the
+return containing the total number of files skipped due to failure
+and up to 10 filenames.</p></li>
+<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, instruct the server to calculate the offsets or
+segments array instead of loading it from HDF5 files.</p></li>
+<li><p><strong>column_delim</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;</em><em>,</em><em>&quot;</em>) – Column delimiter to use if the dataset is CSV. Otherwise unused.</p></li>
+<li><p><strong>read_nested</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are read from the file. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects and other nested Parquet columns
+are ignored. Ignored if <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>. Parquet
+only.</p></li>
+<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to read non-float Parquet columns that
+contain null values.</p></li>
+<li><p><strong>fixed_len</strong> (<em>int</em><em>, </em><em>default=-1</em>) – Fixed string length to use when reading Parquet string columns
+if the length of each string is known at runtime. This can avoid
+byte calculation and may improve performance.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary of {datasetName: pdarray, String, or SegArray}</p>
+<dd class="field-even"><p>DataFrame, IPv4, Datetime, Timedelta, Index]]
+Dictionary mapping <code class="docutils literal notranslate"><span class="pre">datasetName</span></code> to the loaded object. The values may
+be <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">IPv4</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Timedelta</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</p>
+<dd class="field-odd"><p>Mapping[<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str">str</a>, <a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a>, <a class="reference internal" href="#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>,</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If invalid filetype is detected</p>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if an invalid file type is detected.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -10581,30 +10595,33 @@ calculation, which can have an impact on performance.</p></li>
 <p><a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="#arkouda.read_parquet" title="arkouda.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>, <a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>If filenames is a string, it is interpreted as a shell expression
-(a single filename is a valid expression, so it will work) and is
-expanded with glob to read all matching files.</p>
-<p>If iterative == True each dataset name and file names are passed to
-the server as independent sequential strings while if iterative == False
-all dataset names and file names are passed to the server in a single
-string.</p>
-<p>If datasets is None, infer the names of datasets from the first file
-and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
-to HDF5/Parquet files.</p>
-<p>CSV files without the Arkouda Header are not supported.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">filenames</span></code> is a string, it is interpreted as a shell expression.
+A single filename is a valid expression, so it will also work. The
+expression is expanded with <code class="docutils literal notranslate"><span class="pre">glob</span></code> to read all matching files.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">iterative=True</span></code>, each dataset name and filename is passed to the
+server independently in sequence. If <code class="docutils literal notranslate"><span class="pre">iterative=False</span></code>, all dataset
+names and filenames are passed to the server in a single string.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, dataset names are inferred from the first
+file and all datasets are read. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names
+of datasets in HDF5 or Parquet files.</p>
+<p>CSV files without the Arkouda header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Read with file Extension
-load HDF5 - processing determines file type not extension
-&gt;&gt;&gt; x = ak.read(‘path/name_prefix.h5’)  # doctest: +SKIP</p>
-<p>Read without file Extension
-load Parquet
-&gt;&gt;&gt; x = ak.read(‘path/name_prefix.parquet’) # doctest: +SKIP</p>
-<p>Read Glob Expression
-Reads HDF5
-&gt;&gt;&gt; x = ak.read(‘path/name_prefix*’) # doctest: +SKIP</p>
+<p>Read a file with an extension:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The file type is determined from file contents, not the extension.</p>
+<p>Read a Parquet file:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.parquet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read files matching a glob expression:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -10660,58 +10677,80 @@ bytes as uint(8).</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.read_hdf">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">arkouda.client_dtypes.IPv4</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><span class="pre">arkouda.numpy.timeclass.Datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><span class="pre">arkouda.numpy.timeclass.Timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read_hdf" title="Link to this definition">¶</a></dt>
-<dd><p>Read Arkouda objects from HDF5 file/s.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">arkouda.client_dtypes.IPv4</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><span class="pre">arkouda.numpy.timeclass.Datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><span class="pre">arkouda.numpy.timeclass.Timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read_hdf" title="Link to this definition">¶</a></dt>
+<dd><p>Read Arkouda objects from HDF5 files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – Filename/s to read objects from</p></li>
-<li><p><strong>datasets</strong> (<em>Optional str</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – datasets to read from the provided files</p></li>
-<li><p><strong>iterative</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
-<li><p><strong>strict_types</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
-same precision and sign. If False, allow dtypes of different
+<li><p><strong>filenames</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – Filename or list of filenames to read objects from.</p></li>
+<li><p><strong>datasets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – Dataset name or list of dataset names to read from the provided
+files. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all datasets are read.</p></li>
+<li><p><strong>iterative</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make iterative function calls to the server. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, make a single function call to the server.</p></li>
+<li><p><strong>strict_types</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
+same precision and sign. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, allow dtypes of different
 precision and sign across different files. For example, if one
-file contains a uint32 dataset and another contains an int64
-dataset with the same name, the contents of both will be read
-into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
-instead of failing.  A warning will be included in the return containing
-the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
-offsets/segments array on the server versus loading them from HDF5 files.
-In the future this option may be set to True as the default.</p></li>
-<li><p><strong>tag_data</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True tag the data with the code associated with the filename
-that the data was pulled from.</p></li>
+file contains a <code class="docutils literal notranslate"><span class="pre">uint32</span></code> dataset and another contains an
+<code class="docutils literal notranslate"><span class="pre">int64</span></code> dataset with the same name, the contents of both will
+be read into an <code class="docutils literal notranslate"><span class="pre">int64</span></code> <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
+<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
+causing the operation to fail. A warning will be included in the
+return containing the total number of files skipped due to failure
+and up to 10 filenames.</p></li>
+<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, instruct the server to calculate the offsets or
+segments array instead of loading it from HDF5 files. In the
+future, this option may become the default.</p></li>
+<li><p><strong>tag_data</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, tag the returned data with the code associated with
+the filename from which it was read.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary of {datasetName: pdarray, String, SegArray}</p>
+<dd class="field-even"><p><ul>
+<li><p><em>Mapping[</em> – str,
+Union[</p>
+<blockquote>
+<div><p>pdarray,
+Strings,
+SegArray,
+Categorical,
+DataFrame,
+IPv4,
+Datetime,
+Timedelta,
+Index,</p>
+</div></blockquote>
+<p>],</p>
+</li>
+<li><p><em>]</em></p></li>
+<li><p>Dictionary mapping <code class="docutils literal notranslate"><span class="pre">datasetName</span></code> to the loaded object. The values</p></li>
+<li><p>may be <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">IPv4</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Timedelta</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>. – Dictionary mapping <code class="docutils literal notranslate"><span class="pre">datasetName</span></code> to the loaded object. The values
+may be <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">IPv4</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Timedelta</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>.</p></li>
+</ul>
+</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files or if one or
-more of the specified files do not exist</p></li>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if not all datasets are present in all HDF5 files or if one
+or more of the specified files do not exist.</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if one or more of the specified files cannot be opened.
-If <cite>allow_errors</cite> is true this may be raised if no values are returned
-from the server.</p></li>
-<li><p><strong>TypeError</strong> – Raised if we receive an unknown arkouda_type returned from the server</p></li>
+If <code class="docutils literal notranslate"><span class="pre">allow_errors</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this may also be raised if no
+values are returned from the server.</p></li>
+<li><p><strong>TypeError</strong> – Raised if an unknown Arkouda type is returned from the server.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If filenames is a string, it is interpreted as a shell expression
-(a single filename is a valid expression, so it will work) and is
-expanded with glob to read all matching files.</p>
-<p>If iterative == True each dataset name and file names are passed to
-the server as independent sequential strings while if iterative == False
-all dataset names and file names are passed to the server in a single
-string.</p>
-<p>If datasets is None, infer the names of datasets from the first file
-and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
-to HDF5 files.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">filenames</span></code> is a string, it is interpreted as a shell expression.
+A single filename is a valid expression, so it will also work. The
+expression is expanded with <code class="docutils literal notranslate"><span class="pre">glob</span></code> to read all matching files.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">iterative=True</span></code>, each dataset name and filename is passed to the
+server independently in sequence. If <code class="docutils literal notranslate"><span class="pre">iterative=False</span></code>, all dataset
+names and filenames are passed to the server in a single string.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, dataset names are inferred from the first
+file and all datasets are read. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show dataset
+names in HDF5 files.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.read_tagged_data" title="arkouda.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a></p>
@@ -10720,82 +10759,96 @@ to HDF5 files.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Read with file Extension
-&gt;&gt;&gt; x = ak.read_hdf(‘path/name_prefix.h5’)  # doctest: +SKIP</p>
-<p>Read Glob Expression
-&gt;&gt;&gt; x = ak.read_hdf(‘path/name_prefix*’)  # doctest: +SKIP</p>
+<p>Read a file with an extension:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read files matching a glob expression:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.read_parquet">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_nested</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_non_float_nulls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_handling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">arkouda.client_dtypes.IPv4</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><span class="pre">arkouda.numpy.timeclass.Datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><span class="pre">arkouda.numpy.timeclass.Timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read_parquet" title="Link to this definition">¶</a></dt>
-<dd><p>Read Arkouda objects from Parquet file/s.</p>
+<dd><p>Read Arkouda objects from Parquet files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – Filename/s to read objects from</p></li>
-<li><p><strong>datasets</strong> (<em>Optional str</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – datasets to read from the provided files</p></li>
-<li><p><strong>iterative</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
-<li><p><strong>strict_types</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
-same precision and sign. If False, allow dtypes of different
+<li><p><strong>filenames</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – Filename or list of filenames to read objects from.</p></li>
+<li><p><strong>datasets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – Dataset name or list of dataset names to read from the provided files.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all datasets are read.</p></li>
+<li><p><strong>iterative</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make iterative function calls to the server. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, make a single function call to the server.</p></li>
+<li><p><strong>strict_types</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
+same precision and sign. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, allow dtypes of different
 precision and sign across different files. For example, if one
-file contains a uint32 dataset and another contains an int64
-dataset with the same name, the contents of both will be read
-into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
-instead of failing.  A warning will be included in the return containing
-the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>tag_data</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True tag the data with the code associated with the filename
-that the data was pulled from.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
-SegArray (or other nested Parquet columns) will be ignored.
-If datasets is not None, this will be ignored.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Deprecated. Please use null_handling.
-Default False. This flag must be set to True to read non-float parquet columns
-that contain null values.</p></li>
-<li><p><strong>null_handling</strong> (<em>Optional str</em>) – Defaults to “only floats”.
-Supported values are “none”, “only floats”, “all”.
-If “none”, the data is assumed to be free of nulls.  This results in the
-fastest performance. However, if there is nulls in the data, the
-behavior is undefined. If “only floats”, only floating point typed
-columns may contain nulls. This makes reading other data types faster.
-If “all”, any column can contain nulls. This is the most generally
-applicable mode, though results in slower performance across the board.</p></li>
-<li><p><strong>fixed_len</strong> (<em>int</em>) – Default -1. This value can be set for reading Parquet string columns when the
-length of each string is known at runtime. This can allow for skipping byte
-calculation, which can have an impact on performance.</p></li>
+file contains a <code class="docutils literal notranslate"><span class="pre">uint32</span></code> dataset and another contains an
+<code class="docutils literal notranslate"><span class="pre">int64</span></code> dataset with the same name, the contents of both will
+be read into an <code class="docutils literal notranslate"><span class="pre">int64</span></code> <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
+<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
+causing the operation to fail. A warning will be included in the
+return containing the total number of files skipped due to failure
+and up to 10 filenames.</p></li>
+<li><p><strong>tag_data</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, tag the data with the code associated with the
+filename from which the data was read.</p></li>
+<li><p><strong>read_nested</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are read from the file. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects and other nested Parquet columns
+are ignored. If <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>, this parameter is
+ignored.</p></li>
+<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – <p>Deprecated. Use <code class="docutils literal notranslate"><span class="pre">null_handling</span></code> instead.</p>
+<p>This flag must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to read non-float Parquet columns
+that contain null values.</p>
+</p></li>
+<li><p><strong>null_handling</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>, </em><em>default=None</em>) – <p>Null-handling mode. Supported values are <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;only</span> <span class="pre">floats&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default is
+<code class="docutils literal notranslate"><span class="pre">&quot;only</span> <span class="pre">floats&quot;</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, the data is assumed to contain no nulls. This gives
+the best performance, but behavior is undefined if nulls are
+present.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">&quot;only</span> <span class="pre">floats&quot;</span></code>, only floating-point columns may contain
+nulls. This improves performance for other data types.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any column may contain nulls. This is the most
+general mode, but it is slower overall.</p>
+</p></li>
+<li><p><strong>fixed_len</strong> (<em>int</em><em>, </em><em>default=-1</em>) – Fixed string length to use when reading Parquet string columns if
+the length of each string is known at runtime. This can avoid byte
+calculation and may improve performance.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary of {datasetName: pdarray, String, or SegArray}</p>
+<dd class="field-even"><p>DataFrame, IPv4, Datetime, Timedelta, Index]]
+Dictionary mapping <code class="docutils literal notranslate"><span class="pre">datasetName</span></code> to the loaded object. The values may
+be <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code>, <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">IPv4</span></code>, <code class="docutils literal notranslate"><span class="pre">Datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Timedelta</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</p>
+<dd class="field-odd"><p>Mapping[<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str">str</a>, <a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a>, <a class="reference internal" href="#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>,</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if all datasets are not present in all parquet files or if one or
-more of the specified files do not exist</p></li>
+<li><p><strong>ValueError</strong> – Raised if not all datasets are present in all Parquet files or if
+one or more of the specified files do not exist.</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if one or more of the specified files cannot be opened.
-If <cite>allow_errors</cite> is true this may be raised if no values are returned
-from the server.</p></li>
-<li><p><strong>TypeError</strong> – Raised if we receive an unknown arkouda_type returned from the server</p></li>
+If <code class="docutils literal notranslate"><span class="pre">allow_errors</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this may also be raised if no
+values are returned from the server.</p></li>
+<li><p><strong>TypeError</strong> – Raised if an unknown Arkouda type is returned from the server.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If filenames is a string, it is interpreted as a shell expression
-(a single filename is a valid expression, so it will work) and is
-expanded with glob to read all matching files.</p>
-<p>If iterative == True each dataset name and file names are passed to
-the server as independent sequential strings while if iterative == False
-all dataset names and file names are passed to the server in a single
-string.</p>
-<p>If datasets is None, infer the names of datasets from the first file
-and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
-to Parquet files.</p>
-<p>Parquet always recomputes offsets at this time
-This will need to be updated once parquets workflow is updated</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">filenames</span></code> is a string, it is interpreted as a shell expression.
+A single filename is a valid expression, so it will also work. The
+expression is expanded with <code class="docutils literal notranslate"><span class="pre">glob</span></code> to read all matching files.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">iterative=True</span></code>, each dataset name and filename is passed to the
+server independently in sequence. If <code class="docutils literal notranslate"><span class="pre">iterative=False</span></code>, all dataset
+names and filenames are passed to the server in a single string.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, dataset names are inferred from the first
+file and all datasets are read. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names
+of datasets in Parquet files.</p>
+<p>Parquet currently always recomputes offsets. This note should be
+updated when the Parquet workflow changes.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.read_tagged_data" title="arkouda.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a></p>
@@ -10804,56 +10857,65 @@ This will need to be updated once parquets workflow is updated</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Read without file Extension
-load Parquet
-&gt;&gt;&gt; x = ak.read_parquet(‘path/name_prefix.parquet’)  # doctest: +SKIP</p>
-<p>Read Glob Expression
-Reads Parquet
-&gt;&gt;&gt; x = ak.read_parquet(‘path/name_prefix*’)  # doctest: +SKIP</p>
+<p>Read a Parquet file:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.parquet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read files matching a glob expression:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.read_tagged_data">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read_tagged_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_nested</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_non_float_nulls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read_tagged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read_tagged_data" title="Link to this definition">¶</a></dt>
-<dd><p>Read datasets from files and tag each record to the file it was read from.</p>
-<p>File Type is determined automatically.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">read_tagged_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_nested</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_non_float_nulls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#read_tagged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.read_tagged_data" title="Link to this definition">¶</a></dt>
+<dd><p>Read datasets from files and tag each record with the file it was read from.</p>
+<p>The file type is determined automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<em>list</em><em> or </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Either a list of filenames or shell expression</p></li>
-<li><p><strong>datasets</strong> (<em>list</em><em> or </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
-<li><p><strong>strictTypes</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
-same precision and sign. If False, allow dtypes of different
+<li><p><strong>filenames</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – Either a list of filenames or a shell expression.</p></li>
+<li><p><strong>datasets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – Dataset name or list of dataset names to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all
+available datasets are read.</p></li>
+<li><p><strong>strictTypes</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
+same precision and sign. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, allow dtypes of different
 precision and sign across different files. For example, if one
-file contains a uint32 dataset and another contains an int64
-dataset with the same name, the contents of both will be read
-into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
-instead of failing.  A warning will be included in the return containing
-the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
-offsets/segments array on the server versus loading them from HDF5 files.
-In the future this option may be set to True as the default.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
-SegArray (or other nested Parquet columns) will be ignored.
-Ignored if datasets is not <cite>None</cite>
-Parquet Files only.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False. This flag must be set to True to read non-float parquet columns
-that contain null values.</p></li>
+file contains a <code class="docutils literal notranslate"><span class="pre">uint32</span></code> dataset and another contains an
+<code class="docutils literal notranslate"><span class="pre">int64</span></code> dataset with the same name, the contents of both will
+be read into an <code class="docutils literal notranslate"><span class="pre">int64</span></code> <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
+<li><p><strong>allow_errors</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
+causing the operation to fail. A warning will be included in the
+return containing the total number of files skipped due to failure
+and up to 10 filenames.</p></li>
+<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, instruct the server to calculate the offsets or
+segments array instead of loading it from HDF5 files. In the
+future, this option may become the default.</p></li>
+<li><p><strong>read_nested</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are read from the file. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects and other nested Parquet columns
+are ignored. Ignored if <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>. Parquet only.</p></li>
+<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to read non-float Parquet columns that
+contain null values.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Not currently supported for Categorical or GroupBy datasets</p>
+<p>This function is not currently supported for <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> or
+<code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> datasets.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Read files and return data with tagging corresponding to the Categorical returned
-cat.codes will link the codes in data to the filename. Data will contain the code <cite>Filename_Codes</cite>
-&gt;&gt;&gt; data, cat = ak.read_tagged_data(‘path/name’) # doctest: +SKIP
-&gt;&gt;&gt; data # doctest: +SKIP
-{‘Filname_Codes’: array([0 3 6 9 12]), ‘col_name’: array([0 0 0 1])}</p>
+<p>Read files and return the data along with tagging information:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_tagged_data</span><span class="p">(</span><span class="s2">&quot;path/name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The codes in <code class="docutils literal notranslate"><span class="pre">cat</span></code> map each record in <code class="docutils literal notranslate"><span class="pre">data</span></code> to the file it came
+from. The returned data includes a <code class="docutils literal notranslate"><span class="pre">&quot;Filename_Codes&quot;</span></code> array.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span>
+<span class="go">{&quot;Filename_Codes&quot;: array([0 3 6 9 12]), &quot;col_name&quot;: array([0 0 0 1])}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -11163,43 +11225,45 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save with mapping defining dataset names
-&gt;&gt;&gt; ak.to_hdf({‘a’: a, ‘b’: b}, ‘path/name_prefix’) # doctest: +SKIP</p>
-<p>Save using names instead of mapping
-&gt;&gt;&gt; ak.to_hdf([a, b], ‘path/name_prefix’, names=[‘a’, ‘b’]) # doctest: +SKIP</p>
+<p>Save with mapping defining dataset names</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">},</span> <span class="s1">&#39;path/name_prefix&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save using names instead of mapping</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="s1">&#39;path/name_prefix&#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.to_parquet">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_categoricals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/io.html#to_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.to_parquet" title="Link to this definition">¶</a></dt>
-<dd><p>Save multiple named pdarrays to Parquet files.</p>
+<dd><p>Save multiple named arrays to Parquet files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>columns</strong> (<em>dict</em><em> or </em><em>list</em><em> of </em><em>pdarrays</em>) – Collection of arrays to save</p></li>
-<li><p><strong>prefix_path</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix for output files</p></li>
-<li><p><strong>names</strong> (<em>list</em><em> of </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Dataset names for the pdarrays</p></li>
-<li><p><strong>mode</strong> (<em>{&quot;truncate&quot;</em><em>, </em><em>&quot;append&quot;}</em>) – By default, truncate (overwrite) the output files if they exist.
-If ‘append’, attempt to create new dataset in existing files.
-‘append’ is deprecated, please use the multi-column write.</p></li>
-<li><p><strong>compression</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – <dl class="simple">
-<dt>Default None.</dt><dd><p>Provide the compression type to use when writing the file.
-Supported values: snappy, gzip, brotli, zstd, lz4</p>
-</dd>
-<dt>convert_categoricals: bool</dt><dd><p>Defaults to False
-Parquet requires all columns to be the same size and Categoricals
-don’t satisfy that requirement.
-if set, write the equivalent Strings in place of any Categorical columns.</p>
-</dd>
-</dl>
+<li><p><strong>columns</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Mapping</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>]</em><em>]</em><em>,</em>) – List[Union[pdarray, Strings, SegArray]]]
+Collection of arrays to save.</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix for the output files.</p></li>
+<li><p><strong>names</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>default=None</em>) – Dataset names for the arrays when <code class="docutils literal notranslate"><span class="pre">columns</span></code> is provided as a list.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><em>Literal</em></a><em>[</em><em>&quot;truncate&quot;</em><em>, </em><em>&quot;append&quot;</em><em>]</em><em>, </em><em>default=&quot;truncate&quot;</em>) – <p>If <code class="docutils literal notranslate"><span class="pre">&quot;truncate&quot;</span></code>, overwrite any existing output files. If
+<code class="docutils literal notranslate"><span class="pre">&quot;append&quot;</span></code>, attempt to create a new dataset in existing files.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;append&quot;</span></code> is deprecated. Use the multi-column write instead.</p>
 </p></li>
+<li><p><strong>compression</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>, </em><em>default=None</em>) – Compression type to use when writing the file. Supported values
+include <code class="docutils literal notranslate"><span class="pre">&quot;snappy&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;gzip&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;brotli&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;zstd&quot;</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">&quot;lz4&quot;</span></code>.</p></li>
+<li><p><strong>convert_categoricals</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Parquet requires all columns to have the same size, and
+<code class="docutils literal notranslate"><span class="pre">Categorical</span></code> objects do not satisfy that requirement. If set
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>, write the equivalent <code class="docutils literal notranslate"><span class="pre">Strings</span></code> in place of any
+<code class="docutils literal notranslate"><span class="pre">Categorical</span></code> columns.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
-is not ‘truncate’ or ‘append’</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+<li><p><strong>ValueError</strong> – Raised if the lengths of <code class="docutils literal notranslate"><span class="pre">columns</span></code> and <code class="docutils literal notranslate"><span class="pre">names</span></code> differ, or if
+<code class="docutils literal notranslate"><span class="pre">mode</span></code> is not <code class="docutils literal notranslate"><span class="pre">&quot;truncate&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;append&quot;</span></code>.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error occurs while saving the arrays.</p></li>
 </ul>
 </dd>
 </dl>
@@ -11208,24 +11272,29 @@ is not ‘truncate’ or ‘append’</p></li>
 <p><a class="reference internal" href="#arkouda.to_hdf" title="arkouda.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>, <a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.load_all" title="arkouda.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.read" title="arkouda.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>Creates one file per locale containing that locale’s chunk of each pdarray.
-If columns is a dictionary, the keys are used as the Parquet column names.
-Otherwise, if no names are supplied, 0-up integers are used. By default,
-any existing files at path_prefix will be deleted
-(regardless of whether they would be overwritten), unless the user
-specifies the ‘append’ mode, in which case arkouda will attempt to add
-&lt;columns&gt; as new datasets to existing files. If the wrong number of files
-is present or dataset names already exist, a RuntimeError is raised.</p>
+<p>Creates one file per locale containing that locale’s chunk of each array.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">columns</span></code> is a dictionary, its keys are used as the Parquet
+column names. Otherwise, if no <code class="docutils literal notranslate"><span class="pre">names</span></code> are supplied, integer names
+starting at <code class="docutils literal notranslate"><span class="pre">0</span></code> are used.</p>
+<p>By default, any existing files at <code class="docutils literal notranslate"><span class="pre">prefix_path</span></code> are deleted
+regardless of whether they would be overwritten. If <code class="docutils literal notranslate"><span class="pre">mode=&quot;append&quot;</span></code>,
+Arkouda attempts to add <code class="docutils literal notranslate"><span class="pre">columns</span></code> as new datasets to existing files.
+If the wrong number of files is present or dataset names already
+exist, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> is raised.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save with mapping defining dataset names
-&gt;&gt;&gt; ak.to_parquet({‘a’: a, ‘b’: b}, ‘path/name_prefix’) # doctest: +SKIP</p>
-<p>Save using names instead of mapping
-&gt;&gt;&gt; ak.to_parquet([a, b], ‘path/name_prefix’, names=[‘a’, ‘b’]) # doctest: +SKIP</p>
+<p>Save with a mapping defining dataset names:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">},</span> <span class="s2">&quot;path/name_prefix&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save using <code class="docutils literal notranslate"><span class="pre">names</span></code> instead of a mapping:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="s2">&quot;path/name_prefix&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
