@@ -1270,7 +1270,7 @@
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.union1d" title="arkouda.numpy.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.pandas.groupbyclass.groupable)</p></td>
-<td><p>Find the union of two arrays/List of Arrays.</p></td>
+<td><p>Find the union of two arrays or lists of arrays.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.unregister" title="arkouda.numpy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
 <td><p>Unregister an Arkouda object by its name.</p></td>
@@ -11269,26 +11269,27 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <dt class="sig sig-object py" id="arkouda.numpy.intersect1d">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">intersect1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#intersect1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.intersect1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the intersection of two arrays.</p>
-<p>Return the sorted, unique values that are in both of the input arrays.</p>
+<p>Return the sorted, unique values that are present in both input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
-can speed up the calculation.  Default is False.</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – First input array or list of arrays.</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Second input array or list of arrays.</p></li>
+<li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, the input arrays are assumed to contain unique values,
+which can speed up the calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Sorted 1D array/List of sorted pdarrays of common and unique elements.</p>
+<dd class="field-even"><p>Sorted 1D array of common unique elements. If the inputs are lists of
+arrays, a list of sorted pdarrays is returned.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pdarray/groupable</p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> or <a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either ar1 or ar2 is not a groupable</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
+<li><p><strong>TypeError</strong> – Raised if either <cite>ar1</cite> or <cite>ar2</cite> is not groupable.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported.</p></li>
 </ul>
 </dd>
 </dl>
@@ -11297,21 +11298,23 @@ can speed up the calculation.  Default is False.</p></li>
 <p><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.unique" title="arkouda.pandas.groupbyclass.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.groupbyclass.unique</span></code></a>, <a class="reference internal" href="#arkouda.numpy.union1d" title="arkouda.numpy.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
+<p>Basic 1D example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="go">array([1 3])</span>
 </pre></div>
 </div>
-<p>1D Example
-&gt;&gt;&gt; ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
-array([1 3])</p>
-<p>Multi-Array Example
-&gt;&gt;&gt; a = ak.arange(5)
-&gt;&gt;&gt; b = ak.array([1, 5, 3, 4, 2])
-&gt;&gt;&gt; c = ak.array([1, 4, 3, 2, 5])
-&gt;&gt;&gt; d = ak.array([1, 2, 3, 5, 4])
-&gt;&gt;&gt; multia = [a, a, a]
-&gt;&gt;&gt; multib = [b, c, d]
-&gt;&gt;&gt; ak.intersect1d(multia, multib)
-[array([1 3]), array([1 3]), array([1 3])]</p>
+<p>Multi-array example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multib</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">multia</span><span class="p">,</span> <span class="n">multib</span><span class="p">)</span>
+<span class="go">[array([1 3]), array([1 3]), array([1 3])]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -17181,26 +17184,27 @@ is invoked with a dtype of float64</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.union1d">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">union1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#union1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.union1d" title="Link to this definition">¶</a></dt>
-<dd><p>Find the union of two arrays/List of Arrays.</p>
-<p>Return the unique, sorted array of values that are in either
-of the two input arrays.</p>
+<dd><p>Find the union of two arrays or lists of arrays.</p>
+<p>Return the unique, sorted array of values that appear in either
+of the input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – First input array or list of arrays.</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Second input array or list of arrays.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Unique, sorted union of the input arrays.</p>
+<dd class="field-even"><p>Unique, sorted union of the input arrays. If the inputs are lists
+of arrays, a list of pdarrays is returned.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either ar1 or ar2 is not a groupable</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if the dtype of either input is not supported</p></li>
+<li><p><strong>TypeError</strong> – Raised if either <cite>ar1</cite> or <cite>ar2</cite> is not groupable.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the dtype of either input is not supported.</p></li>
 </ul>
 </dd>
 </dl>
@@ -17209,21 +17213,23 @@ of the two input arrays.</p>
 <p><a class="reference internal" href="#arkouda.numpy.intersect1d" title="arkouda.numpy.intersect1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect1d</span></code></a>, <a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.unique" title="arkouda.pandas.groupbyclass.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.groupbyclass.unique</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
+<p>Basic 1D example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">array([-2 -1 0 1 2])</span>
 </pre></div>
 </div>
-<p>1D Example
-&gt;&gt;&gt; ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
-array([-2 -1 0 1 2])</p>
-<p>Multi-Array Example
-&gt;&gt;&gt; a = ak.arange(1, 6)
-&gt;&gt;&gt; b = ak.array([1, 5, 3, 4, 2])
-&gt;&gt;&gt; c = ak.array([1, 4, 3, 2, 5])
-&gt;&gt;&gt; d = ak.array([1, 2, 3, 5, 4])
-&gt;&gt;&gt; multia = [a, a, a]
-&gt;&gt;&gt; multib = [b, c, d]
-&gt;&gt;&gt; ak.union1d(multia, multib)
-[array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]</p>
+<p>Multi-array example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multib</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">multia</span><span class="p">,</span> <span class="n">multib</span><span class="p">)</span>
+<span class="go">[array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
