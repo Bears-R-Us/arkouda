@@ -772,37 +772,38 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.alignment.lookup">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply the function defined by the mapping keys --&gt; values to arguments.</span>
+<span class="sd">    Apply the function defined by the mapping ``keys --&gt; values`` to arguments.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    keys : (sequence of) array-like</span>
-<span class="sd">        The domain of the function. Entries must be unique (if a sequence of</span>
-<span class="sd">        arrays is given, each row is treated as a tuple-valued entry).</span>
+<span class="sd">        The domain of the function. Entries must be unique. If a sequence of</span>
+<span class="sd">        arrays is given, each row is treated as a tuple-valued entry.</span>
 <span class="sd">    values : pdarray</span>
-<span class="sd">        The range of the function. Must be same length as keys.</span>
+<span class="sd">        The range of the function. Must be the same length as ``keys``.</span>
 <span class="sd">    arguments : (sequence of) array-like</span>
-<span class="sd">        The arguments on which to evaluate the function. Must have same dtype</span>
-<span class="sd">        (or tuple of dtypes, for a sequence) as keys.</span>
-<span class="sd">    fillvalue : scalar</span>
-<span class="sd">        The default value to return for arguments not in keys.</span>
+<span class="sd">        The arguments on which to evaluate the function. Must have the same</span>
+<span class="sd">        dtype (or tuple of dtypes, for a sequence) as ``keys``.</span>
+<span class="sd">    fillvalue : scalar, default=-1</span>
+<span class="sd">        The default value to return for arguments not in ``keys``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    evaluated : pdarray</span>
-<span class="sd">        The result of evaluating the function over arguments.</span>
+<span class="sd">        The result of evaluating the function over ``arguments``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    While the values cannot be Strings (or other complex objects), the same</span>
-<span class="sd">    result can be achieved by passing an arange as the values, then using</span>
-<span class="sd">    the return as indices into the desired object.</span>
+<span class="sd">    result can be achieved by passing an ``arange`` as the values and then</span>
+<span class="sd">    using the return value as indices into the desired object.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">    Lookup numbers by two-word name</span>
+<span class="sd">    Lookup numbers by two-word name:</span>
+
 <span class="sd">    &gt;&gt;&gt; keys1 = ak.array([&#39;twenty&#39; for _ in range(5)])</span>
 <span class="sd">    &gt;&gt;&gt; keys2 = ak.array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;])</span>
 <span class="sd">    &gt;&gt;&gt; values = ak.array([21, 22, 23, 24, 25])</span>
@@ -811,15 +812,15 @@
 <span class="sd">    &gt;&gt;&gt; ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])</span>
 <span class="sd">    array([24 -1 22])</span>
 
-<span class="sd">    Other direction requires an intermediate index</span>
+<span class="sd">    The reverse direction requires an intermediate index:</span>
+
 <span class="sd">    &gt;&gt;&gt; revkeys = values</span>
 <span class="sd">    &gt;&gt;&gt; revindices = ak.arange(values.size)</span>
 <span class="sd">    &gt;&gt;&gt; revargs = ak.array([24, 21, 22])</span>
 <span class="sd">    &gt;&gt;&gt; idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)</span>
 <span class="sd">    &gt;&gt;&gt; keys1[idx], keys2[idx]</span>
 <span class="sd">    (array([&#39;twenty&#39;, &#39;twenty&#39;, &#39;twenty&#39;]),</span>
-<span class="sd">    array([&#39;four&#39;, &#39;one&#39;, &#39;two&#39;]))</span>
-
+<span class="sd">     array([&#39;four&#39;, &#39;one&#39;, &#39;two&#39;]))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">)</span>
@@ -894,60 +895,68 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the index of the best interval containing each query value.</span>
 
-<span class="sd">    Given an array of query vals and non-overlapping, closed intervals, return</span>
-<span class="sd">    the index of the best (see tiebreak) interval containing each query value,</span>
-<span class="sd">    or -1 if not present in any interval.</span>
+<span class="sd">    Given an array of query values and non-overlapping, half-open intervals,</span>
+<span class="sd">    return the index of the best (see ``tiebreak``) interval containing each</span>
+<span class="sd">    query value, or ``-1`` if not present in any interval.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    vals : (sequence of) pdarray(int, uint, float)</span>
-<span class="sd">        Values to search for in intervals. If multiple arrays, each &quot;row&quot; is an item.</span>
+<span class="sd">    vals : (sequence of) pdarray (int, uint, float)</span>
+<span class="sd">        Values to search for in intervals. If multiple arrays are provided,</span>
+<span class="sd">        each &quot;row&quot; is treated as a single item.</span>
 <span class="sd">    intervals : 2-tuple of (sequences of) pdarrays</span>
-<span class="sd">        Non-overlapping, half-open intervals, as a tuple of</span>
-<span class="sd">        (lower_bounds_inclusive, upper_bounds_exclusive)</span>
-<span class="sd">        Must have same dtype(s) as vals.</span>
-<span class="sd">    tiebreak : (optional) pdarray, numeric</span>
-<span class="sd">        When a value is present in more than one interval, the interval with the</span>
-<span class="sd">        lowest tiebreak value will be chosen. If no tiebreak is given, the</span>
-<span class="sd">        first containing interval will be chosen.</span>
-<span class="sd">    hierarchical: boolean</span>
-<span class="sd">        When True, sequences of pdarrays will be treated as components specifying</span>
-<span class="sd">        a single dimension (i.e. hierarchical)</span>
-<span class="sd">        When False, sequences of pdarrays will be specifying multi-dimensional intervals</span>
+<span class="sd">        Non-overlapping, half-open intervals, given as</span>
+<span class="sd">        ``(lower_bounds_inclusive, upper_bounds_exclusive)``.</span>
+<span class="sd">        Must have the same dtype(s) as ``vals``.</span>
+<span class="sd">    tiebreak : pdarray, numeric, optional</span>
+<span class="sd">        When a value is present in more than one interval, the interval with</span>
+<span class="sd">        the lowest tiebreak value is chosen. If not provided, the first</span>
+<span class="sd">        containing interval is chosen.</span>
+<span class="sd">    hierarchical : bool, default=True</span>
+<span class="sd">        When ``True``, sequences of pdarrays are treated as components</span>
+<span class="sd">        specifying a single hierarchical dimension.</span>
+<span class="sd">        When ``False``, sequences of pdarrays specify multi-dimensional</span>
+<span class="sd">        intervals.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    idx : pdarray(int64)</span>
-<span class="sd">        Index of interval containing each query value, or -1 if not found</span>
+<span class="sd">        Index of the interval containing each query value, or ``-1`` if not found.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The return idx satisfies the following condition:</span>
-<span class="sd">        present = idx &gt; -1</span>
-<span class="sd">        ((intervals[0][idx[present]] &lt;= vals[present]) &amp;</span>
-<span class="sd">         (intervals[1][idx[present]] &gt;= vals[present])).all()</span>
+<span class="sd">    The returned ``idx`` satisfies the following condition:</span>
+
+<span class="sd">    &gt;&gt;&gt; present = idx &gt; -1  # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; ((intervals[0][idx[present]] &lt;= vals[present]) &amp; # doctest: +SKIP</span>
+<span class="sd">    ...  (intervals[1][idx[present]] &gt;= vals[present])).all()</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; starts = (ak.array([0, 5]), ak.array([0, 11]))</span>
 <span class="sd">    &gt;&gt;&gt; ends = (ak.array([5, 9]), ak.array([10, 20]))</span>
-<span class="sd">    &gt;&gt;&gt; vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))</span>
+<span class="sd">    &gt;&gt;&gt; vals = (</span>
+<span class="sd">    ...     ak.array([0, 0, 2, 5, 5, 6, 6, 9]),</span>
+<span class="sd">    ...     ak.array([0, 20, 1, 5, 15, 0, 12, 30]),</span>
+<span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; ak.numpy.alignment.search_intervals(vals, (starts, ends), hierarchical=False)</span>
 <span class="sd">    array([0 -1 0 0 1 -1 1 -1])</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.numpy.alignment.search_intervals(vals, (starts, ends))</span>
 <span class="sd">    array([0 0 0 0 1 1 1 -1])</span>
+
 <span class="sd">    &gt;&gt;&gt; bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])</span>
 <span class="sd">    &gt;&gt;&gt; bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])</span>
 <span class="sd">    &gt;&gt;&gt; bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])</span>
 <span class="sd">    &gt;&gt;&gt; bi_starts, bi_ends, bi_vals</span>
 <span class="sd">    (array([0 92233720368547758091]),</span>
-<span class="sd">    array([92233720368547758090 166020696663385964564]),</span>
-<span class="sd">    array([0 20 36893488147419103233 92233720368547758085 92233720368547758095</span>
-<span class="sd">    110680464442257309696 110680464442257309708 166020696663385964574]))</span>
+<span class="sd">     array([92233720368547758090 166020696663385964564]),</span>
+<span class="sd">     array([0 20 36893488147419103233 92233720368547758085 92233720368547758095</span>
+<span class="sd">     110680464442257309696 110680464442257309708 166020696663385964574]))</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.numpy.alignment.search_intervals(bi_vals, (bi_starts, bi_ends))</span>
 <span class="sd">    array([0 0 0 0 1 1 1 -1])</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.join</span><span class="w"> </span><span class="kn">import</span> <span class="n">gen_ranges</span>
 

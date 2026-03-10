@@ -388,46 +388,49 @@ data with specific interpretations or domain semantics. These include:</p>
 <li><p><cite>IPv4</cite>: For storing and displaying 32-bit integers as IPv4 addresses.</p></li>
 </ul>
 <p>These classes enhance usability and improve readability when working with encoded or
-domain-specific data while preserving Arkouda’s performance model and distributed data structures.</p>
+domain-specific data while preserving Arkouda’s performance model and distributed data
+structures.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><cite>bit_vectorizer</cite>: Creates a partially applied BitVector constructor.</p></li>
-<li><p><cite>ip_address</cite>: Converts various formats to an Arkouda IPv4 object.</p></li>
-<li><p><cite>is_ipv4</cite>: Returns a boolean array indicating IPv4 addresses.</p></li>
-<li><p><cite>is_ipv6</cite>: Returns a boolean array indicating IPv6 addresses.</p></li>
-</ul>
+<dl class="simple">
+<dt>bit_vectorizer</dt><dd><p>Creates a partially applied BitVector constructor.</p>
+</dd>
+<dt>ip_address</dt><dd><p>Converts various formats to an Arkouda IPv4 object.</p>
+</dd>
+<dt>is_ipv4</dt><dd><p>Returns a boolean array indicating IPv4 addresses.</p>
+</dd>
+<dt>is_ipv6</dt><dd><p>Returns a boolean array indicating IPv6 addresses.</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">,</span> <span class="n">is_ipv4</span>
 </pre></div>
 </div>
-<p>Create and use BitVectors:
-&gt;&gt;&gt; a = ak.array([3, 5, 7])
-&gt;&gt;&gt; bv = BitVector(a, width=4)
-&gt;&gt;&gt; print(bv)
-BitVector([..||,</p>
-<blockquote>
-<div><blockquote>
-<div><p>.|.|,
-.|||],</p>
-</div></blockquote>
-<p>width=4, reverse=False)</p>
-</div></blockquote>
-<p>Create Fields with named binary flags:
-&gt;&gt;&gt; f = Fields(ak.array([1, 2, 3]), names=[‘read’, ‘write’, ‘exec’], separator=’:’)
-&gt;&gt;&gt; print(f[0])  # doctest: +SKIP
-–:–:read (1)</p>
-<p>Convert and work with IP addresses:
-&gt;&gt;&gt; ips = ip_address([‘192.168.0.1’, ‘10.0.0.1’])
-&gt;&gt;&gt; print(ips)
-IPv4([192.168.0.1,</p>
-<blockquote>
-<div><blockquote>
-<div><p>10.0.0.1],</p>
-</div></blockquote>
-<p>)</p>
-</div></blockquote>
+<p>Create and use BitVectors:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bv</span> <span class="o">=</span> <span class="n">BitVector</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bv</span><span class="p">)</span>
+<span class="go">BitVector([..||,</span>
+<span class="go">           .|.|,</span>
+<span class="go">           .|||],</span>
+<span class="go">          width=4, reverse=False)</span>
+</pre></div>
+</div>
+<p>Create Fields with named binary flags:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Fields</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">],</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">--:--:read (1)</span>
+</pre></div>
+</div>
+<p>Convert and work with IP addresses:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ips</span> <span class="o">=</span> <span class="n">ip_address</span><span class="p">([</span><span class="s1">&#39;192.168.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;10.0.0.1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ips</span><span class="p">)</span>
+<span class="go">IPv4([192.168.0.1,</span>
+<span class="go">      10.0.0.1],</span>
+<span class="go">     )</span>
+</pre></div>
+</div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_ipv4</span><span class="p">(</span><span class="n">ips</span><span class="p">)</span>
 <span class="go">array([True True])</span>
 </pre></div>

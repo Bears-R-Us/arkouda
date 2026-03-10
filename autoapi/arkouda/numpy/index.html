@@ -1090,7 +1090,7 @@
 <td><p>Create a pdarray of numbers evenly spaced on a log scale.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.lookup" title="arkouda.numpy.lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lookup</span></code></a>(keys, values, arguments[, fillvalue])</p></td>
-<td><p>Apply the function defined by the mapping keys --&gt; values to arguments.</p></td>
+<td><p>Apply the function defined by the mapping <code class="docutils literal notranslate"><span class="pre">keys</span> <span class="pre">--&gt;</span> <span class="pre">values</span></code> to arguments.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.matmul" title="arkouda.numpy.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the product of two matrices.</p></td>
@@ -12258,20 +12258,20 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.lookup">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.lookup" title="Link to this definition">¶</a></dt>
-<dd><p>Apply the function defined by the mapping keys –&gt; values to arguments.</p>
+<dd><p>Apply the function defined by the mapping <code class="docutils literal notranslate"><span class="pre">keys</span> <span class="pre">--&gt;</span> <span class="pre">values</span></code> to arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The domain of the function. Entries must be unique (if a sequence of
-arrays is given, each row is treated as a tuple-valued entry).</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The range of the function. Must be same length as keys.</p></li>
-<li><p><strong>arguments</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The arguments on which to evaluate the function. Must have same dtype
-(or tuple of dtypes, for a sequence) as keys.</p></li>
-<li><p><strong>fillvalue</strong> (<em>scalar</em>) – The default value to return for arguments not in keys.</p></li>
+<li><p><strong>keys</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The domain of the function. Entries must be unique. If a sequence of
+arrays is given, each row is treated as a tuple-valued entry.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The range of the function. Must be the same length as <code class="docutils literal notranslate"><span class="pre">keys</span></code>.</p></li>
+<li><p><strong>arguments</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The arguments on which to evaluate the function. Must have the same
+dtype (or tuple of dtypes, for a sequence) as <code class="docutils literal notranslate"><span class="pre">keys</span></code>.</p></li>
+<li><p><strong>fillvalue</strong> (<em>scalar</em><em>, </em><em>default=-1</em>) – The default value to return for arguments not in <code class="docutils literal notranslate"><span class="pre">keys</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>evaluated</strong> – The result of evaluating the function over arguments.</p>
+<dd class="field-even"><p><strong>evaluated</strong> – The result of evaluating the function over <code class="docutils literal notranslate"><span class="pre">arguments</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
@@ -12279,28 +12279,32 @@ arrays is given, each row is treated as a tuple-valued entry).</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>While the values cannot be Strings (or other complex objects), the same
-result can be achieved by passing an arange as the values, then using
-the return as indices into the desired object.</p>
+result can be achieved by passing an <code class="docutils literal notranslate"><span class="pre">arange</span></code> as the values and then
+using the return value as indices into the desired object.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 </pre></div>
 </div>
-<p>Lookup numbers by two-word name
-&gt;&gt;&gt; keys1 = ak.array([‘twenty’ for _ in range(5)])
-&gt;&gt;&gt; keys2 = ak.array([‘one’, ‘two’, ‘three’, ‘four’, ‘five’])
-&gt;&gt;&gt; values = ak.array([21, 22, 23, 24, 25])
-&gt;&gt;&gt; args1 = ak.array([‘twenty’, ‘thirty’, ‘twenty’])
-&gt;&gt;&gt; args2 = ak.array([‘four’, ‘two’, ‘two’])
-&gt;&gt;&gt; ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])
-array([24 -1 22])</p>
-<p>Other direction requires an intermediate index
-&gt;&gt;&gt; revkeys = values
-&gt;&gt;&gt; revindices = ak.arange(values.size)
-&gt;&gt;&gt; revargs = ak.array([24, 21, 22])
-&gt;&gt;&gt; idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)
-&gt;&gt;&gt; keys1[idx], keys2[idx]
-(array([‘twenty’, ‘twenty’, ‘twenty’]),
-array([‘four’, ‘one’, ‘two’]))</p>
+<p>Lookup numbers by two-word name:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keys1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;twenty&#39;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="s1">&#39;five&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">args1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;twenty&#39;</span><span class="p">,</span> <span class="s1">&#39;thirty&#39;</span><span class="p">,</span> <span class="s1">&#39;twenty&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">args2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">lookup</span><span class="p">([</span><span class="n">keys1</span><span class="p">,</span> <span class="n">keys2</span><span class="p">],</span> <span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="n">args1</span><span class="p">,</span> <span class="n">args2</span><span class="p">])</span>
+<span class="go">array([24 -1 22])</span>
+</pre></div>
+</div>
+<p>The reverse direction requires an intermediate index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">revkeys</span> <span class="o">=</span> <span class="n">values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">revindices</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">revargs</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">24</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">revkeys</span><span class="p">,</span> <span class="n">revindices</span><span class="p">,</span> <span class="n">revargs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys1</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">keys2</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="go">(array([&#39;twenty&#39;, &#39;twenty&#39;, &#39;twenty&#39;]),</span>
+<span class="go"> array([&#39;four&#39;, &#39;one&#39;, &#39;two&#39;]))</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -15306,58 +15310,67 @@ In either case, this is followed by: for k in F:  D[k] = F[k]</p>
 <dt class="sig sig-object py" id="arkouda.numpy.search_intervals">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#search_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.search_intervals" title="Link to this definition">¶</a></dt>
 <dd><p>Return the index of the best interval containing each query value.</p>
-<p>Given an array of query vals and non-overlapping, closed intervals, return
-the index of the best (see tiebreak) interval containing each query value,
-or -1 if not present in any interval.</p>
+<p>Given an array of query values and non-overlapping, half-open intervals,
+return the index of the best (see <code class="docutils literal notranslate"><span class="pre">tiebreak</span></code>) interval containing each
+query value, or <code class="docutils literal notranslate"><span class="pre">-1</span></code> if not present in any interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>vals</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><a class="reference internal" href="#arkouda.numpy.uint" title="arkouda.numpy.uint"><em>uint</em></a><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
-<li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
-(lower_bounds_inclusive, upper_bounds_exclusive)
-Must have same dtype(s) as vals.</p></li>
-<li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When a value is present in more than one interval, the interval with the
-lowest tiebreak value will be chosen. If no tiebreak is given, the
-first containing interval will be chosen.</p></li>
-<li><p><strong>hierarchical</strong> (<em>boolean</em>) – When True, sequences of pdarrays will be treated as components specifying
-a single dimension (i.e. hierarchical)
-When False, sequences of pdarrays will be specifying multi-dimensional intervals</p></li>
+<li><p><strong>vals</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> (</em><em>int</em><em>, </em><a class="reference internal" href="#arkouda.numpy.uint" title="arkouda.numpy.uint"><em>uint</em></a><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals. If multiple arrays are provided,
+each “row” is treated as a single item.</p></li>
+<li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, given as
+<code class="docutils literal notranslate"><span class="pre">(lower_bounds_inclusive,</span> <span class="pre">upper_bounds_exclusive)</span></code>.
+Must have the same dtype(s) as <code class="docutils literal notranslate"><span class="pre">vals</span></code>.</p></li>
+<li><p><strong>tiebreak</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em><em>, </em><em>optional</em>) – When a value is present in more than one interval, the interval with
+the lowest tiebreak value is chosen. If not provided, the first
+containing interval is chosen.</p></li>
+<li><p><strong>hierarchical</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, sequences of pdarrays are treated as components
+specifying a single hierarchical dimension.
+When <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequences of pdarrays specify multi-dimensional
+intervals.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>idx</strong> – Index of interval containing each query value, or -1 if not found</p>
+<dd class="field-even"><p><strong>idx</strong> – Index of the interval containing each query value, or <code class="docutils literal notranslate"><span class="pre">-1</span></code> if not found.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>(<a class="reference internal" href="#arkouda.numpy.int64" title="arkouda.numpy.int64">int64</a>)</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<dl>
-<dt>The return idx satisfies the following condition:</dt><dd><p>present = idx &gt; -1
-((intervals[0][idx[present]] &lt;= vals[present]) &amp;</p>
-<blockquote>
-<div><p>(intervals[1][idx[present]] &gt;= vals[present])).all()</p>
-</div></blockquote>
-</dd>
-</dl>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">idx</span></code> satisfies the following condition:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">present</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">((</span><span class="n">intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">[</span><span class="n">present</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">vals</span><span class="p">[</span><span class="n">present</span><span class="p">])</span> <span class="o">&amp;</span>
+<span class="gp">... </span> <span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">idx</span><span class="p">[</span><span class="n">present</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">vals</span><span class="p">[</span><span class="n">present</span><span class="p">]))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ends</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">]),</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">),</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">array([0 -1 0 0 1 -1 1 -1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">))</span>
 <span class="go">array([0 0 0 0 1 1 1 -1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bi_starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bi_starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_ends</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ends</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_vals</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">,</span> <span class="n">bi_vals</span>
 <span class="go">(array([0 92233720368547758091]),</span>
-<span class="go">array([92233720368547758090 166020696663385964564]),</span>
-<span class="go">array([0 20 36893488147419103233 92233720368547758085 92233720368547758095</span>
-<span class="go">110680464442257309696 110680464442257309708 166020696663385964574]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">bi_vals</span><span class="p">,</span> <span class="p">(</span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">))</span>
+<span class="go"> array([92233720368547758090 166020696663385964564]),</span>
+<span class="go"> array([0 20 36893488147419103233 92233720368547758085 92233720368547758095</span>
+<span class="go"> 110680464442257309696 110680464442257309708 166020696663385964574]))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">bi_vals</span><span class="p">,</span> <span class="p">(</span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">))</span>
 <span class="go">array([0 0 0 0 1 1 1 -1])</span>
 </pre></div>
 </div>
