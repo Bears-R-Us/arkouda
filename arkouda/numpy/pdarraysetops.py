@@ -515,13 +515,13 @@ def concatenate(
         if dtype_ == bigint:
             max_bit_list = []
             for a in arrays:
-                if a.dtype == bigint and isinstance(a, pdarray):
-                    if a.max_bits > 0:
+                if isinstance(a, pdarray) and a.dtype == bigint:
+                    if a.max_bits is not None and a.max_bits > 0:
                         max_bit_list.append(a.max_bits)
             # Should this be min or max?
             m_bits = -1 if len(max_bit_list) == 0 else min(max_bit_list)
             for a in arrays:
-                if a.dtype == bigint and isinstance(a, pdarray):
+                if isinstance(a, pdarray) and a.dtype == bigint:
                     a.max_bits = m_bits
         offsets = [0 for _ in range(len(arrays))]
         for i in range(1, len(arrays)):
