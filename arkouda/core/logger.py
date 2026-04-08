@@ -1,7 +1,7 @@
 """
 Logging utilities for Arkouda client operations.
 
-The `arkouda.logger` module provides an extensible, configurable logging system tailored
+The `arkouda.core.logger` module provides an extensible, configurable logging system tailored
 to Arkouda's Python client. It supports structured logging using the standard `logging`
 module with added conveniences, such as type-safe log level enums, named handlers,
 and global verbosity toggles.
