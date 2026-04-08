@@ -36,7 +36,7 @@ import re
 # Aggregate operations explicitly defined
 import arkouda as ak
 
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.logger import get_arkouda_logger
 
 
 BENCHMARK_DIR = os.path.dirname(__file__)
