@@ -171,7 +171,7 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
         A new Array which is the concatention of the given Arrays along the given axis.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
     # Check array ranks
@@ -240,7 +240,7 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
     Array
         A new Array with a new dimension equal to 1, inserted at the given axis.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
     # expand_dims and stack test the axis validity against an array of rank ndim+1
@@ -290,7 +290,7 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
     Array
         A copy of x with the results reversed along the given axis or axes.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _axis_validation
 
     axis_list = []
@@ -420,7 +420,7 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
     Array
         A copy of x with the axes permuted as per the axes argument.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # Check axes, e.g. if x.ndim = 3, axes must be some permutation of 0,1,2.
     # If it is, then a sort will turn it into (0,1,2).
@@ -474,7 +474,7 @@ def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = Non
     Array
         A new 1D array with each element of x repeated repeats times.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(repeats, int):
         reps = Array._new(scalar_array(repeats))
@@ -525,7 +525,7 @@ def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None)
         A reshaped version of x, as specified in shape.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # Check the validity of the new shape.  At most one -1 is allowed, as in numpy.
 
@@ -604,7 +604,7 @@ def roll(
     Array
         An array with the same shape as x, but with elements shifted as per axis and shift.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _axis_validation
 
     if isinstance(shift, tuple) and isinstance(axis, tuple) and (len(axis) != len(shift)):
@@ -691,7 +691,7 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
     Array
         A stacked array with rank 1 greater than the input arrays.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
     ndim = arrays[0].ndim
@@ -745,7 +745,7 @@ def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
     Array
         The tiled output array.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if len(repetitions) > x.ndim:
         xr = reshape(x, (1,) * (len(repetitions) - x.ndim) + x.shape)
@@ -794,7 +794,7 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
     Tuple
         A Tuple of unstacked Arrays.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
     valid, axis_ = _integer_axis_validation(axis, x.ndim)

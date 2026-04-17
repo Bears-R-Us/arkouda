@@ -9,8 +9,8 @@ import arkouda as ak
 def time_split(N_per_locale, trials):
     print(">>> arkouda split")
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
 
     thirds = [ak.cast(ak.arange(i, N * 3, 3), "str") for i in range(3)]
     thickrange = thirds[0].stick(thirds[1], delimiter="_").stick(thirds[2], delimiter="_")

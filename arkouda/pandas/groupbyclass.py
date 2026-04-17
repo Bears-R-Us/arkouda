@@ -31,7 +31,7 @@ groupable : type alias
 Examples
 --------
 >>> import arkouda as ak
->>> from arkouda.groupbyclass import GroupBy
+>>> from arkouda.pandas.groupbyclass import GroupBy
 
 >>> keys = ak.array([0, 1, 0, 1, 0])
 >>> values = ak.array([10, 20, 30, 40, 50])
@@ -64,7 +64,7 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.logger import ArkoudaLogger, get_arkouda_logger
+from arkouda.core.logger import ArkoudaLogger, get_arkouda_logger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint, float_scalars, int_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -76,8 +76,11 @@ from arkouda.numpy.sorting import argsort, sort
 
 
 if TYPE_CHECKING:
+    from pandas import Series as pd_Series
+
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
+    from arkouda.pandas.extension import ArkoudaExtensionArray
 else:
     Categorical = TypeVar("Categorical")
     Strings = TypeVar("Strings")
@@ -89,6 +92,42 @@ groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 
 # Note: we won't be typechecking GroupBy until we can figure out a way to handle
 # the circular import with Categorical
+
+
+def _unwrap_to_pdarray(values):
+    """
+    Unwrap a pandas Series or ArkoudaExtensionArray to its backing pdarray.
+
+    Parameters
+    ----------
+    values : pdarray | pandas.Series | ArkoudaExtensionArray
+        The object containing Arkouda-backed data.
+
+    Returns
+    -------
+    pdarray
+        The underlying Arkouda pdarray.
+    """
+    from arkouda.numpy.pdarrayclass import pdarray
+
+    if isinstance(values, pdarray):
+        return values
+
+    # pandas Series?
+    # (avoid importing pandas at module import time)
+    if hasattr(values, "_values") and hasattr(values, "array"):
+        # pandas Series has .array and ._values; prefer .array in modern pandas
+        arr = values.array
+    else:
+        arr = values  # maybe it's already the EA
+
+    if hasattr(arr, "_data"):
+        return arr._data
+
+    raise TypeError(
+        f"Unsupported values type for Arkouda GroupBy reductions: {type(values)}. "
+        "Expected pdarray or pandas Series backed by ArkoudaExtensionArray."
+    )
 
 
 def _get_grouping_keys(pda: groupable):
@@ -166,7 +205,7 @@ def unique(
     array([1 2 3])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.pandas.categorical import Categorical as Categorical_
 
     if not return_groups and hasattr(pda, "unique"):
@@ -270,55 +309,52 @@ class GroupBy:
     """
     Group an array or list of arrays by value.
 
-    Usually in preparation
-    for aggregating the within-group values of another array.
+    Usually in preparation for aggregating the within-group values of another array.
 
     Parameters
     ----------
     keys : (list of) pdarray, Strings, or Categorical
-        The array to group by value, or if list, the column arrays to group by row
+        The array to group by value, or if list, the column arrays to group by row.
     assume_sorted : bool
-        If True, assume keys is already sorted (Default: False)
+        If True, assume keys is already sorted (default: False).
 
     Attributes
     ----------
     nkeys : int
-        The number of key arrays (columns)
+        The number of key arrays (columns).
     permutation : pdarray
-        The permutation that sorts the keys array(s) by value (row)
+        The permutation that sorts the key array(s) by value (row).
     unique_keys : pdarray, Strings, or Categorical
-        The unique values of the keys array(s), in grouped order
+        The unique values of the key array(s), in grouped order.
     ngroups : int_scalars
-        The length of the unique_keys array(s), i.e. number of groups
+        The length of the unique_keys array(s), i.e., the number of groups.
     segments : pdarray
-        The start index of each group in the grouped array(s)
+        The start index of each group in the grouped array(s).
     logger : ArkoudaLogger
-        Used for all logging operations
-    dropna : bool (default=True)
-        If True, and the groupby keys contain NaN values,
-        the NaN values together with the corresponding row will be dropped.
-        Otherwise, the rows corresponding to NaN values will be kept.
-        The default is True
+        Used for all logging operations.
+    dropna : bool, default=True
+        If True and the groupby keys contain NaN values, the NaN values together
+        with the corresponding row will be dropped. Otherwise, rows corresponding
+        to NaN values will be kept.
 
     Raises
     ------
     TypeError
-        Raised if keys is a pdarray with a dtype other than int64
+        Raised if keys is a pdarray with a dtype other than int64.
 
     Notes
     -----
     Integral pdarrays, Strings, and Categoricals are natively supported, but
     float64 and bool arrays are not.
 
-    For a user-defined class to be groupable, it must inherit from pdarray
-    and define or overload the grouping API:
-      1) a ._get_grouping_keys() method that returns a list of pdarrays
-         that can be (co)argsorted.
-      2) (Optional) a .group() method that returns the permutation that
-         groups the array
-    If the input is a single array with a .group() method defined, method 2
-    will be used; otherwise, method 1 will be used.
+    For a user-defined class to be groupable, it must inherit from ``pdarray``
+    and provide the grouping API:
 
+    - ``._get_grouping_keys()``: Return a list of pdarrays that can be (co)argsorted.
+    - ``.group()`` (optional): Return the permutation that groups the array.
+
+    If the input is a single array with a ``.group()`` method defined, that method
+    is used. Otherwise, ``._get_grouping_keys()`` is used.
     """
 
     nkeys: int
@@ -501,7 +537,7 @@ class GroupBy:
         GroupBy is not currently supported by Parquet
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -572,7 +608,7 @@ class GroupBy:
             If the file type cannot be determined or required metadata is missing.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -664,7 +700,7 @@ class GroupBy:
         array([2 3 1 4])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="sizeReduction",
@@ -714,7 +750,7 @@ class GroupBy:
 
     def aggregate(
         self,
-        values: groupable,
+        values: Union[groupable, pdarray | pd_Series | "ArkoudaExtensionArray"],
         operator: str,
         skipna: bool = True,
         ddof: int_scalars = 1,
@@ -768,7 +804,9 @@ class GroupBy:
          array([-1.00000000000000000 -0.5 0.00000000000000000 0.5 1.00000000000000000]))
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
+
+        values_pdarray = _unwrap_to_pdarray(values)
 
         operator = operator.lower()
         if operator not in self.Reductions:
@@ -776,22 +814,22 @@ class GroupBy:
 
         # TO DO: remove once logic is ported over to Chapel
         if operator == "nunique":
-            return self.nunique(values)
+            return self.nunique(values_pdarray)
         if operator == "first":
-            return self.first(cast(groupable_element_type, values))
+            return self.first(cast(groupable_element_type, values_pdarray))
         if operator == "mode":
-            return self.mode(values)
+            return self.mode(values_pdarray)
         if operator == "unique":
-            return self.unique(values)
+            return self.unique(values_pdarray)
 
         # All other aggregations operate on pdarray
         if cast(pdarray, values).size != self.length:
             raise ValueError("Attempt to group array using key array of different length")
 
         if self.assume_sorted:
-            permuted_values = cast(pdarray, values)
+            permuted_values = cast(pdarray, values_pdarray)
         else:
-            permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
+            permuted_values = cast(pdarray, values_pdarray)[cast(pdarray, self.permutation)]
 
         rep_msg = generic_msg(
             cmd="segmentedReduction",
@@ -1398,31 +1436,31 @@ class GroupBy:
         """
         Group another array of values and return the number of unique values in each group.
 
-        Group using the permutation stored in the GroupBy instance.
+        Grouping uses the permutation stored in the ``GroupBy`` instance.
 
         Parameters
         ----------
-        values : pdarray, int64
-            The values to group and find unique values
+        values : groupable
+            Values to group and compute the number of unique values for each group.
 
         Returns
         -------
         Tuple[groupable, pdarray]
             unique_keys : groupable
-                The unique keys, in grouped order
-            group_nunique : groupable
-                Number of unique values per unique key in the GroupBy instance
+                The unique keys in grouped order.
+            group_nunique : pdarray
+                Number of unique values for each key in the ``GroupBy`` instance.
 
         Raises
         ------
         TypeError
-            Raised if the dtype(s) of values array(s) does/do not support
-            the nunique method
+            Raised if the dtype(s) of the ``values`` array(s) do not support
+            the ``nunique`` operation.
         ValueError
-            Raised if the key array size does not match the values size or
-            if the operator is not in the GroupBy.Reductions array
+            Raised if the key array size does not match the ``values`` size or
+            if the operator is not present in ``GroupBy.Reductions``.
         RuntimeError
-            Raised if nunique is not supported for the values dtype
+            Raised if ``nunique`` is not supported for the ``values`` dtype.
 
         Examples
         --------
@@ -1430,20 +1468,24 @@ class GroupBy:
         >>> data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
         >>> data
         array([3 4 3 1 1 4 3 4 1 4])
+
         >>> labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
         >>> labels
         array([1 1 1 2 2 2 3 3 3 4])
+
         >>> g = ak.GroupBy(labels)
         >>> g.keys
         array([1 1 1 2 2 2 3 3 3 4])
+
         >>> g.nunique(data)
         (array([1 2 3 4]), array([2 2 3 1]))
 
-        Group (1,1,1) has values [3,4,3] -> there are 2 unique values 3&4
-        Group (2,2,2) has values [1,1,4] -> 2 unique values 1&4
-        Group (3,3,3) has values [3,4,1] -> 3 unique values
-        Group (4) has values [4] -> 1 unique value
+        Group explanations:
 
+        - Group ``(1, 1, 1)`` has values ``[3, 4, 3]`` → 2 unique values (3, 4)
+        - Group ``(2, 2, 2)`` has values ``[1, 1, 4]`` → 2 unique values (1, 4)
+        - Group ``(3, 3, 3)`` has values ``[3, 4, 1]`` → 3 unique values
+        - Group ``(4)`` has values ``[4]`` → 1 unique value
         """
         # TO DO: defer to self.aggregate once logic is ported over to Chapel
         # return self.aggregate(values, "nunique")
@@ -1455,7 +1497,7 @@ class GroupBy:
         # Count number of values per key
         keyorder, nuniq = g2.size()
 
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         if not isinstance(keyorder, (pdarray, Strings, Categorical)):
             raise TypeError(
@@ -1715,7 +1757,7 @@ class GroupBy:
         array([0 -6 -2 -8 -4 -10])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="segmentedReduction",
@@ -1797,7 +1839,7 @@ class GroupBy:
         array([-12 -18 -8 -14 -10 -16])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="segmentedReduction",
@@ -1948,7 +1990,7 @@ class GroupBy:
             Otherwise, return the sample values.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import round as akround
         from arkouda.numpy.pdarraycreation import full
@@ -2122,32 +2164,32 @@ class GroupBy:
 
         Parameters
         ----------
-        values : pdarray, Strings
-            The values to put in each group's segment
-        permute : bool
-            If True (default), permute broadcast values back to the ordering
-            of the original array on which GroupBy was called. If False, the
-            broadcast values are grouped by value.
+        values : Union[pdarray, Strings]
+            Values to place in each group's segment.
+        permute : bool, default=True
+            If ``True``, permute broadcast values back to the ordering of the
+            original array on which ``GroupBy`` was called. If ``False``, the
+            broadcast values are returned in grouped order.
 
         Returns
         -------
-        pdarray, Strings
-            The broadcasted values
+        Union[pdarray, Strings]
+            The broadcasted values.
 
         Raises
         ------
         TypeError
-            Raised if value is not a pdarray object
+            Raised if ``values`` is not a ``pdarray`` or ``Strings`` object.
         ValueError
-            Raised if the values array does not have one
-            value per segment
+            Raised if the ``values`` array does not contain exactly one value
+            per segment.
 
         Notes
         -----
-        This function is a sparse analog of ``np.broadcast``. If a
-        GroupBy object represents a sparse matrix (tensor), then
-        this function takes a (dense) column vector and replicates
-        each value to the non-zero elements in the corresponding row.
+        This function is a sparse analog of ``np.broadcast``. If a ``GroupBy``
+        object represents a sparse matrix (tensor), this function takes a
+        dense column vector and replicates each value to the non-zero elements
+        in the corresponding row.
 
         Examples
         --------
@@ -2156,27 +2198,29 @@ class GroupBy:
         >>> values = ak.array([3, 5])
         >>> g = ak.GroupBy(a)
 
-        By default, result is in original order
+        By default, the result is in the original order:
+
         >>> g.broadcast(values)
         array([3 5 3 5 3])
 
-        With permute=False, result is in grouped order
+        With ``permute=False``, the result is returned in grouped order:
+
         >>> g.broadcast(values, permute=False)
         array([3 3 3 5 5])
+
         >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
         array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
-        >>> keys,counts = g.size()
+        >>> keys, counts = g.size()
         >>> g.broadcast(counts > 2)
         array([True True True True False True False True True False])
         >>> g.broadcast(counts == 3)
         array([True False False True False False False True False False])
         >>> g.broadcast(counts < 4)
         array([True False False True True False True True False True])
-
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.pdarraycreation import arange
         from arkouda.numpy.strings import Strings
 
@@ -2298,7 +2342,7 @@ class GroupBy:
 
         """
         from arkouda import Categorical
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         if self.registered_name is not None and self.is_registered():
@@ -2442,54 +2486,59 @@ def broadcast(
 
     Parameters
     ----------
-    segments : pdarray, int64
-        Offsets of the start of each row in the sparse matrix or grouped array.
-        Must be sorted in ascending order.
-    values : pdarray, Strings
-        The values to broadcast, one per row (or group)
-    size : int
-        The total number of nonzeros in the matrix. If permutation is given, this
-        argument is ignored and the size is inferred from the permutation array.
-    permutation : pdarray, int64
-        The permutation to go from the original ordering of nonzeros to the ordering
-        grouped by row. To broadcast values back to the original ordering, this
-        permutation will be inverted. If no permutation is supplied, it is assumed
-        that the original nonzeros were already grouped by row. In this case, the
-        size argument must be given.
+    segments : pdarray
+        Offsets marking the start of each row in the sparse matrix or grouped
+        array. Must be sorted in ascending order.
+    values : Union[pdarray, Strings]
+        Values to broadcast, one per row (or group).
+    size : Union[int, np.int64, np.uint64], default=-1
+        Total number of nonzeros in the matrix. If ``permutation`` is given,
+        this argument is ignored and the size is inferred from the
+        permutation array.
+    permutation : Union[pdarray, None], optional
+        Permutation that maps the original ordering of nonzeros to the
+        ordering grouped by row. To broadcast values back to the original
+        ordering, this permutation will be inverted.
+
+        If no permutation is supplied, it is assumed that the original
+        nonzeros were already grouped by row. In that case, the ``size``
+        argument must be provided.
 
     Returns
     -------
-    pdarray, Strings
-        The broadcast values, one per nonzero
+    Union[pdarray, Strings]
+        Broadcast values, one per nonzero element.
 
     Raises
     ------
     ValueError
-        - If segments and values are different sizes
-        - If segments are empty
-        - If number of nonzeros (either user-specified or inferred from permutation)
-          is less than one
+        - If ``segments`` and ``values`` have different sizes.
+        - If ``segments`` is empty.
+        - If the number of nonzeros (either user-specified or inferred from
+          ``permutation``) is less than one.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>>
-    # Define a sparse matrix with 3 rows and 7 nonzeros
+
+    Define a sparse matrix with 3 rows and 7 nonzeros:
+
     >>> row_starts = ak.array([0, 2, 5])
     >>> nnz = 7
 
-    Broadcast the row number to each nonzero element
+    Broadcast the row number to each nonzero element:
+
     >>> row_number = ak.arange(3)
     >>> ak.broadcast(row_starts, row_number, nnz)
     array([0 0 1 1 1 2 2])
 
-    If the original nonzeros were in reverse order...
+    If the original nonzeros were in reverse order:
+
     >>> permutation = ak.arange(6, -1, -1)
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)
     array([2 2 1 1 1 0 0])
-
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import arange
     from arkouda.numpy.strings import Strings
 

@@ -33,9 +33,9 @@ Notes
 See Also
 --------
 - arkouda.join
-- arkouda.groupbyclass
+- arkouda.pandas.groupbyclass
 - arkouda.pandas.merge
-- arkouda.categorical.Categorical
+- arkouda.pandas.categorical.Categorical
 
 """
 
@@ -44,8 +44,8 @@ import re
 
 from typing import cast
 
-from arkouda.infoclass import list_symbol_table
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.infoclass import list_symbol_table
+from arkouda.core.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType
@@ -55,25 +55,25 @@ class Matcher:
     """
     Utility class for storing and standardizing information about pattern matches.
 
-    The `Matcher` class defines a standard set of location-related fields that can be
-    used to represent the results of search or match operations, typically involving
-    string or pattern matching over Arkouda arrays.
+    The ``Matcher`` class defines a standard set of location-related fields that can
+    be used to represent the results of search or match operations, typically
+    involving string or pattern matching over Arkouda arrays.
 
     Attributes
     ----------
-    frozenset
-        LocationsInfo : A set of standardized string keys that describe match-related metadata.
+    LocationsInfo = frozenset({...})
+        A set of standardized string keys describing match-related metadata.
         These include:
-            - 'num_matches': total number of matches found.
-            - 'starts': start positions of matches.
-            - 'lengths': lengths of matches.
-            - 'search_bool': boolean array indicating matches in search space.
-            - 'search_ind': indices of matches in search space.
-            - 'match_bool': boolean array indicating actual matches.
-            - 'match_ind': indices of actual matches.
-            - 'full_match_bool': boolean array for full string matches.
-            - 'full_match_ind': indices of full matches.
 
+        - ``'num_matches'`` – total number of matches found.
+        - ``'starts'`` – start positions of matches.
+        - ``'lengths'`` – lengths of matches.
+        - ``'search_bool'`` – boolean array indicating matches in the search space.
+        - ``'search_ind'`` – indices of matches in the search space.
+        - ``'match_bool'`` – boolean array indicating actual matches.
+        - ``'match_ind'`` – indices of actual matches.
+        - ``'full_match_bool'`` – boolean array for full string matches.
+        - ``'full_match_ind'`` – indices of full matches.
     """
 
     LocationsInfo = frozenset(
@@ -113,7 +113,7 @@ class Matcher:
 
     def find_locations(self) -> None:
         """Populate Matcher object by finding the positions of matches."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         sym_tab = list_symbol_table()
         if not self.populated or any(
@@ -177,7 +177,7 @@ class Matcher:
 
         If maxsplit is nonzero, at most maxsplit splits occur.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         if re.search(self.pattern, ""):
@@ -204,7 +204,7 @@ class Matcher:
 
     def findall(self, return_match_origins: bool = False):
         """Return all non-overlapping matches of pattern in Strings as a new Strings object."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         self.find_locations()
@@ -237,7 +237,7 @@ class Matcher:
         If count is nonzero, at most count substitutions occur
         If return_num_subs is True, return the number of substitutions that occurred.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         rep_msg = cast(

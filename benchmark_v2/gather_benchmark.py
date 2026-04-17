@@ -18,8 +18,8 @@ def bench_gather(benchmark, dtype):
     N = pytest.prob_size
     isize = N if pytest.idx_size is None else pytest.idx_size
     vsize = N if pytest.val_size is None else pytest.val_size
-    Ni = isize * pytest.cfg["numLocales"]
-    Nv = vsize * pytest.cfg["numLocales"]
+    Ni = isize * pytest.cfg["numNodes"]
+    Nv = vsize * pytest.cfg["numNodes"]
 
     i_ak = ak.randint(0, Nv, Ni, seed=pytest.seed)
     if pytest.seed is not None:

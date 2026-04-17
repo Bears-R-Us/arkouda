@@ -44,7 +44,7 @@ def unique_all(x: Array, /) -> UniqueAllResult:
     - the counts of each unique value.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     arrays = create_pdarrays(
         cast(
@@ -70,7 +70,7 @@ def unique_counts(x: Array, /) -> UniqueCountsResult:
     - the unique values in `x`
     - the counts of each unique value.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     arrays = create_pdarrays(
         cast(
@@ -94,7 +94,7 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
     - the unique values in `x`
     - the inverse indices that reconstruct `x` from the unique values.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     arrays = create_pdarrays(
         cast(
@@ -114,7 +114,7 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
 
 def unique_values(x: Array, /) -> Array:
     """Return an array containing the unique values from `x`."""
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     return Array._new(
         create_pdarray(

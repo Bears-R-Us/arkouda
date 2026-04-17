@@ -22,7 +22,7 @@ Key Features
 Example:
 -------
 >>> import arkouda as ak
->>> ak.connect()
+>>> ak.connect()  # doctest: +SKIP
 >>> a = ak.array([1, 2, 3])
 >>> b = a + 5
 >>> print(b)
@@ -36,6 +36,32 @@ from ._version import get_versions
 
 __version__ = get_versions()["version"]
 del get_versions
+
+from arkouda.core.logger import LogLevel, disable_verbose, enable_verbose, write_log
+
+from arkouda.core.client import (
+    connect,
+    disconnect,
+    generate_history,
+    get_config,
+    get_max_array_rank,
+    get_mem_avail,
+    get_mem_status,
+    get_mem_used,
+    get_server_commands,
+    print_server_commands,
+    ruok,
+    shutdown,
+)
+
+from arkouda.core.infoclass import (
+    AllSymbols,
+    RegisteredSymbols,
+    information,
+    list_registry,
+    list_symbol_table,
+    pretty_print_information,
+)
 
 from arkouda.numpy import (
     ARKOUDA_SUPPORTED_DTYPES,
@@ -358,11 +384,6 @@ from arkouda.numpy import (
     where,
     zeros,
     zeros_like,
-    isSupportedInt,
-    isSupportedNumber,
-    isSupportedBool,
-    isSupportedFloat,
-    isSupportedDType,
 )
 from arkouda.pandas import (
     Row,
@@ -376,7 +397,7 @@ from arkouda.pandas import (
     series,
     ArkoudaArray,
     ArkoudaStringArray,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaBoolDtype,
     ArkoudaCategoricalDtype,
     ArkoudaInt64Dtype,
@@ -387,33 +408,12 @@ from arkouda.pandas import (
     ArkoudaFloat64Dtype,
     ArkoudaArrayLike,
 )
-from arkouda.client import (
-    connect,
-    disconnect,
-    generate_history,
-    get_config,
-    get_max_array_rank,
-    get_mem_avail,
-    get_mem_status,
-    get_mem_used,
-    get_server_commands,
-    print_server_commands,
-    ruok,
-    shutdown,
-)
-from arkouda.client_dtypes import BitVector, bit_vectorizer, BitVectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
-from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
-from arkouda.categorical import Categorical
-from arkouda.logger import LogLevel, disableVerbose, enableVerbose, disable_verbose, enable_verbose, write_log
-from arkouda.infoclass import (
-    AllSymbols,
-    RegisteredSymbols,
-    information,
-    list_registry,
-    list_symbol_table,
-    pretty_print_information,
-)
-from arkouda.dataframe import (
+
+from arkouda.client_dtypes import BitVector, bit_vectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
+from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
+from arkouda.pandas.categorical import Categorical
+
+from arkouda.pandas.dataframe import (
     DataFrame,
     DataFrameGroupBy,
     DiffAggregate,
@@ -422,7 +422,7 @@ from arkouda.dataframe import (
     invert_permutation,
     merge,
 )
-from arkouda.index import Index, MultiIndex
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy.alignment import (
     NonUniqueError,
     align,
@@ -446,7 +446,7 @@ from arkouda.pandas.accessor import (
     date_operators,
     string_operators,
 )
-from arkouda.io import (
+from arkouda.pandas.io import (
     export,
     get_columns,
     get_datasets,

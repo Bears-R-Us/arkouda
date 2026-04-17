@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import builtins
 import sys
-import warnings
 
 from enum import Enum
 from typing import (  # noqa: F401
     Literal,
+    Optional,
     TypeAlias,
     TypeGuard,
     Union,
@@ -70,6 +70,8 @@ from numpy.dtypes import (
 
 from ._bigint import bigint, bigint_
 
+
+CastingKind: TypeAlias = Literal["no", "equiv", "safe", "same_kind", "unsafe"]
 
 __all__ = [
     "_datatype_check",
@@ -155,11 +157,6 @@ __all__ = [
     "ULongLongDType",
     "UShortDType",
     "VoidDType",
-    "isSupportedDType",
-    "isSupportedInt",
-    "isSupportedFloat",
-    "isSupportedBool",
-    "isSupportedNumber",
 ]
 
 
@@ -258,7 +255,7 @@ def dtype(x):
         return bigint()
 
     # ---- String dtype spellings ----
-    if isinstance(x, str) and x.lower() in {"str", "str_", "Strings", "strings"}:
+    if isinstance(x, str) and x.lower() in {"str", "str_", "strings", "string"}:
         return np.dtype(np.str_)
     if x in (str, np.str_):
         return np.dtype(np.str_)
@@ -519,15 +516,16 @@ def can_cast(from_dt, to_dt, casting: Literal["safe",] | None = "safe") -> built
 
     np_to = _to_np_dtype(to_dt)
 
+    casting_kind: CastingKind = "safe" if casting is None else casting
     # ① Python int scalar special-case: emulate old scalar rules for "safe"
-    if casting == "safe" and isinstance(from_dt, int):
+    if casting_kind == "safe" and isinstance(from_dt, int):
         scalar_result = _scalar_int_can_cast_safe(from_dt, np_to)
         if scalar_result is not None:
             return builtins.bool(scalar_result)
 
     # ② Fallback: pure dtype-based NEP 50-style semantics
     np_from = _to_np_dtype(from_dt)
-    return builtins.bool(np.can_cast(np_from, np_to, casting=casting))
+    return builtins.bool(np.can_cast(np_from, np_to, casting=casting_kind))
 
 
 def result_type(*args):
@@ -877,36 +875,6 @@ def is_supported_int(num) -> TypeGuard[int_scalars]:
     return isinstance(num, ARKOUDA_SUPPORTED_INTS)
 
 
-def isSupportedInt(num):
-    """
-    Deprecated alias for :func:`is_supported_int`.
-
-    This function exists for backward compatibility only. Use
-    :func:`is_supported_int` instead.
-
-    Parameters
-    ----------
-    num : object
-        A scalar value to test.
-
-    Returns
-    -------
-    bool
-        True if ``num`` is an arkouda-supported integer dtype,
-        otherwise False.
-
-    See Also
-    --------
-    is_supported_int : Preferred replacement.
-    """
-    warnings.warn(
-        "isSupportedInt is deprecated; use is_supported_int instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return is_supported_int(num)
-
-
 def is_supported_float(num) -> TypeGuard[float_scalars]:
     """
     Whether a scalar is an arkouda supported float dtype.
@@ -931,36 +899,6 @@ def is_supported_float(num) -> TypeGuard[float_scalars]:
 
     """
     return isinstance(num, ARKOUDA_SUPPORTED_FLOATS)
-
-
-def isSupportedFloat(num):
-    """
-    Deprecated alias for :func:`is_supported_float`.
-
-    This function exists for backward compatibility only. Use
-    :func:`is_supported_float` instead.
-
-    Parameters
-    ----------
-    num : object
-        A scalar value to test.
-
-    Returns
-    -------
-    bool
-        True if ``num`` is an arkouda-supported float dtype,
-        otherwise False.
-
-    See Also
-    --------
-    is_supported_float : Preferred replacement.
-    """
-    warnings.warn(
-        "isSupportedFloat is deprecated; use is_supported_float instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return is_supported_float(num)
 
 
 def is_supported_number(num) -> TypeGuard[numeric_scalars]:
@@ -989,36 +927,6 @@ def is_supported_number(num) -> TypeGuard[numeric_scalars]:
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
 
 
-def isSupportedNumber(num):
-    """
-    Deprecated alias for :func:`is_supported_number`.
-
-    This function exists for backward compatibility only. Use
-    :func:`is_supported_number` instead.
-
-    Parameters
-    ----------
-    num : object
-        A scalar value to test.
-
-    Returns
-    -------
-    bool
-        True if ``num`` is an arkouda-supported numeric dtype,
-        otherwise False.
-
-    See Also
-    --------
-    is_supported_number : Preferred replacement.
-    """
-    warnings.warn(
-        "isSupportedNumber is deprecated; use is_supported_number instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return is_supported_number(num)
-
-
 def is_supported_bool(num) -> TypeGuard[bool_scalars]:
     """
     Whether a scalar is an arkouda supported boolean dtype.
@@ -1045,36 +953,6 @@ def is_supported_bool(num) -> TypeGuard[bool_scalars]:
     return isinstance(num, ARKOUDA_SUPPORTED_BOOLS)
 
 
-def isSupportedBool(num):
-    """
-    Deprecated alias for :func:`is_supported_bool`.
-
-    This function exists for backward compatibility only. Use
-    :func:`is_supported_bool` instead.
-
-    Parameters
-    ----------
-    num : object
-        A scalar value to test.
-
-    Returns
-    -------
-    bool
-        True if ``num`` is an arkouda-supported boolean dtype,
-        otherwise False.
-
-    See Also
-    --------
-    is_supported_bool : Preferred replacement.
-    """
-    warnings.warn(
-        "isSupportedBool is deprecated; use is_supported_bool instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return is_supported_bool(num)
-
-
 def is_supported_dtype(scalar: object) -> builtins.bool:
     """
     Whether a scalar is an arkouda supported dtype.
@@ -1098,36 +976,6 @@ def is_supported_dtype(scalar: object) -> builtins.bool:
 
     """
     return isinstance(scalar, ARKOUDA_SUPPORTED_DTYPES)
-
-
-def isSupportedDType(num):
-    """
-    Deprecated alias for :func:`is_supported_dtype`.
-
-    This function exists for backward compatibility only. Use
-    :func:`is_supported_dtype` instead.
-
-    Parameters
-    ----------
-    num : object
-        A scalar value to test.
-
-    Returns
-    -------
-    bool
-        True if ``num`` is an arkouda-supported dtype,
-        otherwise False.
-
-    See Also
-    --------
-    is_supported_dtype : Preferred replacement.
-    """
-    warnings.warn(
-        "isSupportedDType is deprecated; use is_supported_dtype instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return is_supported_dtype(num)
 
 
 def resolve_scalar_dtype(val: object) -> str:
@@ -1247,7 +1095,7 @@ def get_server_byteorder() -> str:
     'little'
 
     """
-    from arkouda.client import get_config
+    from arkouda.core.client import get_config
 
     order = get_config()["byteorder"]
     if order not in ("little", "big"):

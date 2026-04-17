@@ -14,9 +14,13 @@ TYPES = ("int64", "float64", "bool")
 def time_ak_gather(isize, vsize, trials, dtype, random, seed):
     print(">>> arkouda {} gather".format(dtype))
     cfg = ak.get_config()
-    Ni = isize * cfg["numLocales"]
-    Nv = vsize * cfg["numLocales"]
-    print("numLocales = {}, num_indices = {:,} ; num_values = {:,}".format(cfg["numLocales"], Ni, Nv))
+    Ni = isize * cfg["numNodes"]
+    Nv = vsize * cfg["numNodes"]
+    print(
+        "numLocales = {}, numNodes {}, num_indices = {:,} ; num_values = {:,}".format(
+            cfg["numLocales"], cfg["numNodes"], Ni, Nv
+        )
+    )
     # Index vector is always random
     i = ak.randint(0, Nv, Ni, seed=seed)
     if seed is not None:

@@ -15,7 +15,7 @@ TYPES = ("int64", "float64")
 def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
     print(">>> arkouda {} array transfer".format(dtype))
     cfg = ak.get_config()
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
 
     if dtype == ak.bigint.name:
         u1 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
@@ -24,11 +24,11 @@ def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
         # bytes per bigint array (N * 16) since it's made of 2 uint64 arrays
         # if max_bits in [0, 64] then they're essentially 1 uint64 array
         nb = a.size * 8 if max_bits != -1 and max_bits <= 64 else a.size * 8 * 2
-        ak.client.maxTransferBytes = nb
+        ak.core.client.maxTransferBytes = nb
     else:
         a = ak.randint(0, 2**32, N, dtype=dtype, seed=seed)
         nb = a.size * a.itemsize
-        ak.client.maxTransferBytes = nb
+        ak.core.client.maxTransferBytes = nb
 
     to_ndarray_times = []
     to_pdarray_times = []

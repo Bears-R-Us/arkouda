@@ -19,7 +19,7 @@ def bench_shuffle(benchmark, dtype, method):
     using arkouda's default RNG and the given shuffle method(s).
     """
     cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numNodes"]
     seed = pytest.seed or 0
 
     # Build 1..N in the desired dtype

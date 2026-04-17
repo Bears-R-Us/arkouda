@@ -23,8 +23,9 @@ def time_all_ops(N_per_locale, trials, seed, correctnessOnly):
     else:
         print(">>> arkouda string locality tests")
         nl = ak.get_config()["numLocales"]
+        nn = ak.get_config()["numNodes"]
         N = nl * N_per_locale
-        print("numLocales = {}, N = {:,}".format(nl, N))
+        print("numLocales = {}, numNodes {}, N = {:,}".format(nl, nn, N))
     random_strings, sorted_strings, perm = generate_data(N, seed)
     nbytes = random_strings.nbytes
 
@@ -68,7 +69,7 @@ def time_all_ops(N_per_locale, trials, seed, correctnessOnly):
     assert (ans1[perm] == ans2).all()
 
     # Scalar compare
-    op = lambda x: (x == "5.5")
+    op = lambda x: x == "5.5"
     ans1, ans2 = time_op(op, "Comparing to scalar")
     assert (ans1[perm] == ans2).all()
 

@@ -14,22 +14,22 @@ from typeguard import typechecked
 
 import arkouda.pandas.dataframe
 
-from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
 from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.util import get_callback, is_float
+from arkouda.pandas.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.alignment import lookup
-    from arkouda.numpy.pdarraycreation import arange, array, zeros
+    from arkouda.numpy.pdarraycreation import arange, zeros
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
+    from arkouda.pandas.categorical import Categorical
 else:
     Categorical = TypeVar("Categorical")
     SegArray = TypeVar("SegArray")
@@ -86,51 +86,40 @@ def unary_operators(cls) -> type:
     return cls
 
 
-def aggregation_operators(cls) -> type:
-    for name in ["max", "min", "mean", "sum", "std", "var", "argmax", "argmin", "prod"]:
-        setattr(cls, name, cls._make_aggop(name))
-    return cls
-
-
 @unary_operators
-@aggregation_operators
 @natural_binary_operators
 class Series:
     """
-    One-dimensional arkouda array with axis labels.
+    One-dimensional Arkouda array with axis labels.
 
     Parameters
     ----------
-    index : pdarray, Strings
-        an array of indices associated with the data array.
-        If empty, it will default to a range of ints whose size match the size of the data.
-        optional
-    data : Tuple, List, groupable_element_type, Series, SegArray
-        a 1D array. Must not be None.
+    index : pdarray or Strings, optional
+        An array of indices associated with the data array.
+        If not provided (or empty), it defaults to a range of ints whose size matches
+        the size of the data.
+    data : tuple, list, groupable_element_type, Series, or SegArray
+        A 1D array-like. Must not be None.
 
     Raises
     ------
     TypeError
-        Raised if index is not a pdarray or Strings object
-        Raised if data is not a pdarray, Strings, or Categorical object
+        Raised if ``index`` is not a pdarray or Strings object.
+        Raised if ``data`` is not a supported type.
     ValueError
-        Raised if the index size does not match data size
+        Raised if the index size does not match the data size.
 
     Notes
     -----
     The Series class accepts either positional arguments or keyword arguments.
-    If entering positional arguments,
-        2 arguments entered:
-            argument 1 - data
-            argument 2 - index
-        1 argument entered:
-            argument 1 - data
-    If entering 1 positional argument, it is assumed that this is the data argument.
-    If only 'data' argument is passed in, Index will automatically be generated.
-    If entering keywords,
-        'data' (see Parameters)
-        'index' (optional) must match size of 'data'
 
+    Positional arguments
+        - ``Series(data)``: ``data`` is provided and an index is generated automatically.
+        - ``Series(data, index)``: both ``data`` and ``index`` are provided.
+
+    Keyword arguments
+        - ``Series(data=..., index=...)``: ``index`` is optional but must match the size
+          of ``data`` when provided.
     """
 
     objType = "Series"
@@ -513,7 +502,7 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda.series import Series
+        >>> from arkouda.pandas.series import Series
         >>> s = ak.Series(ak.arange(3))
         >>> s.memory_usage()
         48
@@ -677,38 +666,119 @@ class Series:
             A Series containing the values corresponding to the key.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+
+        def is_scalar_label(x) -> bool:
+            # scalar label component (NOT array-like)
+            return not isinstance(x, (pdarray, Index, Series, list, tuple))
+
+        def to_pdarray(obj) -> pdarray:
+            """
+            Convert without ever touching pandas/numpy containers.
+            Assumes Arkouda Index/Series store pdarrays internally.
+            """
+            if isinstance(obj, pdarray):
+                return obj
+            if isinstance(obj, Index):
+                # Arkouda Index wrapper: underlying pdarray is on .index
+                return obj.index
+            if isinstance(obj, Series):
+                # Arkouda Series wrapper: underlying pdarray is on .values
+                values = obj.values
+                if isinstance(values, pdarray):
+                    return values
+            # python scalar / python list/tuple -> arkouda pdarray (server-side)
+            return array(obj)
+
+        def rebuild_mi_with_names(mi: MultiIndex, names) -> MultiIndex:
+            # Do not rely on mi.names setter being functional
+            return MultiIndex(mi.levels, names=list(names))
+
+        def finalize(selector) -> Series:
+            out_index = self.index[selector]
+            if isinstance(out_index, MultiIndex) and isinstance(self.index, MultiIndex):
+                out_index = rebuild_mi_with_names(out_index, self.index.names)
+            return Series(index=out_index, data=self.values[selector])
+
+        # ---- Series key: preserve its index, lookup by its values (Arkouda Series)
         if isinstance(key, Series):
-            # special case, keep the index values of the Series, and lookup the values
-            return Series(index=key.index, data=lookup(self.index.index, self.values, key.values))
-        elif isinstance(key, MultiIndex):
-            idx = self.index.lookup(key.index)
-        elif isinstance(key, Index):
-            idx = self.index.lookup(key.index)
-        elif isinstance(key, pdarray):
-            idx = self.index.lookup(key)
-        elif isinstance(key, (list, tuple)):
+            return Series(index=key.index, data=lookup(self.index.values, self.values, key.values))
+
+        # ---- Direct index objects
+        if isinstance(key, MultiIndex):
+            return finalize(self.index.lookup(key.index))
+
+        if isinstance(key, Index):
+            return finalize(self.index.lookup(key.values))
+
+        # ---- pdarray key
+        if isinstance(key, pdarray):
+            return finalize(self.index.lookup(key))
+
+        # ---- list/tuple keys
+        if isinstance(key, (list, tuple)):
+            if isinstance(self.index, MultiIndex):
+                nlevels = self.index.nlevels
+
+                if len(key) != nlevels:
+                    raise TypeError(
+                        "For MultiIndex Series, 'key' must be a tuple label, an Index/MultiIndex, "
+                        "or per-level keys with length equal to nlevels."
+                    )
+
+                # Reject flat list-of-scalars like [0, 2]
+                if isinstance(key, list):
+                    all_scalar = True
+                    for k in key:
+                        if not is_scalar_label(k):
+                            all_scalar = False
+                            break
+                    if all_scalar:
+                        raise TypeError(
+                            "For MultiIndex Series, a single label must be a tuple, e.g. (0, 2), "
+                            "not a flat list like [0, 2]."
+                        )
+
+                # Single scalar label tuple: (0, 10) -> per-level length-1 arrays
+                if isinstance(key, tuple):
+                    all_scalar = True
+                    for k in key:
+                        if not is_scalar_label(k):
+                            all_scalar = False
+                            break
+                    if all_scalar:
+                        per_level = [array([k]) for k in key]
+                        return finalize(self.index.lookup(per_level))
+
+                # Per-level keys: normalize each element without pandas/numpy
+                per_level = [to_pdarray(k) for k in key]
+
+                # Enforce paired selection: equal sizes (metadata only)
+                sizes = [int(k.size) for k in per_level]
+                if len(set(sizes)) != 1:
+                    raise ValueError(
+                        f"Per-level MultiIndex keys must have the same length; got {sizes}."
+                    )
+
+                return finalize(self.index.lookup(per_level))
+
+            # Non-MultiIndex:
+            # - list of scalars -> convert to pdarray
+            # - nested list/tuple -> transpose using pure Python (keys only)
             key0 = key[0]
-            if isinstance(key0, list) or isinstance(key0, tuple):
-                # nested list. check if already arkouda arrays
-                if not isinstance(key0[0], pdarray):
-                    # convert list of lists to list of pdarrays
-                    key = [array(a) for a in np.array(key).T.copy()]
 
-            elif not isinstance(key0, pdarray):
-                # a list of scalers, convert into arkouda array
-                try:
-                    val = array(key)
-                    if isinstance(val, pdarray):
-                        key = val
-                except Exception:
-                    raise TypeError("'key' parameter must be convertible to pdarray")
+            if isinstance(key0, (list, tuple)):
+                cols = list(zip(*key))
+                per_level = [array(col) for col in cols]  # col is a tuple of python scalars
+                return finalize(self.index.lookup(per_level))
 
-            # else already list if arkouda array, use as is
-            idx = self.index.lookup(key)
-        else:
-            # scalar value
-            idx = self.index == key
-        return Series(index=self.index[idx], data=self.values[idx])
+            if isinstance(key0, pdarray):
+                return finalize(self.index.lookup(key))
+
+            return finalize(self.index.lookup(to_pdarray(key)))
+
+        # ---- scalar key
+        return finalize(self.index == key)
 
     @classmethod
     def _make_binop(cls, operator):
@@ -718,8 +788,8 @@ class Series:
                     return cls((self.index, operator(self.values, other.values)))
                 else:
                     idx = self.index._merge(other.index).index
-                    a = lookup(self.index.index, self.values, idx, fillvalue=0)
-                    b = lookup(other.index.index, other.values, idx, fillvalue=0)
+                    a = lookup(self.index.values, self.values, idx, fillvalue=0)
+                    b = lookup(other.index.values, other.values, idx, fillvalue=0)
                     return cls((idx, operator(a, b)))
             else:
                 return cls((self.index, operator(self.values, other)))
@@ -733,16 +803,36 @@ class Series:
 
         return unaryop
 
-    @classmethod
-    def _make_aggop(cls, name):
-        def aggop(self) -> Series:
-            return getattr(self.values, name)()
+    def max(self):
+        return self.values.max()
 
-        return aggop
+    def min(self):
+        return self.values.min()
+
+    def mean(self):
+        return self.values.mean()
+
+    def sum(self):
+        return self.values.sum()
+
+    def std(self):
+        return self.values.std()
+
+    def var(self):
+        return self.values.var()
+
+    def argmax(self):
+        return self.values.argmax()
+
+    def argmin(self):
+        return self.values.argmin()
+
+    def prod(self):
+        return self.values.prod()
 
     @typechecked
     def add(self, b: Series) -> Series:
-        index = self.index.concat(b.index).index
+        index = self.index.concat(b.index).values
 
         values = concatenate([self.values, b.values], ordered=False)
 
@@ -771,7 +861,7 @@ class Series:
         idx = argmaxk(v, n)
         idx = idx[-1 : -n - 1 : -1]
 
-        return Series(index=k.index[idx], data=v[idx])
+        return Series(index=k.values[idx], data=v[idx])
 
     def _reindex(self, idx):
         if isinstance(self.index, MultiIndex):
@@ -840,13 +930,13 @@ class Series:
     def tail(self, n: int = 10) -> Series:
         """Return the last n values of the series."""
         idx_series = self.index[-n:]
-        return Series(index=idx_series.index, data=self.values[-n:])
+        return Series(index=idx_series.values, data=self.values[-n:])
 
     @typechecked
     def head(self, n: int = 10) -> Series:
         """Return the first n values of the series."""
         idx_series = self.index[0:n]
-        return Series(index=idx_series.index, data=self.values[0:n])
+        return Series(index=idx_series.values, data=self.values[0:n])
 
     @typechecked
     def to_pandas(self) -> pd.Series:
@@ -1057,7 +1147,7 @@ class Series:
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is not None and self.is_registered():
@@ -1310,7 +1400,7 @@ class Series:
                 if value_labels is not None:
                     # Expect value_labels to always be not None; were doing the check for mypy
                     for col, label in zip(arrays, value_labels):
-                        data[str(label)] = lookup(col.index.index, col.values, idx.index, fillvalue=0)
+                        data[str(label)] = lookup(col.index.values, col.values, idx.values, fillvalue=0)
 
             return arkouda.pandas.dataframe.DataFrame(data)
         else:
@@ -1320,7 +1410,7 @@ class Series:
             for other in arrays[1:]:
                 idx = idx.concat(other.index)
                 v = concatenate([v, other.values], ordered=True)
-            return Series(index=idx.index, data=v)
+            return Series(index=idx.values, data=v)
 
     def map(self, arg: Union[dict, Series]) -> Series:
         """
@@ -1376,9 +1466,9 @@ class Series:
 
         """
         from arkouda import Series
-        from arkouda.categorical import Categorical
         from arkouda.numpy.strings import Strings
         from arkouda.numpy.util import map
+        from arkouda.pandas.categorical import Categorical
 
         if not isinstance(self.values, (pdarray, Strings, Categorical)):
             raise TypeError("Series values must be of type pdarray, Categorical, or Strings to use map")
@@ -1632,19 +1722,31 @@ class Series:
         dtype: float64
 
         """
+        import typing as t
+
         from arkouda.numpy import isnan, where
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
 
+        # Normalize `value` to the underlying thing
         value_: Union[supported_scalars, pdarray, Strings, Categorical, SegArray]
-
         if isinstance(value, Series):
             value_ = value.values
         else:
             value_ = value  # scalar or pdarray
 
+        # Only float pdarray supports NaN fill
         if isinstance(self.values, pdarray) and is_float(self.values):
-            return Series(where(isnan(self.values), value_, self.values), index=self.index)
-        else:
-            return Series(self.values, index=self.index)
+            # For a float Series, the fill value must be numeric scalar or pdarray
+            if isinstance(value_, (Strings, Categorical, SegArray)):
+                raise TypeError("fillna for float Series requires a numeric scalar or pdarray")
+
+            value_num = t.cast(Union[supported_scalars, pdarray], value_)
+            return Series(where(isnan(self.values), value_num, self.values), index=self.index)
+
+        # Non-float: current behavior is "no-op"
+        return Series(self.values, index=self.index)
 
     @staticmethod
     @typechecked

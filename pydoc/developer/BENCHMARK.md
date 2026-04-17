@@ -9,7 +9,7 @@ In most cases, running the full benchmark suite is desired. The simplest way to 
 root-level of arkouda and run `make benchmark`
 
 This will run the entire benchmark suite with the following command:
-```commandline
+```console
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks
 ```
 
@@ -69,7 +69,7 @@ to any use case.
 int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate sets of multiple types.
 > 
 > **Example:** 
-> ```commandline
+> ```console
 > --dtype="int64,bigint,bool,str"
 > ```
 
@@ -109,7 +109,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 > Comma separated list (NO SPACES) allowing for multiple encoding to be used. Accepted values: idna, ascii
 > 
 > **Example:**
-> ```commandline
+> ```console
 > --encoding="idna,ascii"   
 > ```
 > 
@@ -149,7 +149,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 > Compression types to run Parquet IO benchmarks against. Comma delimited list (NO SPACES) allowing for multiple. 
 > Accepted values: none, snappy, gzip, brotli, zstd, and lz4
 > 
-> ```commandline
+> ```console
 > --io_compression="none,snappy,brotli,lz4"
 > ```
 > 
@@ -167,12 +167,12 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 
 In instances where a single test or set of tests needs to be run, use the `-k <expression>` flag.
 
-```commandline
+```console
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py
 ```
 
 Running this command, you can expect to see an output table similar to this
-```commandline
+```console
 benchmark_v2/encoding_benchmark.py ....                                                                                                                                       [100%]
 Saved benchmark data in: <Arkouda_root>/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0014_31de39be8b19c76d073a8999def6673a305c250d_20230405_145759_uncommited-changes.json
 
@@ -186,11 +186,11 @@ bench_decode[ascii]     3.4621 (1.04)     4.9177 (1.11)     4.2250 (1.13)     0.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
 Similarly, to only run a single test within a file, specify the test name with the `-k` flag instead of a filename. The following example will run only the `bench_encode` benchmark.
-```commandline
+```console
 python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k bench_encode
 ```
 Results:
-```commandline
+```console
 benchmark_v2/encoding_benchmark.py ..                                                                                                                                         [100%]
 Saved benchmark data in: <Arkouda_root>/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0015_31de39be8b19c76d073a8999def6673a305c250d_20230405_145947_uncommited-changes.json
 

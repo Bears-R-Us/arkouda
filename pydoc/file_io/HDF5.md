@@ -52,7 +52,7 @@ All data within the HDF5 file is expected to contain several attributes that aid
 `arkouda_version`: `c_string` (Optional)
 > String value of the Arkouda version at the time the object was written.
 
-The 2 attributes marked `Optional` are not required for data to be read. Thus, if you are reading data into Arkouda from another source, these can be omitted. However, any dataset written out by Arkodua will include this information.
+The 2 attributes marked `Optional` are not required for data to be read. Thus, if you are reading data into Arkouda from another source, these can be omitted. However, any dataset written out by Arkouda will include this information.
 
 *Additional object types are being worked for direct support.*
 

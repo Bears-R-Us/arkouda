@@ -27,35 +27,36 @@ def from_series(
     Convert a pandas ``Series`` to an Arkouda ``pdarray`` or ``Strings``.
 
     If ``dtype`` is not provided, the dtype is inferred from the pandas
-    ``Series`` (using pandas' dtype metadata). If ``dtype`` is provided, it
+    ``Series`` (using pandas dtype metadata). If ``dtype`` is provided, it
     is used as an override and normalized via Arkouda's dtype resolution rules.
 
-    In addition to the core numeric/bool types, this function supports
-    datetime and timedelta Series of **any** resolution (``ns``, ``us``, ``ms``,
-    etc.) by converting them to an ``int64`` pdarray of nanoseconds.
+    In addition to the core numeric and boolean types, this function supports
+    datetime and timedelta ``Series`` of any resolution (``ns``, ``us``, ``ms``,
+    etc.) by converting them to an ``int64`` ``pdarray`` of nanoseconds.
 
     Parameters
     ----------
     series : pd.Series
-        The pandas Series to convert.
+        The pandas ``Series`` to convert.
     dtype : Optional[Union[type, str]], optional
         Optional dtype override. This may be a Python type (e.g. ``bool``),
         a NumPy scalar type (e.g. ``np.int64``), or a dtype string.
 
-        String-like spellings are normalized to Arkouda string dtype, including:
-        ``"object"``, ``"str"``, ``"string"``, ``"string[python]"``,
-        and ``"string[pyarrow]"``.
+        String-like spellings are normalized to Arkouda string dtype, including
+        ``"object"``, ``"str"``, ``"string"``, ``"string[python]"``, and
+        ``"string[pyarrow]"``.
 
     Returns
     -------
     Union[pdarray, Strings]
-        An Arkouda ``pdarray`` for numeric/bool/datetime/timedelta inputs, or an
-        Arkouda ``Strings`` for string inputs.
+        An Arkouda ``pdarray`` for numeric, boolean, datetime, or timedelta
+        inputs, or an Arkouda ``Strings`` for string inputs.
 
     Raises
     ------
     ValueError
-        Raised if the dtype cannot be interpreted or is unsupported for conversion.
+        Raised if the dtype cannot be interpreted or is unsupported for
+        conversion.
 
     Examples
     --------
@@ -63,7 +64,8 @@ def from_series(
     >>> import numpy as np
     >>> import pandas as pd
 
-    # ints
+    Integers:
+
     >>> np.random.seed(1701)
     >>> ak.from_series(pd.Series(np.random.randint(0, 10, 5)))
     array([4 3 3 5 0])
@@ -71,32 +73,37 @@ def from_series(
     >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']), dtype=np.int64)
     array([1 2 3 4 5])
 
-    # floats
+    Floats:
+
     >>> np.random.seed(1701)
     >>> ak.from_series(pd.Series(np.random.uniform(low=0.0, high=1.0, size=3)))
     array([0.089433234324597599 0.1153776854774361 0.51874393620990389])
 
-    # bools
+    Booleans:
+
     >>> np.random.seed(1864)
     >>> ak.from_series(pd.Series(np.random.choice([True, False], size=5)))
     array([True True True False False])
 
-    # strings: pandas dtype spellings normalized to Arkouda Strings
+    Strings (pandas dtype spellings normalized to Arkouda ``Strings``):
+
     >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
     array(['a', 'b', 'c', 'd', 'e'])
 
     >>> ak.from_series(pd.Series(['a', 'b', 'c'], dtype="string[pyarrow]"))
     array(['a', 'b', 'c'])
 
-    # datetime: any resolution is accepted, returned as int64 nanoseconds
+    Datetime (any resolution is accepted and returned as ``int64`` nanoseconds):
+
     >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
     array([1514764800000000000 1514764800000000000])
 
     Notes
     -----
-    - Datetime and timedelta Series are converted to ``int64`` nanoseconds.
-    - String-like pandas dtypes (including ``object``) are treated as string and
-      converted to Arkouda ``Strings``.
+    Datetime and timedelta ``Series`` are converted to ``int64`` nanoseconds.
+
+    String-like pandas dtypes (including ``object``) are treated as string
+    and converted to Arkouda ``Strings``.
     """
     from arkouda.numpy.pdarraycreation import array
 

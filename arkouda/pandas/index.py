@@ -36,7 +36,7 @@ Notes
 Examples
 --------
 >>> import arkouda as ak
->>> from arkouda.index import Index, MultiIndex
+>>> from arkouda.pandas.index import Index, MultiIndex
 
 >>> idx = Index([10, 20, 30], name="id")
 >>> idx
@@ -51,7 +51,7 @@ Index(array(['a', 'b']), dtype='<U0')
 See Also
 --------
 - arkouda.pandas.series.Series
-- arkouda.categorical.Categorical
+- arkouda.pandas.categorical.Categorical
 
 """
 
@@ -97,7 +97,7 @@ __all__ = [
 ]
 
 if TYPE_CHECKING:
-    from arkouda.numpy.pdarraycreation import array, ones
+    from arkouda.numpy.pdarraycreation import ones
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.series import Series
@@ -280,7 +280,7 @@ class Index:
             Printable representation of the Index object.
 
         """
-        return f"Index({repr(self.index)}, dtype='{self.dtype}')"
+        return f"Index({repr(self.values)}, dtype='{self.dtype}')"
 
     def __len__(self):
         """
@@ -292,7 +292,7 @@ class Index:
             Number of elements in the Index.
 
         """
-        return len(self.index)
+        return len(self.values)
 
     def _get_arrays_for_comparison(
         self, other
@@ -429,34 +429,6 @@ class Index:
     def names(self):
         """Return Index or MultiIndex names."""
         return [self.name]
-
-    @property
-    def index(self):
-        """
-        Deprecated alias for `values`.
-
-        This property is maintained for backward compatibility and returns the same
-        array as the `values` attribute. It will be removed in a future release;
-        use `values` directly instead.
-
-        Returns
-        -------
-        arkouda.numpy.pdarray
-            The underlying values of this object (same as `values`).
-
-        Deprecated
-        ----------
-        Use the `values` attribute directly. This alias will be removed in a future release.
-
-        Examples
-        --------
-        >>> import arkouda as ak
-        >>> idx = ak.Index(ak.array([1, 2, 3]))
-        >>> idx.index
-        array([1 2 3])
-
-        """
-        return self.values
 
     @property
     def shape(self):
@@ -753,7 +725,7 @@ class Index:
         See Also
         --------
         arkouda.numpy.pdarrayclass.nbytes
-        arkouda.index.MultiIndex.memory_usage
+        arkouda.pandas.index.MultiIndex.memory_usage
         arkouda.pandas.series.Series.memory_usage
         arkouda.pandas.dataframe.DataFrame.memory_usage
 
@@ -918,7 +890,7 @@ class Index:
         if isinstance(self.values, list):
             raise TypeError("Index cannot be registered when values are list type.")
 
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -1054,7 +1026,7 @@ class Index:
             label = "idx"
         elif isinstance(label, list):
             label = label[0]
-        data[label] = self.index
+        data[label] = self.values
         return data
 
     def _check_types(self, other):
@@ -1200,7 +1172,7 @@ class Index:
 
         Returns
         -------
-        arkouda.index.Index
+        arkouda.pandas.index.Index
             A new index with the values transformed by the mapping correspondence.
 
         Raises
@@ -1251,7 +1223,11 @@ class Index:
         self._check_types(other)
 
         idx = generic_concat([self.values, other.values], ordered=True)
-        return Index(idx)
+
+        other_name = getattr(other, "name", None)
+        name = self.name if self.name == other_name else None
+
+        return Index(idx, name=name)
 
     def lookup(self, key):
         """
@@ -1276,6 +1252,7 @@ class Index:
 
         """
         from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array
 
         if not isinstance(key, pdarray):
             # try to handle single value
@@ -1339,7 +1316,7 @@ class Index:
         determine the file format.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -1422,7 +1399,7 @@ class Index:
           file with the new data
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import (
             _file_type_to_int,
@@ -1611,7 +1588,7 @@ class MultiIndex(Index):
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.index import MultiIndex
+    >>> from arkouda.pandas.index import MultiIndex
     >>> a = ak.array([1, 2, 3])
     >>> b = ak.array(['a', 'b', 'c'])
     >>> mi = MultiIndex([a, b])
@@ -1896,7 +1873,7 @@ class MultiIndex(Index):
         See Also
         --------
         arkouda.numpy.pdarrayclass.nbytes
-        arkouda.index.Index.memory_usage
+        arkouda.pandas.index.Index.memory_usage
         arkouda.pandas.series.Series.memory_usage
         arkouda.pandas.dataframe.DataFrame.memory_usage
 
@@ -1904,7 +1881,7 @@ class MultiIndex(Index):
         --------
         >>> import arkouda as ak
 
-        >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
+        >>> m = ak.pandas.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
         >>> m.memory_usage()
         48
 
@@ -2013,7 +1990,7 @@ class MultiIndex(Index):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is not None and self.is_registered():
@@ -2202,7 +2179,11 @@ class MultiIndex(Index):
         """
         self._check_types(other)
         idx = [generic_concat([ix1, ix2], ordered=True) for ix1, ix2 in zip(self.index, other.index)]
-        return MultiIndex(idx)
+
+        other_names = getattr(other, "names", None)
+        names = self.names if self.names == other_names else None
+
+        return MultiIndex(idx, names=names)
 
     def lookup(self, key: list[Any] | tuple[Any, ...]) -> groupable:
         """
@@ -2327,7 +2308,7 @@ class MultiIndex(Index):
         determine the file format.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -2402,7 +2383,7 @@ class MultiIndex(Index):
           file with the new data
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import (
             _file_type_to_int,

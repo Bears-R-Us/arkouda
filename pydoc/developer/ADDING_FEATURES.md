@@ -39,7 +39,7 @@ def times2(pda: pdarray) -> pdarray:
     pdarray
         The doubled array
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     if isinstance(pda, pdarray):
         rep_msg = generic_msg(cmd=f"times2<{pda.dtype},{pda.ndim}>", args={"arg1" : pda})
         return create_pdarray(rep_msg)

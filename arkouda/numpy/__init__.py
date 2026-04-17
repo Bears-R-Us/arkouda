@@ -151,11 +151,6 @@ from arkouda.numpy.dtypes import (
     uint32,
     uint64,
     uint8,
-    isSupportedDType,
-    isSupportedFloat,
-    isSupportedInt,
-    isSupportedNumber,
-    isSupportedBool
 )
 from arkouda.numpy.exceptions import RankWarning, TooHardError
 from arkouda.numpy.lib import add_docstring, add_newdoc, emath

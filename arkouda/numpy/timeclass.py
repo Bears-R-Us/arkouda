@@ -222,7 +222,7 @@ class _AbstractBaseTime(pdarray):
         file_type: Literal["single", "distribute"] = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special dtype."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return generic_msg(
@@ -240,7 +240,7 @@ class _AbstractBaseTime(pdarray):
 
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -269,7 +269,7 @@ class _AbstractBaseTime(pdarray):
             _repack_hdf(prefix_path)
 
     def __str__(self):
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
             vals = [f"'{self[i]}'" for i in range(self.size)]
@@ -477,7 +477,7 @@ class Datetime(_AbstractBaseTime):
     special_objType = "Datetime"
 
     def _ensure_components(self):
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self._is_populated:
             return
@@ -669,7 +669,7 @@ class Datetime(_AbstractBaseTime):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -786,7 +786,7 @@ class Timedelta(_AbstractBaseTime):
     special_objType = "Timedelta"
 
     def _ensure_components(self):
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self._is_populated:
             return
@@ -934,7 +934,7 @@ class Timedelta(_AbstractBaseTime):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")

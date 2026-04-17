@@ -14,7 +14,9 @@ from arkouda.pandas.categorical import Categorical as ak_Categorical
 from arkouda.pandas.dataframe import DataFrame as ak_DataFrame
 from arkouda.pandas.extension import (
     ArkoudaArray,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
+    ArkoudaExtensionArray,
+    ArkoudaIndexAccessor,
     ArkoudaStringArray,
 )
 from arkouda.pandas.extension._dataframe_accessor import (
@@ -87,7 +89,7 @@ class TestDataFrameConversion:
             {
                 "i": ArkoudaArray(ak_arange(5)),
                 "s": ArkoudaStringArray(ak_array(["a", "b", "c", "d", "e"])),
-                "c": ArkoudaCategoricalArray(
+                "c": ArkoudaCategorical(
                     ak_Categorical(ak_array(["low", "low", "high", "medium", "low"]))
                 ),
             }
@@ -216,3 +218,22 @@ class TestAccessorValidationAndMerge:
 
         with pytest.raises(TypeError):
             df_left2.ak.merge(df_right2, on="id")
+
+    def test_dataframe_to_ak_converts_index_to_arkouda_backed(self):
+        # plain pandas DF (RangeIndex)
+        df = pd.DataFrame({"a": np.arange(5), "b": np.arange(5)})
+
+        # convert to Arkouda-backed pandas DF
+        ak_df = df.ak.to_ak()
+
+        # Sanity: columns are Arkouda-backed
+        assert isinstance(ak_df["a"].array, ArkoudaExtensionArray)
+        assert isinstance(ak_df["b"].array, ArkoudaExtensionArray)
+
+        assert ArkoudaIndexAccessor(ak_df.index).is_arkouda, (
+            f"Expected Arkouda-backed index, got {type(ak_df.index).__name__}: {ak_df.index!r}"
+        )
+        assert isinstance(ak_df.index.array, ArkoudaExtensionArray)
+
+        assert np.array_equal(ak_df["a"].array.to_numpy(), np.arange(5))
+        assert np.array_equal(ak_df["b"].array.to_numpy(), np.arange(5))

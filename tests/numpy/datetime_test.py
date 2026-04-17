@@ -4,6 +4,7 @@ import pytest
 
 import arkouda as ak
 
+from arkouda.numpy import err as akerr
 from arkouda.numpy import timeclass
 
 
@@ -148,6 +149,8 @@ class TestDatetime:
                     eval(f"fcvec {op} scsca")
                 metrics["ak_not_supported"] += 1
             else:
+                oldmodes = akerr.geterr()
+                akerr.seterr(divide="ignore")
                 compare_flag = True
                 ret = eval(f"fcvec {op} scvec")
                 assert isinstance(ret, return_type)
@@ -161,6 +164,7 @@ class TestDatetime:
                         )
                     metrics["ak_yes_pd_no"] += 1
                     compare_flag = False
+                ak.seterr(**oldmodes)
                 if compare_flag:
                     # Arkouda currently does not handle NaT, so replace with zero
                     if pdret.dtype.kind == "m":

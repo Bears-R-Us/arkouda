@@ -25,7 +25,7 @@ Features
 Typical Use
 -----------
 >>> import arkouda as ak
->>> from arkouda.categorical import Categorical
+>>> from arkouda.pandas.categorical import Categorical
 >>> strings = ak.array(["apple", "banana", "apple", "banana", "pear"])
 >>> cat = Categorical(strings)
 >>> cat.codes
@@ -40,7 +40,7 @@ Notes
 See Also
 --------
 - arkouda.Strings
-- arkouda.groupbyclass.GroupBy
+- arkouda.pandas.groupbyclass.GroupBy
 - pandas.Categorical
 
 """
@@ -49,7 +49,6 @@ from __future__ import annotations
 
 import itertools
 import json
-import warnings
 
 from collections import defaultdict
 from typing import (
@@ -72,8 +71,8 @@ from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from typeguard import typechecked
 
-from arkouda.infoclass import information
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.infoclass import information
+from arkouda.core.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars, int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -163,24 +162,6 @@ class Categorical:
 
         self.logger = get_arkouda_logger(name=__class__.__name__)  # type: ignore
 
-        # --- deprecated kwarg aliases for na_value ---
-        _new = "na_value"
-        _deprecated = [k for k in ("naValue", "NAvalue") if k in kwargs]
-
-        cls_name = type(self).__name__
-
-        if _new in kwargs and _deprecated:
-            raise TypeError(f"{cls_name}() got both '{_new}' and '{_deprecated[0]}'. Use '{_new}'.")
-
-        if _deprecated:
-            old = _deprecated[0]
-            warnings.warn(
-                f"'{old}' is deprecated; use '{_new}' instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            kwargs[_new] = kwargs.pop(old)
-
         if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored
@@ -261,22 +242,6 @@ class Categorical:
         self.shape = self.codes.shape
         self.dtype = akdtype(str_)
         self.registered_name: Optional[str] = None
-
-    @property
-    def NAvalue(self):
-        """
-        Deprecated alias for `na_value`.
-
-        Returns
-        -------
-        Same value as `na_value`.
-        """
-        warnings.warn(
-            "Categorical.NAvalue is deprecated; use Categorical.find_na instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.na_value
 
     @property
     def nbytes(self):
@@ -537,12 +502,12 @@ class Categorical:
 
         Notes
         -----
-        The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+        The number of bytes in the array cannot exceed ``ak.core.client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.client.maxTransferBytes to a larger
+        may override this limit by setting ak.core.client.maxTransferBytes to a larger
         value, but proceed with caution.
 
         """
@@ -579,12 +544,12 @@ class Categorical:
 
         Notes
         -----
-        The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
+        The number of bytes in the Categorical cannot exceed ``ak.core.client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.client.maxTransferBytes to a larger
+        may override this limit by setting ak.core.client.maxTransferBytes to a larger
         value, but proceed with caution.
 
         """
@@ -653,7 +618,7 @@ class Categorical:
 
         """
         # limit scope of import to pick up changes to global variable
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
             vals = [f"'{self[i]}'" for i in range(self.size)]
@@ -1081,7 +1046,7 @@ class Categorical:
         values is negligible.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="categoricalHash",
@@ -1298,7 +1263,7 @@ class Categorical:
         load
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         args = {
@@ -1353,7 +1318,7 @@ class Categorical:
           automatic creation of a file without the inaccessible data.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -1511,7 +1476,7 @@ class Categorical:
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -1760,7 +1725,7 @@ class Categorical:
             a supported dtype
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         # hostname is the hostname to send to
         args = {

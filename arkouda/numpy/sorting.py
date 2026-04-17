@@ -174,7 +174,7 @@ def coargsort(
     array([0 1 0 1])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.pdarraycreation import zeros
@@ -296,7 +296,7 @@ def sort(
     >>> sorted
     array([0 1 1 4 5 5 5 7 8 9])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray
     from arkouda.numpy.pdarraycreation import zeros
     from arkouda.numpy.util import _integer_axis_validation
@@ -374,7 +374,7 @@ def searchsorted(
     >>> ak.searchsorted(a, v_sorted, x2_sorted=True)
     array([0 1 2 5])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.pdarraycreation import array
 

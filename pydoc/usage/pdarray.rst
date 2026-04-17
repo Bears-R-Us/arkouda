@@ -5,6 +5,7 @@ The ``pdarray`` class
 Just as the backbone of NumPy is the ``ndarray``, the backbone of arkouda is an array class called ``pdarray``. And just as the ``ndarray`` object is a Python wrapper for C-style data with C and Fortran methods, the ``pdarray`` object is a Python wrapper for distributed data with parallel methods written in Chapel. The API of ``pdarray`` is similar, but not identical, to that of ``ndarray``.
 
 .. autoclass:: arkouda.pdarray
+   :no-index:
 
 Data Type
 ============
@@ -38,6 +39,7 @@ Iteration
 Iterating directly over a ``pdarray`` with ``for x in array`` is not supported to discourage transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_ndarray`` function to return the ``pdarray`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``ak.client.maxTransferBytes``.
 
 .. autofunction:: arkouda.pdarray.to_ndarray
+   :no-index:
 
 
 .. _cast-label:
@@ -57,10 +59,12 @@ Conversion between dtypes is sometimes implicit, as in the following example:
 Explicit conversion is supported via the ``cast`` function.
 
 .. autofunction:: arkouda.cast
+   :no-index:
 
 Reshape
 =======
 
 Using the ``.reshape`` method, a multi-dimension view of a pdarray will be returned as an ``ArrayView``
 
-.. autofunction:: arkodua.pdarray.reshape
+.. autofunction:: arkouda.pdarray.reshape
+   :no-index:

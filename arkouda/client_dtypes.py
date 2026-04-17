@@ -9,14 +9,22 @@ data with specific interpretations or domain semantics. These include:
 - `IPv4`: For storing and displaying 32-bit integers as IPv4 addresses.
 
 These classes enhance usability and improve readability when working with encoded or
-domain-specific data while preserving Arkouda’s performance model and distributed data structures.
+domain-specific data while preserving Arkouda's performance model and distributed data
+structures.
 
 Functions
 ---------
-- `bit_vectorizer`: Creates a partially applied BitVector constructor.
-- `ip_address`: Converts various formats to an Arkouda IPv4 object.
-- `is_ipv4`: Returns a boolean array indicating IPv4 addresses.
-- `is_ipv6`: Returns a boolean array indicating IPv6 addresses.
+bit_vectorizer
+    Creates a partially applied BitVector constructor.
+
+ip_address
+    Converts various formats to an Arkouda IPv4 object.
+
+is_ipv4
+    Returns a boolean array indicating IPv4 addresses.
+
+is_ipv6
+    Returns a boolean array indicating IPv6 addresses.
 
 Examples
 --------
@@ -24,6 +32,7 @@ Examples
 >>> from arkouda.client_dtypes import BitVector, Fields, IPv4, ip_address, is_ipv4
 
 Create and use BitVectors:
+
 >>> a = ak.array([3, 5, 7])
 >>> bv = BitVector(a, width=4)
 >>> print(bv)
@@ -33,11 +42,13 @@ BitVector([..||,
           width=4, reverse=False)
 
 Create Fields with named binary flags:
+
 >>> f = Fields(ak.array([1, 2, 3]), names=['read', 'write', 'exec'], separator=':')
 >>> print(f[0])  # doctest: +SKIP
 --:--:read (1)
 
 Convert and work with IP addresses:
+
 >>> ips = ip_address(['192.168.0.1', '10.0.0.1'])
 >>> print(ips)
 IPv4([192.168.0.1,
@@ -46,10 +57,7 @@ IPv4([192.168.0.1,
 
 >>> is_ipv4(ips)
 array([True True])
-
 """
-
-import warnings
 
 from functools import partial
 from ipaddress import ip_address as _ip_address
@@ -104,37 +112,6 @@ def bit_vectorizer(width=64, reverse=False):
 
     """
     return partial(BitVector, width=width, reverse=reverse)
-
-
-def BitVectorizer(*args, **kwargs):
-    """
-    Deprecated alias for :func:`bit_vectorizer`.
-
-    This function exists for backward compatibility only. Use
-    :func:`bit_vectorizer` instead.
-
-    Parameters
-    ----------
-    *args : tuple
-        Positional arguments forwarded to :func:`bit_vectorizer`.
-    **kwargs : dict
-        Keyword arguments forwarded to :func:`bit_vectorizer`.
-
-    Returns
-    -------
-    bitvectorizer : callable
-        A function that takes an array and returns a BitVector instance.
-
-    See Also
-    --------
-    bit_vectorizer : Preferred replacement.
-    """
-    warnings.warn(
-        "BitVectorizer is deprecated; use bit_vectorizer",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return bit_vectorizer(*args, **kwargs)
 
 
 class BitVector(pdarray):
@@ -210,7 +187,7 @@ class BitVector(pdarray):
             Human-readable string showing formatted bit vectors.
 
         """
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
             vals = [self.format(self.values[i]) for i in range(self.size)]
@@ -384,7 +361,7 @@ class BitVector(pdarray):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -766,7 +743,7 @@ class IPv4(pdarray):
             Human-readable string showing IP addresses.
 
         """
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
             vals = [self.format(self.values[i]) for i in range(self.size)]
@@ -925,7 +902,7 @@ class IPv4(pdarray):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -948,7 +925,7 @@ class IPv4(pdarray):
         file_type: Literal["single", "distribute"] = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special object type."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return (
@@ -968,7 +945,7 @@ class IPv4(pdarray):
 
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,

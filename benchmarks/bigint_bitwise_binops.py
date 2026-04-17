@@ -11,8 +11,8 @@ import arkouda as ak
 def time_ak_bitwise_binops(N_per_locale, trials, max_bits, seed):
     print(">>> arkouda bigint bitwise binops")
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     a1 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     a2 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     a = ak.bigint_from_uint_arrays([a1, a2], max_bits=max_bits)

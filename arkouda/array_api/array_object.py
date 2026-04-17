@@ -109,7 +109,7 @@ class Array:
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
-        :func:`~arkouda.client.maxTransferBytes`)
+        :func:`~arkouda.core.client.maxTransferBytes`)
 
         See Also
         --------
@@ -129,7 +129,7 @@ class Array:
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
-        :func:`~arkouda.client.maxTransferBytes`)
+        :func:`~arkouda.core.client.maxTransferBytes`)
 
         See Also
         --------
@@ -204,7 +204,7 @@ class Array:
             extract_chunk(
                 cast(
                     str,
-                    ak.client.generic_msg(
+                    ak.core.client.generic_msg(
                         cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>",
                         args={"array": self._array},
                     ),

@@ -5,7 +5,12 @@ import pytest
 import arkouda as ak
 
 from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaStringArray, ArkoudaStringDtype
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaExtensionArray,
+    ArkoudaStringArray,
+    ArkoudaStringDtype,
+)
 from arkouda.testing import assert_equivalent
 
 
@@ -115,6 +120,89 @@ class TestArkoudaStringsExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data, s.take(idx1.to_ndarray()).to_numpy())
+
+
+class TestArkoudaStringArrayAsType:
+    def test_string_array_astype_object_returns_numpy_object_array(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        out = s.astype(object)
+
+        assert isinstance(out, np.ndarray)
+        assert out.dtype == object
+        assert out.tolist() == ["a", "b", "c"]
+
+    @pytest.mark.parametrize("dtype", ["string", "str", "str_", str, np.str_, pd.StringDtype()])
+    def test_string_array_astype_string_targets_stay_string_array(self, dtype):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+
+        out = s.astype(dtype, copy=False)
+        assert isinstance(out, ArkoudaStringArray)
+        # fast-path: should return the same object when copy=False
+        assert out is s
+        assert out.to_ndarray().tolist() == ["a", "b", "c"]
+
+    def test_string_array_astype_string_copy_true_returns_new_array(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+
+        out = s.astype("string", copy=True)
+        assert isinstance(out, ArkoudaStringArray)
+        assert out is not s
+        assert out.to_ndarray().tolist() == ["a", "b", "c"]
+
+    @pytest.mark.parametrize(
+        "dtype, values, expected",
+        [
+            ("int64", ["1", "2", "3"], np.array([1, 2, 3], dtype=np.int64)),
+            ("float64", ["1.5", "2.0", "3.25"], np.array([1.5, 2.0, 3.25], dtype=np.float64)),
+            ("bool", ["True", "False", "True"], np.array([True, False, True], dtype=bool)),
+        ],
+    )
+    def test_string_array_astype_non_string_returns_extension_array(self, dtype, values, expected):
+        s = ArkoudaStringArray(ak.array(values))
+
+        out = s.astype(dtype)
+
+        # must not fall back to numpy for non-object casts
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+
+        np.testing.assert_array_equal(out.to_ndarray(), expected)
+
+    def test_string_array_astype_non_string_dtype_object_uses_numpy_dtype_normalization(self):
+        # This checks the `hasattr(dtype, "numpy_dtype")` normalization path.
+        # We use pandas' numpy dtype wrapper as a proxy (pd.Int64Dtype has numpy_dtype).
+        s = ArkoudaStringArray(ak.array(["1", "2", "3"]))
+
+        out = s.astype(pd.Int64Dtype())
+        assert isinstance(out, ArkoudaExtensionArray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
+
+    def test_string_array_astype_invalid_parse_raises(self):
+        s = ArkoudaStringArray(ak.array(["x", "2", "3"]))
+
+        # exact exception type depends on arkouda Strings.astype implementation
+        with pytest.raises(RuntimeError):
+            _ = s.astype("int64")
+
+    def test_string_array_astype_extensiondtype_stringdtype_returns_self_when_copy_false(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        out = s.astype(pd.StringDtype(), copy=False)
+        assert out is s
+
+    def test_string_array_astype_extensiondtype_stringdtype_copy_true_returns_new_array(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        out = s.astype(pd.StringDtype(), copy=True)
+        assert isinstance(out, ArkoudaStringArray)
+        assert out is not s
+        assert out.to_ndarray().tolist() == ["a", "b", "c"]
+
+    def test_string_array_astype_extensiondtype_numeric_casts_and_returns_extension_array(self):
+        s = ArkoudaStringArray(ak.array(["1", "2", "3"]))
+        out = s.astype(pd.Int64Dtype())  # ExtensionDtype path
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
 
 
 class TestArkoudaStringArrayEq:
@@ -318,3 +406,67 @@ class TestArkoudaStringArrayGetitem:
 
         assert isinstance(result, ArkoudaStringArray)
         np.testing.assert_array_equal(result.to_ndarray(), np.array(["a", "c"], dtype=object))
+
+
+class TestArkoudaStringArrayValueCounts:
+    def _series_to_pycounts(self, s: pd.Series) -> dict[str, int]:
+        """
+        Convert Series(index=unique values, values=counts) to a Python dict.
+        Avoids relying on ordering.
+        """
+        idx = list(s.index.to_numpy())
+        vals = list(s.to_numpy())
+        return {str(idx[i]): int(vals[i]) for i in range(len(s))}
+
+    def test_string_value_counts_basic(self):
+        a = ArkoudaStringArray(["red", "blue", "red", "green", "blue", "red"])
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {"red": 3, "blue": 2, "green": 1}
+
+    def test_string_value_counts_index_is_unique_values_not_original(self):
+        """
+        Regression test for a common bug: using the original array 's' as index,
+        which causes a length mismatch (or incorrect results).
+        """
+        a = ArkoudaStringArray(["a", "b", "a", "c"])
+        out = a.value_counts()
+
+        # index length must equal number of unique values, not len(a)
+        assert len(out.index) == 3
+        assert len(out) == 3
+
+        got = self._series_to_pycounts(out)
+        assert got == {"a": 2, "b": 1, "c": 1}
+
+    def test_string_value_counts_empty_returns_empty_series(self):
+        a = ArkoudaStringArray([])
+        out = a.value_counts()
+
+        assert isinstance(out, pd.Series)
+        assert len(out) == 0
+
+    def test_string_value_counts_dropna_parameter_is_accepted(self):
+        """
+        Dropna is currently inert for ArkoudaStringArray, but should be accepted
+        for pandas compatibility.
+        """
+        a = ArkoudaStringArray(["x", "y", "x"])
+        out_true = a.value_counts(dropna=True)
+        out_false = a.value_counts(dropna=False)
+
+        assert (
+            self._series_to_pycounts(out_true) == self._series_to_pycounts(out_false) == {"x": 2, "y": 1}
+        )
+
+    def test_string_value_counts_matches_pandas_as_multiset(self):
+        """Cross-check counts against pandas, ignoring ordering."""
+        data = ["blue", "red", "blue", "green", "blue", "red"]
+        a = ArkoudaStringArray(data)
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        expected = pd.Series(data).value_counts(dropna=True).to_dict()
+
+        assert got == {str(k): int(v) for k, v in expected.items()}

@@ -10,13 +10,14 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector, IPv4, bit_vectorizer
-from arkouda.infoclass import list_registry
+from arkouda.core.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
     dtype,
     float_scalars,
     int_scalars,
     numeric_scalars,
+    resolve_scalar_dtype,
 )
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import unique
@@ -57,11 +58,11 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
-    from arkouda.client import get_config, get_mem_used
+    from arkouda.core.client import get_config, get_mem_used
     from arkouda.numpy.pdarraycreation import arange
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
+    from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 else:
@@ -155,33 +156,35 @@ def invert_permutation(perm: pdarray) -> pdarray:
 
 def convert_if_categorical(values):
     """
-    Convert a Categorical array to a Strings array for display purposes.
+    Convert a ``Categorical`` array to a ``Strings`` array for display purposes.
 
-    If the input is a Categorical, it is converted to its string labels
-    based on its codes. If not, the input is returned unchanged.
+    If the input is a ``Categorical``, it is converted to its string labels
+    based on its codes. Otherwise, the input is returned unchanged.
 
     Parameters
     ----------
     values : Categorical or any
-        The input array, which may be a Categorical.
+        The input array, which may be a ``Categorical``.
 
     Returns
     -------
-    Strings or original type
-        The string labels if `values` is a Categorical, otherwise the original input.
+    Strings or any
+        The string labels if ``values`` is a ``Categorical``; otherwise the
+        original input.
 
     Examples
     --------
-    >>> import arkouda as ak
+    Convert a ``Categorical`` to its string labels:
 
-    Example with a Categorical
+    >>> import arkouda as ak
     >>> categories = ak.array(["apple", "banana", "cherry"])
     >>> cat = ak.Categorical(categories)
     >>> result = convert_if_categorical(cat)
     >>> print(result)
     ['apple', 'banana', 'cherry']
 
-    Example with a non-Categorical input
+    Non-``Categorical`` inputs are returned unchanged:
+
     >>> values = ak.array([1, 2, 3])
     >>> result = convert_if_categorical(values)
     >>> print(result)
@@ -198,9 +201,9 @@ def register(obj, name):
     """
     Register an Arkouda object with a user-specified name.
 
-    This function registers the provided Arkouda object (`obj`) under a
-    given name (`name`). It is backwards compatible with earlier versions
-    of Arkouda.
+    This function registers the provided Arkouda object (``obj``) under a
+    given name (``name``). It is maintained for backwards compatibility
+    with earlier versions of Arkouda.
 
     Parameters
     ----------
@@ -211,31 +214,31 @@ def register(obj, name):
 
     Returns
     -------
-    Registered object
+    object
         The input object, now registered with the specified name.
 
     Raises
     ------
     AttributeError
-        If `obj` does not have a `register` method.
+        Raised if ``obj`` does not have a ``register`` method.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.util import register
+    >>> from arkouda.numpy.util import register
     >>> obj = ak.array([1, 2, 3])
     >>> registered_obj = register(obj, "my_array")
     >>> print(registered_obj)
     [1 2 3]
     >>> registered_obj.unregister()
 
-    Example of registering a different Arkouda object
+    Register a different Arkouda object:
+
     >>> categories = ak.array(["apple", "banana", "cherry"])
     >>> cat = ak.Categorical(categories)
     >>> registered_cat = register(cat, "my_cat")
     >>> print(registered_cat)
     ['apple', 'banana', 'cherry']
-
     """
     return obj.register(name)
 
@@ -245,9 +248,9 @@ def attach(name: str):
     """
     Attach a previously created Arkouda object by its registered name.
 
-    This function retrieves an Arkouda object (e.g., `pdarray`, `DataFrame`,
-    `Series`, etc.) associated with a given `name`. It returns the corresponding
-    object based on the type of object stored under that name.
+    This function retrieves an Arkouda object (e.g., ``pdarray``, ``DataFrame``,
+    ``Series``) associated with a given ``name``. The returned object type
+    depends on the object stored under that name.
 
     Parameters
     ----------
@@ -257,20 +260,21 @@ def attach(name: str):
     Returns
     -------
     object
-        The Arkouda object associated with the given `name`. The returned object
-        could be of any supported type, such as `pdarray`, `DataFrame`, `Series`,
-        etc.
+        The Arkouda object associated with the given ``name``. The returned
+        object could be any supported type, such as ``pdarray``, ``DataFrame``,
+        or ``Series``.
 
     Raises
     ------
     ValueError
-        If the object type in the response message does not match any known types.
+        Raised if the object type in the response message does not match any
+        known Arkouda types.
 
     Examples
     --------
-    >>> import arkouda as ak
+    Attach an existing ``pdarray``:
 
-    Attach an existing pdarray
+    >>> import arkouda as ak
     >>> obj = ak.array([1, 2, 3])
     >>> registered_obj = obj.register("my_array")
     >>> arr = ak.attach("my_array")
@@ -278,7 +282,7 @@ def attach(name: str):
     [1 2 3]
     >>> registered_obj.unregister()
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
@@ -371,7 +375,7 @@ def unregister(name: str) -> str:
     Unregistered PDARRAY my_array
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = cast(str, generic_msg(cmd="unregister", args={"name": name}))
 
@@ -381,34 +385,35 @@ def unregister(name: str) -> str:
 @typechecked
 def is_registered(name: str, as_component: bool = False) -> bool:
     """
-    Determine if the provided name is associated with a registered Arkouda object.
+    Determine whether the provided name is associated with a registered Arkouda object.
 
-    This function checks if the `name` is found in the registry of objects,
-    and optionally checks if it is registered as a component of a registered object.
+    This function checks whether ``name`` is found in the registry of objects and
+    optionally checks whether it is registered as a component of a registered object.
 
     Parameters
     ----------
     name : str
-        The name to check for in the registry.
+        The name to check in the registry.
     as_component : bool, default=False
-        When True, the function checks if the name is registered as a component
-        of a registered object (rather than as a standalone object).
+        When ``True``, the function checks whether the name is registered as a
+        component of a registered object rather than as a standalone object.
 
     Returns
     -------
     bool
-        `True` if the name is found in the registry, `False` otherwise.
+        ``True`` if the name is found in the registry, ``False`` otherwise.
 
     Raises
     ------
     KeyError
-        If the registry query encounters an issue (e.g., invalid registry data or access issues).
+        Raised if the registry query encounters an issue (e.g., invalid registry
+        data or access problems).
 
     Examples
     --------
-    >>> import arkouda as ak
+    Check whether a name is registered as an object:
 
-    Check if a name is registered as an object
+    >>> import arkouda as ak
     >>> obj = ak.array([1, 2, 3])
     >>> registered_obj = obj.register("my_array")
     >>> result = ak.is_registered("my_array")
@@ -416,7 +421,8 @@ def is_registered(name: str, as_component: bool = False) -> bool:
     True
     >>> registered_obj.unregister()
 
-    Check if a name is registered as a component
+    Check whether a name is registered as a component:
+
     >>> result = ak.is_registered("my_component", as_component=True)
     >>> print(result)
     False
@@ -428,26 +434,26 @@ def register_all(data: dict):
     """
     Register all objects in the provided dictionary.
 
-    This function iterates through the dictionary `data`, registering each object
-    with its corresponding name. It is useful for batch registering multiple
-    objects in Arkouda.
+    This function iterates through the dictionary ``data``, registering each
+    object with its corresponding name. It is useful for batch-registering
+    multiple objects in Arkouda.
 
     Parameters
     ----------
     data : dict
-        A dictionary that maps the name to register the object to the object itself.
-        For example, {"MyArray": ak.array([0, 1, 2])}.
+        A dictionary mapping the name used to register the object to the object
+        itself. For example, ``{"MyArray": ak.array([0, 1, 2])}``.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> data = { "array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5]) }
+    >>> data = {"array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5])}
     >>> ak.register_all(data)
 
-    After calling this function, "array1" and "array2" are registered
-    in Arkouda, and can be accessed by their names.
-    >>> ak.unregister_all(["array1", "array2"])
+    After calling this function, ``"array1"`` and ``"array2"`` are registered
+    in Arkouda and can be accessed by their names.
 
+    >>> ak.unregister_all(["array1", "array2"])
     """
     for reg_name, obj in data.items():
         register(obj, reg_name)
@@ -457,27 +463,27 @@ def unregister_all(names: List[str]):
     """
     Unregister all Arkouda objects associated with the provided names.
 
-    This function iterates through the list of `names`, unregistering each
+    This function iterates through the list of ``names``, unregistering each
     corresponding object from the Arkouda server.
 
     Parameters
     ----------
-    names : List of str
-        A list of registered names corresponding to Arkouda objects
-        that should be unregistered.
+    names : list of str
+        A list of registered names corresponding to Arkouda objects that
+        should be unregistered.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> data = { "array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5]) }
+    >>> data = {"array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5])}
     >>> ak.register_all(data)
 
-    After calling this function, "array1" and "array2" are registered
-    in Arkouda, and can be accessed by their names.
+    After calling this function, ``"array1"`` and ``"array2"`` are registered
+    in Arkouda and can be accessed by their names.
+
     >>> ak.unregister_all(["array1", "array2"])
 
-    "arr1" and "arr2" are now unregistered
-
+    The objects are now unregistered.
     """
     for n in names:
         unregister(n)
@@ -488,11 +494,11 @@ def attach_all(names: list):
     Attach to all objects registered with the provided names.
 
     This function returns a dictionary mapping each name in the input list
-    to the corresponding Arkouda object retrieved using `attach`.
+    to the corresponding Arkouda object retrieved using ``attach``.
 
     Parameters
     ----------
-    names : List of str
+    names : list of str
         A list of names corresponding to registered Arkouda objects.
 
     Returns
@@ -503,15 +509,17 @@ def attach_all(names: list):
     Examples
     --------
     >>> import arkouda as ak
-    >>> data = { "arr1": ak.array([0, 1, 2]), "arr2": ak.array([3, 4, 5]) }
+    >>> data = {"arr1": ak.array([0, 1, 2]), "arr2": ak.array([3, 4, 5])}
     >>> ak.register_all(data)
 
-    Assuming "arr1" and "arr2" were previously registered
+    Assuming ``"arr1"`` and ``"arr2"`` were previously registered:
+
     >>> attached_objs = ak.attach_all(["arr1", "arr2"])
     >>> print(attached_objs["arr1"])
     [0 1 2]
     >>> print(type(attached_objs["arr2"]))
     <class 'arkouda.numpy.pdarrayclass.pdarray'>
+
     >>> ak.unregister_all(["arr1", "arr2"])
     """
     return {n: attach(n) for n in names}
@@ -571,7 +579,7 @@ def sparse_sum_help(
     >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="sparseSumHelp",
@@ -705,13 +713,13 @@ def broadcast_to(x: Union[numeric_scalars, pdarray], shape: Union[int, Tuple[int
 
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.dtypes import _val_isinstance_of_union
     from arkouda.numpy.pdarraycreation import full as akfull
 
     if _val_isinstance_of_union(x, numeric_scalars):
         assert not isinstance(x, pdarray)  # Required for mypy
-        return akfull(shape, x, dtype=type(x))
+        return akfull(shape, x, dtype=dtype(resolve_scalar_dtype(x)))
     elif isinstance(x, pdarray) and isinstance(shape, int):
         if x.ndim == 1 and x.size == shape:
             return x
@@ -767,7 +775,7 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.util import broadcast_dims
+    >>> from arkouda.numpy.util import broadcast_dims
     >>> broadcast_dims((5, 1), (1, 3))
     (5, 3)
 
@@ -825,7 +833,7 @@ def convert_bytes(nbytes: int_scalars, unit: Literal["B", "KB", "MB", "GB"] = "B
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.util import convert_bytes
+    >>> from arkouda.numpy.util import convert_bytes
     >>> convert_bytes(2048, unit="KB")
     2.0
 
@@ -1058,7 +1066,7 @@ def map(
         # Normalize mapping index keys into a "groupable" (single array OR tuple-of-arrays)
         mindex = mapping.index
         if isinstance(mindex, MultiIndex):
-            mkeys = tuple(mindex.index)
+            mkeys = tuple(mindex.values)
         else:
             mkeys = mindex.values
 
@@ -1261,7 +1269,7 @@ def _ak_buffer_names(x):
 
     # Strings: typically has .offsets and .values (or .offsets and .bytes)
     try:
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         if isinstance(x, Strings):
             # Some versions expose .values, older expose .bytes
@@ -1275,7 +1283,7 @@ def _ak_buffer_names(x):
 
     # SegArray: segments + values
     try:
-        from arkouda.segarray import SegArray
+        from arkouda.numpy.segarray import SegArray
 
         if isinstance(x, SegArray):
             if hasattr(x, "segments"):
@@ -1288,7 +1296,7 @@ def _ak_buffer_names(x):
 
     # Categorical: codes + categories (Strings)
     try:
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         if isinstance(x, Categorical):
             if hasattr(x, "codes"):

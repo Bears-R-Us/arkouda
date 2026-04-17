@@ -1,16 +1,21 @@
+import numpy as np
 import pandas as pd
+import pytest
 
 import arkouda as ak
 
 from arkouda import Series
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.extension import ArkoudaExtensionArray
+from arkouda.pandas.extension._index_accessor import ArkoudaIndexAccessor
 from arkouda.pandas.extension._series_accessor import (
     ArkoudaSeriesAccessor,
     _ak_array_to_pandas_series,
     _pandas_series_to_ak_array,
 )
+from arkouda.pandas.index import MultiIndex
 from arkouda.pandas.series import Series as ak_Series
+from tests.apply_test import supports_apply
 
 
 def _assert_series_equal_values(s: pd.Series, values):
@@ -19,6 +24,7 @@ def _assert_series_equal_values(s: pd.Series, values):
 
 
 class TestArkoudaSeriesAccessor:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_series_accessor_docstrings(self):
         import doctest
 
@@ -116,6 +122,26 @@ class TestArkoudaSeriesAccessor:
         s_local = s_ak.ak.collect()
         assert not s_local.ak.is_arkouda
 
+    def test_is_arkouda_true_for_to_ak_series_with_default_rangeindex(self):
+        s = pd.Series([1, 2, 3])  # default RangeIndex
+        ak_s = s.ak.to_ak()
+
+        assert isinstance(getattr(ak_s, "array", None), ArkoudaExtensionArray)
+        assert ak_s.ak.is_arkouda is True
+
+    def test_is_arkouda_true_for_to_ak_series_with_nontrivial_index(self):
+        s = pd.Series([10, 20, 30], index=pd.Index([100, 200, 300], name="i"))
+        ak_s = s.ak.to_ak()
+
+        assert ak_s.ak.is_arkouda is True
+
+    def test_is_arkouda_true_for_to_ak_series_with_multiindex(self):
+        mi = pd.MultiIndex.from_product([["a", "b"], [1, 2]], names=["l0", "l1"])
+        s = pd.Series([0, 1, 2, 3], index=mi)
+
+        ak_s = s.ak.to_ak()
+        assert ak_s.ak.is_arkouda is True
+
     def test_to_ak_preserves_index_and_name(self):
         idx = pd.Index([100, 200, 300], name="id")
         s = pd.Series([10, 20, 30], index=idx, name="values")
@@ -205,3 +231,274 @@ class TestArkoudaSeriesAccessor:
             assert s_back.index.tolist() == [10, 20, 30]
             assert s_back.index.name == "id"
             assert s_back.tolist() == [100, 200, 300]
+
+    def test_ak_array_to_pandas_series_default_index_is_arkouda(self):
+        # legacy arkouda array (pdarray / Strings / Categorical all go through the same helper)
+        akarr = ak.array([1, 3, 4, 1])
+
+        from arkouda.pandas.extension._series_accessor import _ak_array_to_pandas_series
+
+        s = _ak_array_to_pandas_series(akarr, name="x")
+
+        # Should not silently create a NumPy RangeIndex
+        assert not isinstance(s.index, pd.RangeIndex)
+
+        # Index should be Arkouda-backed
+        assert ArkoudaIndexAccessor(s.index).is_arkouda is True
+
+        # Values should match 0..n-1
+        assert np.array_equal(s.index.to_numpy(), np.arange(len(s)))
+
+        # Data should be Arkouda-backed and correct
+        assert np.array_equal(s.to_numpy(), np.array([1, 3, 4, 1]))
+
+    def test_ak_array_to_pandas_series_preserves_provided_index_and_makes_it_arkouda(self):
+        akarr = ak.array([10, 20, 30, 40])
+
+        from arkouda.pandas.extension._series_accessor import _ak_array_to_pandas_series
+
+        idx = pd.Index([100, 101, 102, 103], name="id")
+        assert ArkoudaIndexAccessor(idx).is_arkouda is False
+
+        s = _ak_array_to_pandas_series(akarr, name="x", index=idx)
+
+        # Should preserve index values + name
+        assert s.index.name == "id"
+        assert np.array_equal(s.index.to_numpy(), np.array([100, 101, 102, 103]))
+
+        # Index should be Arkouda-backed (either via internal conversion or via caller passing ak index)
+        assert ArkoudaIndexAccessor(s.index).is_arkouda is True
+
+        # Data correct
+        assert np.array_equal(s.to_numpy(), np.array([10, 20, 30, 40]))
+
+    def test_series_locate_multiindex_accepts_per_level_pdarray_keys(self):
+        # Build MultiIndex Series
+        lvl0 = ak.array([0, 0, 1, 1])
+        lvl1 = ak.array([10, 11, 10, 11])
+        mi = MultiIndex([lvl0, lvl1], names=["a", "b"])
+
+        vals = ak.array([100, 101, 102, 103])
+        s = Series(vals, index=mi)
+
+        # Per-level keys (pdarrays) — should be supported
+        k0 = ak.array([0, 1])
+        k1 = ak.array([10, 11])
+
+        # Expected: select (0,10) and (1,11) in that order -> [100, 103]
+        out = s.locate((k0, k1))
+        out = s.locate([k0, k1])
+
+        # Compare values (and optionally index)
+        assert out.tolist() == [100, 103]
+        assert out.index.nlevels == 2
+        assert out.index.names == ["a", "b"]
+
+
+class TestArkoudaSeriesGroupby:
+    def test_series_ak_groupby_raises_if_not_arkouda_backed(self):
+        s = pd.Series([80, 443, 80], name="Destination Port")  # plain pandas Series
+        with pytest.raises(
+            TypeError, match=r"Series must be Arkouda-backed\. Call \.ak\.to_ak\(\) first\."
+        ):
+            _ = s.ak.groupby()
+
+    def test_series_ak_groupby_returns_ak_groupby_and_size_matches_pandas_value_counts(self):
+        s = pd.Series([80, 443, 80, 22, 443], name="Destination Port").ak.to_ak()
+
+        g = s.ak.groupby()
+        assert isinstance(g, ak.GroupBy)
+
+        keys, counts = g.size()
+
+        # Convert results to python lists for comparison
+        keys_py = keys.tolist()
+        counts_py = counts.tolist()
+
+        # Series.groupby().size() is equivalent to Series.value_counts()
+        # The grouped values become the index of the returned series.
+        # We sort so the order matches.
+        expected = pd.Series([80, 443, 80, 22, 443]).value_counts().sort_index()
+
+        assert keys_py == expected.index.to_list()
+        assert counts_py == expected.to_list()
+
+    def test_series_ak_groupby_raises_if_underlying_array_missing_data(self):
+        s = pd.Series([1, 1, 2, 3]).ak.to_ak()
+
+        # Keep Series "arkouda-backed" but make _data unavailable
+        # so we hit the second error branch.
+        s.array._data = None  # type: ignore[attr-defined]
+
+        with pytest.raises(TypeError, match=r"Arkouda-backed Series array does not expose '_data'"):
+            _ = s.ak.groupby()
+
+    # ------------------------------------------------------------------
+    # locate
+    # ------------------------------------------------------------------
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "bool_", "bigint"])
+    @pytest.mark.parametrize("dtype_index", ["ak_int64", "ak_uint64"])
+    def test_locate(self, dtype, dtype_index):
+        pda = pd.array(ak.arange(3, dtype=dtype), dtype="ak." + dtype)
+        pda2 = pd.array(ak.array(["A", "B", "C"]), dtype="ak_str")
+        idx = pd.array(ak.arange(3), dtype=dtype_index)
+        for val in pda, pda2:
+            s = pd.Series(val, index=idx).ak.to_ak()
+
+            for key in (
+                1,
+                pd.Index([1], dtype=dtype_index),
+                pd.Index([0, 2], dtype=dtype_index),
+            ):
+                lk = s.ak.locate(key)
+                assert isinstance(lk, pd.Series)
+                key = ak.array(key) if not isinstance(key, int) else key
+                assert (lk.index == s.index[key]).all()
+                assert (lk.values == s.values[key]).all()
+
+            # testing multi-index lookup
+            mi = pd.MultiIndex.from_arrays([pda, pda[::-1]])
+            s = pd.Series(data=val, index=mi)
+            lk = s.ak.locate(mi[0])
+            assert isinstance(lk, pd.Series)
+            assert lk.values[0] == val[0]
+
+            # ensure error with scalar and multi-index
+            with pytest.raises(TypeError):
+                s.ak.locate(0)
+
+            with pytest.raises(TypeError):
+                s.ak.locate([0, 2])
+
+
+class TestArkoudaSeriesAccessorArgsort:
+    def test_argsort_returns_arkoudaarray_and_matches_numpy_int(self):
+        s = pd.Series([3, 1, 2]).ak.to_ak()
+        perm = s.ak.argsort()
+
+        assert perm.ak.is_arkouda
+        assert np.array_equal(perm.to_numpy(), np.array([1, 2, 0]))
+
+    def test_argsort_descending(self):
+        s = pd.Series([3, 1, 2]).ak.to_ak()
+        perm = s.ak.argsort(ascending=False)
+
+        assert perm.ak.is_arkouda
+        assert np.array_equal(perm.to_numpy(), np.array([0, 2, 1]))
+
+    def test_argsort_float_nan_default_last(self):
+        s = pd.Series([3.0, np.nan, 1.0]).ak.to_ak()
+        perm = s.ak.argsort()
+
+        assert perm.ak.is_arkouda
+        # values: [3.0, nan, 1.0] -> sorted non-nan indices [2,0] then nan [1]
+        assert np.array_equal(perm.to_numpy(), np.array([2, 0, 1]))
+
+    def test_argsort_float_nan_first(self):
+        s = pd.Series([3.0, np.nan, 1.0]).ak.to_ak()
+        perm = s.ak.argsort(na_position="first")
+
+        assert perm.ak.is_arkouda
+        # nan first, then sorted non-nan
+        assert np.array_equal(perm.to_numpy(), np.array([1, 2, 0]))
+
+    def test_argsort_invalid_na_position_raises(self):
+        s = pd.Series([3.0, np.nan, 1.0]).ak.to_ak()
+        with pytest.raises(ValueError, match="na_position must be 'first' or 'last'"):
+            s.ak.argsort(na_position="middle")
+
+    def test_argsort_non_arkouda_series_raises(self):
+        s = pd.Series([3, 1, 2])
+        with pytest.raises(TypeError, match="Arkouda-backed"):
+            s.ak.argsort()
+
+    def test_argsort_strings(self):
+        s = pd.Series(["b", "a", "c"]).ak.to_ak()
+        perm = s.ak.argsort()
+
+        assert perm.ak.is_arkouda
+        assert np.array_equal(perm.to_numpy(), np.array([1, 0, 2]))
+
+
+@pytest.mark.requires_chapel_module("ApplyMsg")
+class TestArkoudaSeriesApply:
+    @classmethod
+    def setup_class(cls):
+        if not supports_apply():
+            pytest.skip("apply not supported")
+
+    def test_series_accessor_apply_requires_arkouda_backed(self):
+        s = pd.Series([1, 2, 3], name="x")
+        with pytest.raises(TypeError, match="Series must be Arkouda-backed"):
+            s.ak.apply(lambda x: x + 1)
+
+    def test_series_accessor_apply_callable_preserves_index_and_name(self):
+        idx = pd.Index([10, 20, 30], name="id")
+        s = pd.Series([1, 2, 3], index=idx, name="x").ak.to_ak()
+
+        out = s.ak.apply(lambda v: v + 1)
+
+        # still distributed
+        assert out.ak.is_arkouda
+
+        # preserves metadata
+        assert out.name == "x"
+        assert out.index.equals(s.index)
+        assert out.index.name == "id"
+
+        # correct values (materialize for assertion)
+        expected = pd.Series([2, 3, 4], index=idx, name="x")
+        got = out.ak.collect()
+        assert got.equals(expected)
+
+    def test_series_accessor_apply_callable_dtype_change(self):
+        idx = pd.Index([0, 1, 2], name="i")
+        s = pd.Series([2, 4, 6], index=idx, name="y").ak.to_ak()
+
+        out = s.ak.apply(lambda v: v * 0.5, result_dtype="float64")
+
+        assert out.ak.is_arkouda
+        assert out.name == "y"
+        assert out.index.equals(s.index)
+
+        expected = pd.Series([1.0, 2.0, 3.0], index=idx, name="y")
+        got = out.ak.collect()
+        # use allclose-like semantics for float comparisons
+        assert got.index.equals(expected.index)
+        assert got.name == expected.name
+        assert pytest.approx(got.to_numpy().tolist()) == expected.to_numpy().tolist()
+
+    def test_series_accessor_apply_string_lambda_same_dtype(self):
+        idx = pd.Index([5, 6, 7], name="row")
+        s = pd.Series([1, 2, 3], index=idx, name="z").ak.to_ak()
+
+        out = s.ak.apply("lambda x,: x+2")
+
+        assert out.ak.is_arkouda
+        assert out.name == "z"
+        assert out.index.equals(s.index)
+
+        expected = pd.Series([3, 4, 5], index=idx, name="z")
+        got = out.ak.collect()
+        assert got.equals(expected)
+
+    def test_series_accessor_apply_string_lambda_rejects_result_dtype_change(self):
+        s = pd.Series([1, 2, 3], name="a").ak.to_ak()
+
+        # apply.py enforces: for string funcs, result_dtype must match input dtype
+        with pytest.raises(TypeError, match="result_dtype must match"):
+            _ = s.ak.apply("lambda x,: x+1", result_dtype="float64")
+
+    def test_series_accessor_apply_rejects_strings(self):
+        s = pd.Series(["a", "b", "c"]).ak.to_ak()
+        with pytest.raises(TypeError, match="only supports numeric pdarray"):
+            s.ak.apply(lambda x: x)
+
+    def test_series_accessor_apply_rejects_categorical(self):
+        ak_cat = ak.Categorical(ak.array(["red", "blue", "red"]))
+        s = pd.Series.ak.from_ak_legacy(ak_cat, name="color")
+
+        with pytest.raises(TypeError, match="only supports numeric pdarray"):
+            s.ak.apply(lambda x: x)

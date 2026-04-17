@@ -44,7 +44,7 @@ class TestDataFrame:
     def test_dataframe_docstrings(self, df_test_base_tmp):
         import doctest
 
-        from arkouda import dataframe
+        from arkouda.pandas import dataframe
 
         with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
             old_cwd = os.getcwd()
@@ -559,7 +559,7 @@ class TestDataFrame:
         assert_frame_equal(ref_df, df.to_pandas())
 
         idx = np.arange(8)
-        assert idx.tolist() == df.index.index.tolist()
+        assert idx.tolist() == df.index.values.tolist()
 
         df_keyerror = self.build_ak_keyerror()
         with pytest.raises(KeyError):
@@ -721,22 +721,22 @@ class TestDataFrame:
         pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False)[["count"]].sum()
         ak_result1 = ak_df.groupby(["key1", "key2"]).sum("count")
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
-        assert isinstance(ak_result1, ak.dataframe.DataFrame)
+        assert isinstance(ak_result1, ak.pandas.dataframe.DataFrame)
 
         pd_result2 = pd_df.groupby(["key1", "key2"], as_index=False)[["count"]].sum()
         ak_result2 = ak_df.groupby(["key1", "key2"]).sum(["count"])
         assert_frame_equal(pd_result2, ak_result2.to_pandas(retain_index=True))
-        assert isinstance(ak_result2, ak.dataframe.DataFrame)
+        assert isinstance(ak_result2, ak.pandas.dataframe.DataFrame)
 
         pd_result3 = pd_df.groupby(["key1", "key2"], as_index=False)[["count", "nums"]].sum()
         ak_result3 = ak_df.groupby(["key1", "key2"]).sum(["count", "nums"])
         assert_frame_equal(pd_result3, ak_result3.to_pandas(retain_index=True))
-        assert isinstance(ak_result3, ak.dataframe.DataFrame)
+        assert isinstance(ak_result3, ak.pandas.dataframe.DataFrame)
 
         pd_result4 = pd_df.groupby(["key1", "key2"], as_index=False).sum(numeric_only=True)
         ak_result4 = ak_df.groupby(["key1", "key2"]).sum()
         assert_frame_equal(pd_result4, ak_result4.to_pandas(retain_index=True))
-        assert isinstance(ak_result4, ak.dataframe.DataFrame)
+        assert isinstance(ak_result4, ak.pandas.dataframe.DataFrame)
 
     def test_gb_aggregations_numeric_types(self):
         ak_df = self.build_ak_df_example_numeric_types()
@@ -779,7 +779,7 @@ class TestDataFrame:
         pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).size()
         ak_result1 = ak_df.groupby(["key1", "key2"], as_index=False).size()
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
-        assert isinstance(ak_result1, ak.dataframe.DataFrame)
+        assert isinstance(ak_result1, ak.pandas.dataframe.DataFrame)
 
         assert_frame_equal(
             ak_df.groupby(["key1", "key2"], as_index=False).size().to_pandas(retain_index=True),
@@ -823,7 +823,7 @@ class TestDataFrame:
                     ak_result = ak_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
                     pd_result = pd_df.groupby(gb_keys, as_index=as_index, dropna=dropna).size()
 
-                    if isinstance(ak_result, ak.dataframe.DataFrame):
+                    if isinstance(ak_result, ak.pandas.dataframe.DataFrame):
                         assert_frame_equal(ak_result.to_pandas(retain_index=True), pd_result)
                     else:
                         assert_series_equal(ak_result.to_pandas(), pd_result)
@@ -942,7 +942,7 @@ class TestDataFrame:
         for group_by in group_bys:
             ak_result = ak_df.groupby(group_by).size()
             pd_result = ak_result.to_pandas()
-            if isinstance(ak_result, ak.dataframe.DataFrame):
+            if isinstance(ak_result, ak.pandas.dataframe.DataFrame):
                 assert_frame_equal(
                     ak_result.sort_index().to_pandas(retain_index=True),
                     pd_result.sort_index(),
@@ -1017,7 +1017,7 @@ class TestDataFrame:
 
         # test against series
         i = ak.Index(ak.arange(2))
-        s = ak.Series(data=ak.array([3, 9]), index=i.index)
+        s = ak.Series(data=ak.array([3, 9]), index=i.values)
         test_df = df.isin(s)
         assert test_df["col_A"].tolist() == [False, False]
         assert test_df["col_B"].tolist() == [False, True]
@@ -1077,11 +1077,11 @@ class TestDataFrame:
 
         bool_idx = df[df["cnt"] > 3]
         bool_idx.__repr__()
-        assert bool_idx.index.index.tolist() == list(range(4, 65))
+        assert bool_idx.index.values.tolist() == list(range(4, 65))
 
         slice_idx = df[:]
         slice_idx.__repr__()
-        assert slice_idx.index.index.tolist() == list(range(65))
+        assert slice_idx.index.values.tolist() == list(range(65))
 
         # verify it persists non-int Index
         idx = ak.concatenate([ak.zeros(5, bool), ak.ones(60, bool)])
@@ -1091,11 +1091,11 @@ class TestDataFrame:
         bool_idx.__repr__()
         # the new index is first False and rest True (because we lose first 4),
         # so equivalent to arange(61, bool)
-        assert bool_idx.index.index.tolist() == ak.arange(61, dtype=bool).tolist()
+        assert bool_idx.index.values.tolist() == ak.arange(61, dtype=bool).tolist()
 
         slice_idx = df[:]
         slice_idx.__repr__()
-        assert slice_idx.index.index.tolist() == idx.tolist()
+        assert slice_idx.index.values.tolist() == idx.tolist()
 
     def test_subset(self):
         df = ak.DataFrame(

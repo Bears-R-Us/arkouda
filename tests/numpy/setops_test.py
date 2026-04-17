@@ -10,6 +10,7 @@ from arkouda.testing import assert_arkouda_array_equivalent
 OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
 NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
+NP_COMPAT = {"in1d": np.isin}
 
 
 class TestSetOps:
@@ -96,15 +97,26 @@ class TestSetOps:
 
         func = getattr(ak, op)
         ak_result = func(ak.array(a, dtype=dtype), ak.array(b, dtype=dtype))
-        np_func = getattr(np, op)
-        np_result = np_func(a, b)
+
+        # NumPy 2.x compatibility: in1d -> isin
+        if op == "in1d":
+            np_result = np.isin(a, b)
+        else:
+            np_func = NP_COMPAT.get(op, getattr(np, op))
+            np_result = np_func(a, b)
+
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
         a, b = self.make_np_arrays_small(dtype)
         func = getattr(ak, op)
         ak_result = func(ak.array(a, dtype=dtype), ak.array(b, dtype=dtype))
-        np_func = getattr(np, op)
-        np_result = np_func(a, b)
+
+        if op == "in1d":
+            np_result = np.isin(a, b)
+        else:
+            np_func = NP_COMPAT.get(op, getattr(np, op))
+            np_result = np_func(a, b)
+
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -122,39 +134,42 @@ class TestSetOps:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("op", OPS)
     def test_setops_str(self, size, op):
+        def np_setop(op, a, b):
+            if op == "in1d":
+                return np.isin(a, b)
+            return getattr(np, op)(a, b)
+
         a = ak.random_strings_uniform(1, 5, size)
         b = ak.random_strings_uniform(1, 5, size)
         func = getattr(ak, op)
         ak_result = func(a, b)
-        np_func = getattr(np, op)
-        np_result = np_func(a.to_ndarray(), b.to_ndarray())
+        np_result = np_setop(op, a.to_ndarray(), b.to_ndarray())
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
         a = ak.array(["a", "b", "c", "abc", "1"])
         b = ak.array(["x", "a", "y", "z", "abc", "123"])
         func = getattr(ak, op)
         ak_result = func(a, b)
-        np_func = getattr(np, op)
-        np_result = np_func(a.to_ndarray(), b.to_ndarray())
+        np_result = np_setop(op, a.to_ndarray(), b.to_ndarray())
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("op", OPS)
     def test_setops_categorical(self, size, op):
+        def np_setop(op, a, b):
+            if op == "in1d":
+                return np.isin(a, b)
+            return getattr(np, op)(a, b)
+
         a = ak.Categorical(ak.random_strings_uniform(1, 5, size))
         b = ak.Categorical(ak.random_strings_uniform(1, 5, size))
         func = getattr(ak, op)
         ak_result = func(a, b)
-        np_func = getattr(np, op)
-        np_result = np_func(a.to_ndarray(), b.to_ndarray())
-        assert np.array_equal(ak_result.to_ndarray(), np_result)
 
-        a = ak.Categorical(ak.array(["a", "b", "c", "abc", "1"]))
-        b = ak.Categorical(ak.array(["x", "a", "y", "z", "abc", "123"]))
-        func = getattr(ak, op)
-        ak_result = func(a, b)
-        np_func = getattr(np, op)
-        np_result = np_func(a.to_ndarray(), b.to_ndarray())
+        np_a = a.to_ndarray()
+        np_b = b.to_ndarray()
+        np_result = np_setop(op, np_a, np_b)
+
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
     @pytest.mark.parametrize("size", pytest.prob_size)

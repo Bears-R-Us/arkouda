@@ -11,7 +11,7 @@ module ArgSortMsg
 
     use Time;
     use Math only;
-    private use ArkoudaSortCompat;
+    private use Sort;
     private use DynamicSort;
     
     use Reflection only;

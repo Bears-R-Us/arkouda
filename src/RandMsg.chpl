@@ -13,7 +13,7 @@ module RandMsg
     use PrivateDist;
     use RandArray;
     use RandUtil;
-    use ArkoudaSortCompat;
+    use Sort;
     use CommAggregation;
     use Repartition;
     use ZigguratConstants;

@@ -69,7 +69,7 @@ def _my_start_server(server_args, note):
 def _my_stop_server():
     if hasattr(pytest, "server_already_stopped"):
         del pytest.server_already_stopped
-        ak.client.connected = False
+        ak.core.client.connected = False
     else:
         stop_arkouda_server()
 

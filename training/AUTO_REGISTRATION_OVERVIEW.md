@@ -62,7 +62,7 @@ proc foo(a: [?d] ?t, idx: d.rank*int, value: t): [] t {
 Given a pdarray, `arr`, an index tuple that matches `arr`'s rank, and a value that matches `arr`'s dtype, the command is called as follows from the client:
 
 ```python
-from arkouda.client import generic_msg
+from arkouda.core.client import generic_msg
 result = create_pdarray(
     generic_msg(
         cmd=f"foo<{arr.dtype},{arr.ndim}>",
@@ -151,7 +151,7 @@ proc cast(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
 
 Note, this procedure would be called like:
 ```python
-from arkouda.client import generic_msg
+from arkouda.core.client import generic_msg
 result = create_pdarray(
     generic_msg(
         cmd=f"cast<{arr.dtype},{cast_to_dtype},{arr.ndim}>",

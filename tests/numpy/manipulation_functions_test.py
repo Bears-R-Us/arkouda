@@ -90,7 +90,7 @@ class TestNumpyManipulationFunctions:
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize("shape", [(2, 2, 2), (2, 2, 3), (2, 3, 2), (3, 2, 2)])
     def test_repeat_dim_3(self, dtype, shape: Tuple[int, ...]):
-        from arkouda.pdarraycreation import randint as akrandint
+        from arkouda.numpy.pdarraycreation import randint as akrandint
 
         shape_prod = 1
         for i in shape:
@@ -120,7 +120,7 @@ class TestNumpyManipulationFunctions:
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 2), (2, 1), (1, 2)])
     def test_repeat_dim_2(self, dtype, shape: Tuple[int, ...]):
-        from arkouda.pdarraycreation import randint as akrandint
+        from arkouda.numpy.pdarraycreation import randint as akrandint
 
         shape_prod = 1
         for i in shape:

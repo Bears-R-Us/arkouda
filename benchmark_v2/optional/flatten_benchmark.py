@@ -19,24 +19,24 @@ def bench_ak_flatten_2d(benchmark, dtype, shape_type):
 
     if shape_type == "square":
         #   Ensure N has an integer square root:
-        N = int(np.round(np.sqrt(N)) ** 2)
+        trimmed_N = int(np.round(np.sqrt(N)) ** 2)
         sqrt_N = int(np.sqrt(N))
         shape = (sqrt_N, sqrt_N)
     elif shape_type == "tall":
         #   Ensure N is divisible by 2:
-        N = int(N // 2 * 2)
+        trimmed_N = int(N // 2 * 2)
         shape = (N // 2, 2)
     else:
         #   Ensure N is divisible by 2:
-        N = int(N // 2 * 2)
+        trimmed_N = int(N // 2 * 2)
         shape = (2, N // 2)
 
     if dtype == "int64":
-        data = ak.randint(0, 2**32, N, dtype=ak.int64, seed=pytest.seed)
+        data = ak.randint(0, 2**32, trimmed_N, dtype=ak.int64, seed=pytest.seed)
     elif dtype == "float64":
-        data = ak.randint(0, 1, N, dtype=ak.float64, seed=pytest.seed)
+        data = ak.randint(0, 1, trimmed_N, dtype=ak.float64, seed=pytest.seed)
     elif dtype == "bool":
-        data = ak.randint(0, 2, N, dtype=ak.bool_, seed=pytest.seed)
+        data = ak.randint(0, 2, trimmed_N, dtype=ak.bool_, seed=pytest.seed)
 
     arr2d = data.reshape(shape)
 
@@ -46,8 +46,8 @@ def bench_ak_flatten_2d(benchmark, dtype, shape_type):
     benchmark.pedantic(flatten_op, rounds=pytest.trials)
     num_bytes = calc_num_bytes(data)
 
-    benchmark.extra_info["description"] = f"Measures ak.flatten (np-style) on dtype={dtype}"
-    benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["description"] = f"Measures ak.flatten on 2D {shape_type} array, dtype={dtype}"
+    benchmark.extra_info["problem_size"] = trimmed_N
     benchmark.extra_info["backend"] = "Arkouda"
     benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:

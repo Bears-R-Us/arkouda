@@ -6,7 +6,7 @@ Arkouda generates measurement, count, system, and user metrics and makes them av
 
 ## Metrics Generation and Export: The MetricsMsg Module
 
-The [MetricsMsg](src/MetricsMsg.chpl) module contains logic and data structures to generate and cache metrics as well as generate JSON blobs to encapsulate all metrics to be exported. Specifically, the MetricsMsg module contains the following code required to generate and export metrics from Arkouda:
+The `MetricsMsg` (src/MetricsMsg.chpl) module contains logic and data structures to generate and cache metrics as well as generate JSON blobs to encapsulate all metrics to be exported. Specifically, the MetricsMsg module contains the following code required to generate and export metrics from Arkouda:
 
 1. Increment/decrement counter metrics and capture measure metrics
 2. Encapsulated counts and measurements in CounterTable or MeasurementTable Chapel Maps
@@ -19,7 +19,7 @@ The [MetricsMsg](src/MetricsMsg.chpl) module contains logic and data structures 
 
 Measurement metrics are generated in the MeasurementsTable class:
 
-```
+```chapel
     proc get(metric: string) : int {
         if !this.measurements.contains(metric) {
             this.measurements.add(metric,0.0);
@@ -38,7 +38,7 @@ Measurement metrics are generated in the MeasurementsTable class:
 
 Count metrics are captured in the Counter Table:
 
-```
+```chapel
     proc set(metric: string, count: int) {
         this.counts.addOrReplace(metric,count);
     }
@@ -68,7 +68,7 @@ Count metrics are captured in the Counter Table:
 
 The UserMetrics contains logic to increment counts such as total number of requests and number of requests per command:
 
-```
+```chapel
     proc incrementPerUserRequestMetrics(userName: string, metricName: string, increment: int=1) {
         this.incrementNumRequestsPerCommand(userName,metricName,increment);
         this.incrementTotalNumRequests(userName,increment);
@@ -89,7 +89,7 @@ The UserMetrics contains logic to increment counts such as total number of reque
 
 System metrics are generated in the getSystemMetrics function:
 
-```
+```chapel
     proc getSystemMetrics() throws {
         var metrics = new list(owned Metric?);
 
@@ -121,7 +121,7 @@ System metrics are generated in the getSystemMetrics function:
 
 All metrics are exported as a JSON blob via the following logic:
 
-```
+```chapel
     proc exportAllMetrics() throws {        
         var metrics = new list(owned Metric?);
 
@@ -202,7 +202,7 @@ All metrics are exported as a JSON blob via the following logic:
     }
 ```
 
-The MetricsMsg module is integrated into the Arkouda server side workflow within the MetricsServerDaemon class located in the [ServerDaemon](src/ServerDaemon) module. 
+The MetricsMsg module is integrated into the Arkouda server side workflow within the MetricsServerDaemon class located in the `ServerDaemon` (src/ServerDaemon) module. 
 
 ## Enabling Metrics Capture and Export
 
@@ -212,7 +212,7 @@ The arkouda_server startup command that enables metrics capture and export has t
 
 In situations where Arkouda is not registered with an external system such as Kubernetes, the launch command is as follows. Note METRICS_SERVICE_PORT only has to be set if the port cannot be the default value of 5556.
 
-```
+```bash
 export METRICS_SERVICE_PORT=6556
 
 ./arkouda_server -nl 3 --memTrack=true --ServerDaemon.daemonTypes=ServerDaemonType.DEFAULT,ServerDaemonType.METRICS
@@ -222,7 +222,7 @@ export METRICS_SERVICE_PORT=6556
 
 In situations where Arkouda is registered with an external system, in this case Kubernetes, the ServerDaemonType is switched to INTEGRATION and extra environment variables are added as needed.
 
-```
+```bash
 export NAMESPACE=arkouda
 export EXTERNAL_SERVICE_NAME=arkouda-external
 export EXTERNAL_SERVICE_PORT=5555
@@ -243,9 +243,9 @@ The [arkouda_metrics_exporter](https://github.com/Bears-R-Us/arkouda-contrib/tre
 
 ### Core Logic of Arkouda Prometheus Exporter
 
-The Python [prometheus_client](https://github.com/prometheus/client_python) library contains the core functionality required to deliver a Prometheus exporter. The ArkoudaMetrics fetch() method makes a call to MetricsMsg w/ the 'ALL' parameter, meaning that all metrics will be returned to the client and are prepared for Prometheus scrape requests.
+The Python [prometheus_client](https://github.com/prometheus/client_python) library contains the core functionality required to deliver a Prometheus exporter. The ArkoudaMetrics fetch() method makes a call to MetricsMsg with the 'ALL' parameter, meaning that all metrics will be returned to the client and are prepared for Prometheus scrape requests.
 
-```
+```python
     def fetch(self) -> None:
         metrics = json.loads(
             client.generic_msg(cmd="metrics", args=str(MetricCategory.ALL)),
@@ -262,7 +262,7 @@ The Python [prometheus_client](https://github.com/prometheus/client_python) libr
 
 Within the asMetric method the incoming JSON blobs emitted from Arkouda are converted to Prometheus data structures:
 
-```
+```python
     def asMetric(self, value: Dict[str, Union[float, int]]) -> Metric:
         scope = MetricScope(value["scope"])
         labels: Optional[List[Label]]
@@ -308,7 +308,7 @@ Within the asMetric method the incoming JSON blobs emitted from Arkouda are conv
 
 Within the main loop (1) the HTTP server that constitutes the scrape endpoint starts up and (2) the run_metrics_loop method periodically retrieves metric data from Arkouda.
 
-```
+```python
 def main():
     """Main entry point"""
 
@@ -329,7 +329,7 @@ def main():
 
 To run on bare metal, run the following shell script:
 
-```
+```bash
 #!/bin/bash
   
 export METRICS_SERVICE_NAME=<kubernetes external service name or arkouda server hostname>

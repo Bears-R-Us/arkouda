@@ -32,15 +32,19 @@ All operations avoid materializing to NumPy unless explicitly requested.
 
 from __future__ import annotations
 
-from typing import Any, Union
+from typing import Any, Callable, Optional, Union
 
+import numpy as np
 import pandas as pd
 
 from pandas import Index as pd_Index
 from pandas.api.extensions import register_series_accessor
 
 from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.series import Series as ak_Series
+
+from ._index_accessor import _ak_index_to_pandas_no_copy
 
 
 # ---------------------------------------------------------------------------
@@ -75,10 +79,29 @@ def _pandas_series_to_ak_array(s: pd.Series) -> Any:
     return ak_array(s)
 
 
-def _ak_array_to_pandas_series(akarr: Any, name: str | None = None) -> pd.Series:
-    """Wrap an Arkouda array into a pandas Series backed by ArkoudaExtensionArray."""
+def _ak_array_to_pandas_series(
+    akarr: Any,
+    name: str | None = None,
+    index: pd.Index | None = None,
+) -> pd.Series:
+    """
+    Wrap a legacy Arkouda array into a pandas Series backed by ArkoudaExtensionArray.
+
+    If `index` is not provided, construct an Arkouda-backed default index.
+    If `index` is provided and not Arkouda-backed, convert it.
+    """
+    from arkouda.numpy.pdarraycreation import arange as ak_arange
+    from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+
     ea = _ak_arr_to_pandas_ea(akarr)
-    return pd.Series(ea, name=name)
+
+    if index is None:
+        index = pd.Index(ArkoudaExtensionArray._from_sequence(ak_arange(len(ea))))
+
+    if not ArkoudaIndexAccessor(index).is_arkouda:
+        index = ArkoudaIndexAccessor(index).to_ak()
+
+    return pd.Series(ea, index=index, name=name)
 
 
 # ---------------------------------------------------------------------------
@@ -334,14 +357,18 @@ class ArkoudaSeriesAccessor:
     @property
     def is_arkouda(self) -> bool:
         """
-        Return whether the underlying Series is Arkouda-backed.
+        Return True if this Series is fully Arkouda-backed.
 
-        A Series is Arkouda-backed if its underlying storage uses
-        :class:`ArkoudaExtensionArray`.
+        A Series is considered Arkouda-backed when both:
+
+        1. Its values are stored in an ``ArkoudaExtensionArray``.
+        2. Its index (including each level of a MultiIndex) is
+           backed by ``ArkoudaExtensionArray``.
 
         Returns
         -------
         bool
+            True if both data and index are Arkouda-backed, otherwise False.
 
         Examples
         --------
@@ -353,6 +380,277 @@ class ArkoudaSeriesAccessor:
         >>> ak_s.ak.is_arkouda
         True
         """
-        arr = getattr(self._obj, "array", None)
-        idx_arr = self._obj.index.values
-        return isinstance(arr, ArkoudaExtensionArray) and isinstance(idx_arr, ArkoudaExtensionArray)
+        # Check values
+        values = getattr(self._obj, "array", None)
+        if not isinstance(values, ArkoudaExtensionArray):
+            return False
+
+        idx = self._obj.index
+
+        # MultiIndex: require every level to be Arkouda-backed
+        if isinstance(idx, pd.MultiIndex):
+            return all(
+                isinstance(getattr(level, "array", None), ArkoudaExtensionArray) for level in idx.levels
+            )
+
+        # Single-level Index
+        return isinstance(getattr(idx, "array", None), ArkoudaExtensionArray)
+
+    # ------------------------------------------------------------------
+    # Legacy delegation: thin wrappers over ak.Series
+    # ------------------------------------------------------------------
+
+    def locate(self, key: object) -> pd.Series:
+        """
+        Lookup values by index label on the Arkouda server.
+
+        This is a thin wrapper around the legacy :meth:`arkouda.pandas.series.Series.locate`
+        method. It converts the pandas Series to a legacy Arkouda ``ak.Series``,
+        performs the locate operation on the server, and wraps the result back into
+        an Arkouda-backed pandas Series (ExtensionArray-backed) without NumPy
+        materialization.
+
+        Parameters
+        ----------
+        key : object
+            Lookup key or keys. Interpreted in the same way as the legacy Arkouda
+            ``Series.locate`` method. This may be:
+            - a scalar
+            - a list/tuple of scalars
+            - an Arkouda ``pdarray``
+            - an Arkouda ``Index`` / ``MultiIndex``
+            - an Arkouda ``Series`` (special case: preserves key index)
+
+        Returns
+        -------
+        pd.Series
+            A pandas Series backed by Arkouda ExtensionArrays containing the located
+            values. The returned Series remains distributed (no NumPy materialization)
+            and is sorted by index.
+
+        Notes
+        -----
+        * This method is Arkouda-specific; pandas does not define ``Series.locate``.
+        * If ``key`` is a pandas Index/MultiIndex, consider converting it via
+          ``key.ak.to_ak_legacy()`` before calling ``locate`` for the most direct path.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> import pandas as pd
+        >>> s = pd.Series([10, 20, 30], index=pd.Index([1, 2, 3])).ak.to_ak()
+        >>> out = s.ak.locate([3, 1])
+        >>> out.tolist()
+        [np.int64(10), np.int64(30)]
+        """
+        # Lift the pandas Series into a legacy Arkouda Series
+        aks = self.to_ak_legacy()
+
+        # Normalize common pandas key types to legacy Arkouda where possible
+        # (mirrors the “thin wrapper” approach used in the Index accessor).
+        if isinstance(key, (pd.Index, pd.MultiIndex)):
+            key = ArkoudaIndexAccessor(key).to_ak_legacy()
+        elif isinstance(key, pd.Series):
+            # For pandas Series keys, convert to legacy ak.Series to preserve key.index semantics.
+            key = ArkoudaSeriesAccessor(key).to_ak_legacy()
+
+        out_ak = aks.locate(key)
+
+        idx = _ak_index_to_pandas_no_copy(out_ak.index)
+        return _ak_array_to_pandas_series(out_ak.values, name=out_ak.name).set_axis(idx)
+
+    @staticmethod
+    def _from_return_msg(rep_msg: str) -> pd.Series:
+        """
+        Construct a pandas Series from a legacy Arkouda return message.
+
+        This mirrors :meth:`ArkoudaIndexAccessor.from_return_msg`. It calls the legacy
+        ``ak.Series.from_return_msg`` constructor, then immediately wraps the resulting
+        Arkouda arrays back into a pandas Series backed by Arkouda ExtensionArrays.
+
+        Parameters
+        ----------
+        rep_msg : str
+            The ``+ delimited`` string message returned by Arkouda server operations
+            that construct a Series.
+
+        Returns
+        -------
+        pd.Series
+            A pandas Series backed by Arkouda ExtensionArrays (no NumPy materialization).
+        """
+        ak_s = ak_Series.from_return_msg(rep_msg)
+
+        # Wrap values and index without materializing
+        out = _ak_array_to_pandas_series(ak_s.values, name=ak_s.name)
+
+        # Prefer wrapping the legacy index via the Index accessor helper path.
+        # We need a pandas Index/MultiIndex backed by EAs.
+        pd_idx = ArkoudaIndexAccessor.from_ak_legacy(ak_s.index)
+        return pd.Series(out.array, index=pd_idx, name=ak_s.name)
+
+    def groupby(self) -> GroupBy:
+        """
+        Return an Arkouda GroupBy object for this Series, without materializing.
+
+        Returns
+        -------
+        GroupBy
+
+        Raises
+        ------
+        TypeError
+            Returns TypeError if Series is not arkouda backed.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> import pandas as pd
+        >>> s = pd.Series([80, 443, 80]).ak.to_ak()
+        >>> g = s.ak.groupby()
+        >>> keys, counts = g.size()
+        """
+        if not self.is_arkouda:
+            raise TypeError("Series must be Arkouda-backed. Call .ak.to_ak() first.")
+
+        arr = self._obj.array
+        akcol = getattr(arr, "_data", None)
+        if akcol is None:
+            raise TypeError("Arkouda-backed Series array does not expose '_data'")
+
+        return GroupBy(akcol)
+
+    def argsort(
+        self,
+        *,
+        ascending: bool = True,
+        **kwargs: object,
+    ) -> pd.Series:
+        """
+        Return the integer indices that would sort the Series values.
+
+        This mirrors ``pandas.Series.argsort`` but returns an Arkouda-backed
+        pandas Series (distributed), not a NumPy-backed result.
+
+        Parameters
+        ----------
+        ascending : bool
+            Sort values in ascending order if True, descending order if False.
+            Default is True.
+        **kwargs : object
+            Additional keyword arguments.
+
+            Supported keyword arguments
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            na_position : {"first", "last"}, default "last"
+                Where to place NaN values in the sorted result. Currently only
+                applied for floating-point ``pdarray`` data; for ``Strings`` and
+                ``Categorical`` it has no effect.
+
+        Returns
+        -------
+        pd.Series
+            An Arkouda-backed Series of integer permutation indices. The returned
+            Series has the same index as the original.
+
+        Raises
+        ------
+        TypeError
+            If the Series is not Arkouda-backed, or the underlying dtype does not
+            support sorting.
+        ValueError
+            If ``na_position`` is not "first" or "last".
+        """
+        from arkouda.numpy import argsort as ak_argsort
+        from arkouda.numpy.numeric import isnan as ak_isnan
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraysetops import concatenate
+        from arkouda.numpy.strings import Strings
+        from arkouda.numpy.util import is_float
+        from arkouda.pandas.categorical import Categorical
+
+        if not self.is_arkouda:
+            raise TypeError("argsort() requires an Arkouda-backed Series.")
+
+        na_position = kwargs.pop("na_position", "last")
+        if na_position not in {"first", "last"}:
+            raise ValueError("na_position must be 'first' or 'last'.")
+
+        akcol = _pandas_series_to_ak_array(self._obj)
+
+        if not isinstance(akcol, (pdarray, Strings, Categorical)):
+            raise TypeError(f"Unsupported argsort dtype: {type(akcol)}")
+
+        perm = ak_argsort(akcol, ascending=ascending)
+
+        if is_float(akcol):
+            is_nan = ak_isnan(akcol)[perm]
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+
+        return _ak_array_to_pandas_series(
+            perm,
+            name=str(self._obj.name),
+            index=self._obj.index,
+        )
+
+    def apply(
+        self,
+        func: Union[Callable[[Any], Any], str],
+        result_dtype: Optional[Union[np.dtype, str]] = None,
+    ) -> pd.Series:
+        """
+        Apply a Python function element-wise to this Arkouda-backed Series.
+
+        This delegates to :func:`arkouda.apply.apply`, executing the function
+        on the Arkouda server without materializing to NumPy.
+
+        Parameters
+        ----------
+        func : Union[Callable[[Any], Any], str]
+            A Python callable or a specially formatted lambda string
+            (e.g. ``"lambda x,: x+1"``).
+        result_dtype : Optional[Union[np.dtype, str]]
+            The dtype of the resulting array. Required if the function changes dtype.
+            Must be compatible with :func:`arkouda.apply.apply`.
+            Default is None.
+
+        Returns
+        -------
+        pd.Series
+            A new Arkouda-backed Series containing the transformed values.
+
+        Raises
+        ------
+        TypeError
+            If the Series is not Arkouda-backed or if its values are not
+            a numeric pdarray.
+        """
+        if not self.is_arkouda:
+            raise TypeError("Series must be Arkouda-backed. Call .ak.to_ak() first.")
+
+        from arkouda.apply import apply as ak_apply
+        from arkouda.numpy.pdarrayclass import pdarray
+
+        arr = self._obj.array
+        akcol = getattr(arr, "_data", None)
+
+        if akcol is None:
+            raise TypeError("Arkouda-backed Series array does not expose '_data'")
+
+        # 🔒 Explicitly require pdarray (apply currently only supports pdarray)
+        if not isinstance(akcol, pdarray):
+            raise TypeError(
+                "Series.ak.apply currently only supports numeric pdarray-backed Series. "
+                f"Got {type(akcol).__name__}."
+            )
+
+        out = ak_apply(akcol, func, result_dtype=result_dtype)
+
+        return _ak_array_to_pandas_series(
+            out,
+            name=str(self._obj.name),
+            index=self._obj.index,
+        )

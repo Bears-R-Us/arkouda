@@ -16,10 +16,10 @@ def bench_noop(benchmark):
     else:
 
         def noop():
-            ak.client._no_op()
+            ak.core.client._no_op()
 
         backend = "Arkouda"
-        description = "Measures Arkouda no-op (ak.client._no_op)"
+        description = "Measures Arkouda no-op (ak.core.client._no_op)"
 
     benchmark.pedantic(noop, rounds=pytest.trials)
 

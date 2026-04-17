@@ -149,7 +149,7 @@ def create_parser():
     parser.add_argument(
         "-nl",
         "--num-locales",
-        "--numLocales",
+        "--numNodes",
         default=get_arkouda_numlocales(),
         help="Number of locales to use for the server",
     )

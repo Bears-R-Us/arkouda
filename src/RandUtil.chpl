@@ -54,7 +54,7 @@ module RandUtil {
         where D.rank == 1 {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
-            use ArkoudaTimeCompat;
+            use Time;
             var next: rng.eltType;
             if hasSeed {
                 next = rng.next();

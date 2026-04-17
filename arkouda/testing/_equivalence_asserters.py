@@ -153,7 +153,7 @@ def assert_almost_equivalent(
 
     Warning
     -------
-    This function cannot be used on pdarrays of size > ak.client.maxTransferBytes
+    This function cannot be used on pdarrays of size > ak.core.client.maxTransferBytes
     because it converts pdarrays to numpy arrays and calls np.allclose.
 
     See Also
@@ -514,7 +514,7 @@ def assert_frame_equivalent(
         right, (DataFrame, pd.DataFrame)
     ):
         raise TypeError(
-            f"left and right must be type arkouda.pandas.DataFrame or pandas.DataFrame.  "
+            f"left and right must be type arkouda.DataFrame or pandas.DataFrame.  "
             f"Instead types were {type(left)} and {type(right)}."
         )
 

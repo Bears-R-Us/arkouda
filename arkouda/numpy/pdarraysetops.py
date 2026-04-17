@@ -7,7 +7,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -93,8 +93,8 @@ def _in1d_single(
     >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
     array([False True])
     """
-    from arkouda.client import generic_msg
-    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.core.client import generic_msg
+    from arkouda.numpy.pdarraycreation import zeros as ak_zeros
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
@@ -102,10 +102,10 @@ def _in1d_single(
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
         if pda1.size == 0:
-            return zeros(0, dtype=akbool)
+            return ak_zeros(0, dtype=akbool)
     if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
         if pda2.size == 0:
-            return zeros(pda1.size, dtype=akbool)
+            return ak_zeros(pda1.size, dtype=akbool)
     if hasattr(pda1, "categories"):
         x = cast(Categorical_, pda1).in1d(pda2)
         return x if not invert else ~x
@@ -442,7 +442,7 @@ def concatenate(
     array(['one', 'two', 'three', 'four', 'five'])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.dtypes import int_scalars
     from arkouda.numpy.strings import Strings
     from arkouda.numpy.util import _integer_axis_validation, get_callback
@@ -515,13 +515,13 @@ def concatenate(
         if dtype_ == bigint:
             max_bit_list = []
             for a in arrays:
-                if a.dtype == bigint and isinstance(a, pdarray):
-                    if a.max_bits > 0:
+                if isinstance(a, pdarray) and a.dtype == bigint:
+                    if a.max_bits is not None and a.max_bits > 0:
                         max_bit_list.append(a.max_bits)
             # Should this be min or max?
             m_bits = -1 if len(max_bit_list) == 0 else min(max_bit_list)
             for a in arrays:
-                if a.dtype == bigint and isinstance(a, pdarray):
+                if isinstance(a, pdarray) and a.dtype == bigint:
                     a.max_bits = m_bits
         offsets = [0 for _ in range(len(arrays))]
         for i in range(1, len(arrays)):
@@ -590,41 +590,46 @@ def union1d(
     ar2: groupable,
 ) -> groupable:
     """
-    Find the union of two arrays/List of Arrays.
+    Find the union of two arrays or lists of arrays.
 
-    Return the unique, sorted array of values that are in either
-    of the two input arrays.
+    Return the unique, sorted array of values that appear in either
+    of the input arrays.
 
     Parameters
     ----------
     ar1 : list of pdarrays, pdarray, Strings, or Categorical
+        First input array or list of arrays.
     ar2 : list of pdarrays, pdarray, Strings, or Categorical
+        Second input array or list of arrays.
 
     Returns
     -------
     groupable
-        Unique, sorted union of the input arrays.
+        Unique, sorted union of the input arrays. If the inputs are lists
+        of arrays, a list of pdarrays is returned.
 
     Raises
     ------
     TypeError
-        Raised if either ar1 or ar2 is not a groupable
+        Raised if either `ar1` or `ar2` is not groupable.
     RuntimeError
-        Raised if the dtype of either input is not supported
+        Raised if the dtype of either input is not supported.
 
     See Also
     --------
-    intersect1d, arkouda.pandas.groupbyclass.unique
+    intersect1d
+    arkouda.pandas.groupbyclass.unique
 
     Examples
     --------
-    >>> import arkouda as ak
+    Basic 1D example:
 
-    1D Example
+    >>> import arkouda as ak
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2 -1 0 1 2])
 
-    Multi-Array Example
+    Multi-array example:
+
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -633,9 +638,8 @@ def union1d(
     >>> multib = [b, c, d]
     >>> ak.union1d(multia, multib)
     [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
-
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
@@ -678,41 +682,46 @@ def intersect1d(
     """
     Find the intersection of two arrays.
 
-    Return the sorted, unique values that are in both of the input arrays.
+    Return the sorted, unique values that are present in both input arrays.
 
     Parameters
     ----------
     ar1 : list of pdarrays, pdarray, Strings, or Categorical
+        First input array or list of arrays.
     ar2 : list of pdarrays, pdarray, Strings, or Categorical
-    assume_unique : bool
-        If True, the input arrays are both assumed to be unique, which
-        can speed up the calculation.  Default is False.
+        Second input array or list of arrays.
+    assume_unique : bool, default=False
+        If True, the input arrays are assumed to contain unique values,
+        which can speed up the calculation.
 
     Returns
     -------
-    pdarray/groupable
-        Sorted 1D array/List of sorted pdarrays of common and unique elements.
+    pdarray or groupable
+        Sorted 1D array of common unique elements. If the inputs are lists of
+        arrays, a list of sorted pdarrays is returned.
 
     Raises
     ------
     TypeError
-        Raised if either ar1 or ar2 is not a groupable
+        Raised if either `ar1` or `ar2` is not groupable.
     RuntimeError
-        Raised if the dtype of either pdarray is not supported
+        Raised if the dtype of either pdarray is not supported.
 
     See Also
     --------
-    arkouda.pandas.groupbyclass.unique, union1d
+    arkouda.pandas.groupbyclass.unique
+    union1d
 
     Examples
     --------
-    >>> import arkouda as ak
+    Basic 1D example:
 
-    1D Example
+    >>> import arkouda as ak
     >>> ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
     array([1 3])
 
-    Multi-Array Example
+    Multi-array example:
+
     >>> a = ak.arange(5)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -721,9 +730,8 @@ def intersect1d(
     >>> multib = [b, c, d]
     >>> ak.intersect1d(multia, multib)
     [array([1 3]), array([1 3]), array([1 3])]
-
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import ones, zeros
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
@@ -844,7 +852,7 @@ def setdiff1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Un
     >>> ak.setdiff1d(multia, multib)
     [array([2 4 5]), array([2 4 5]), array([2 4 5])]
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import ones, zeros
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
@@ -956,7 +964,7 @@ def setxor1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Uni
     >>> ak.setxor1d(multia, multib)
     [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import array, ones, zeros
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_

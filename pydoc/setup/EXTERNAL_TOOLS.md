@@ -14,7 +14,7 @@ The current applications being used are `black`, `flake8`, and `isort`.
 
 Using `pip install`, the following applications can be downloaded to your arkouda directory.
 
-```commandline
+```console
 # navigate to the arkouda directory
 cd <path_to_arkouda>/arkouda
 
@@ -44,7 +44,7 @@ The following are the configurations and settings for each of the external tools
 
 #### `black`
 
-```commandline
+```console
 Name: black     Group: External Tools
 Description: python formating
 
@@ -62,7 +62,7 @@ Advanced Options
 
 #### `flake8`
 
-```commandline
+```console
 Name: flake8     Group: External Tools
 Description: pep8 formatting validation
 
@@ -80,7 +80,7 @@ Advanced Options
 
 #### `isort`
 
-```commandline
+```console
 Name: isort     Group: External Tools
 Description: sort/group imports
 

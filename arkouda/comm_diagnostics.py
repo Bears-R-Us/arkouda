@@ -1,16 +1,18 @@
 """
 Communication diagnostics and instrumentation utilities for Arkouda.
 
-This module provides tools to collect, reset, and report Chapel communication statistics
-used in Arkouda operations. It is useful for profiling and debugging distributed communication
-patterns in both blocking and non-blocking modes. The diagnostics can be queried at a per-locale
-level and printed as a markdown-formatted summary.
+This module provides tools to collect, reset, and report Chapel communication
+statistics used in Arkouda operations. It is useful for profiling and debugging
+distributed communication patterns in both blocking and non-blocking modes.
+Diagnostics can be queried at a per-locale level and printed as a
+markdown-formatted summary.
 
 Features
 --------
-- Start/stop/reset communication diagnostics tracking
+- Start, stop, and reset communication diagnostics tracking
 - Enable verbose reporting of communication events
-- Retrieve statistics on blocking/non-blocking gets, puts, AMOs, and remote execution
+- Retrieve statistics on blocking and non-blocking gets, puts, AMOs,
+  and remote execution
 - Inspect remote cache usage (hits, misses, prefetch, readahead)
 - Aggregate results into a DataFrame
 - Export markdown summary tables
@@ -18,47 +20,90 @@ Features
 Functions
 ---------
 start_comm_diagnostics()
+    Start communication diagnostics tracking.
+
 stop_comm_diagnostics()
+    Stop communication diagnostics tracking.
+
 reset_comm_diagnostics()
+    Reset all collected diagnostics.
+
 print_comm_diagnostics_table(print_empty_columns=False)
+    Print a markdown-formatted summary table of diagnostics.
+
 start_verbose_comm()
+    Enable verbose communication reporting.
+
 stop_verbose_comm()
+    Disable verbose communication reporting.
 
-Getters for specific metrics:
-- get_comm_diagnostics_{put, get, put_nb, get_nb, try_nb, wait_nb, amo}
-- get_comm_diagnostics_{execute_on, execute_on_fast, execute_on_nb}
-- get_comm_diagnostics_cache_{get_hits, get_misses, put_hits, put_misses,
-  num_prefetches, num_page_readaheads, prefetch_unused, prefetch_waited,
-  readahead_unused, readahead_waited}
+Getters for specific metrics
+----------------------------
+- get_comm_diagnostics_put
+- get_comm_diagnostics_get
+- get_comm_diagnostics_put_nb
+- get_comm_diagnostics_get_nb
+- get_comm_diagnostics_try_nb
+- get_comm_diagnostics_wait_nb
+- get_comm_diagnostics_amo
+- get_comm_diagnostics_execute_on
+- get_comm_diagnostics_execute_on_fast
+- get_comm_diagnostics_execute_on_nb
 
-get_comm_diagnostics() → DataFrame
+Cache diagnostics
+-----------------
+- get_comm_diagnostics_cache_get_hits
+- get_comm_diagnostics_cache_get_misses
+- get_comm_diagnostics_cache_put_hits
+- get_comm_diagnostics_cache_put_misses
+- get_comm_diagnostics_cache_num_prefetches
+- get_comm_diagnostics_cache_num_page_readaheads
+- get_comm_diagnostics_cache_prefetch_unused
+- get_comm_diagnostics_cache_prefetch_waited
+- get_comm_diagnostics_cache_readahead_unused
+- get_comm_diagnostics_cache_readahead_waited
+
+get_comm_diagnostics() -> DataFrame
     Collect all diagnostics into a single DataFrame.
 
 Examples
 --------
 >>> import arkouda as ak
 >>> import arkouda.comm_diagnostics as cd
+>>> from arkouda.comm_diagnostics import (
+...     start_comm_diagnostics,
+...     stop_comm_diagnostics,
+...     get_comm_diagnostics,
+...     print_comm_diagnostics_table,
+... )
 
->>> from arkouda.comm_diagnostics import start_comm_diagnostics, stop_comm_diagnostics, \
-get_comm_diagnostics, print_comm_diagnostics_table
 >>> start_comm_diagnostics()
 'commDiagnostics started.'
+
 >>> a = ak.randint(0, 100, 1_000_000)
 >>> b = ak.sort(a)
+
 >>> stop_comm_diagnostics()
 'commDiagnostics stopped.'
+
 >>> df = get_comm_diagnostics()
->>> df.columns
-Index(['put', 'get', 'put_nb', 'get_nb', 'try_nb', 'amo', 'execute_on', 'execute_on_fast', \
-'execute_on_nb', 'cache_get_hits', 'cache_get_misses', 'cache_put_hits', 'cache_put_misses', \
-'cache_num_prefetches', 'cache_num_page_readaheads', 'cache_prefetch_unused', \
-'cache_prefetch_waited', 'cache_readahead_unused', 'cache_readahead_waited', 'wait_nb'], dtype='<U0')
->>> df[["put","get"]]  # doctest: +SKIP
+
+>>> list(df.columns)
+['put', 'get', 'put_nb', 'get_nb', 'try_nb', 'amo',
+ 'execute_on', 'execute_on_fast', 'execute_on_nb',
+ 'cache_get_hits', 'cache_get_misses',
+ 'cache_put_hits', 'cache_put_misses',
+ 'cache_num_prefetches', 'cache_num_page_readaheads',
+ 'cache_prefetch_unused', 'cache_prefetch_waited',
+ 'cache_readahead_unused', 'cache_readahead_waited',
+ 'wait_nb']
+
+>>> df[["put", "get"]]  # doctest: +SKIP
    put  get
 0  162  118
 1  170  198
 2  170  198
-3  170  198 (4 rows x 2 columns)
+3  170  198  (4 rows x 2 columns)
 
 >>> print_comm_diagnostics_table()  # doctest: +SKIP
 +----+-------+-------+--------------+-----------------+
@@ -82,8 +127,8 @@ Printed tables and verbose messages appear in the server-side Chapel logs.
 
 See Also
 --------
-arkouda.DataFrame, arkouda.client.generic_msg
-
+arkouda.pandas.dataframe.DataFrame
+arkouda.core.client.generic_msg
 """
 
 import sys
@@ -133,7 +178,7 @@ def start_comm_diagnostics():
         Completion message.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="startCommDiagnostics",
@@ -152,7 +197,7 @@ def stop_comm_diagnostics():
         Completion message.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="stopCommDiagnostics",
@@ -171,7 +216,7 @@ def reset_comm_diagnostics():
         Completion message.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="resetCommDiagnostics",
@@ -203,7 +248,7 @@ def print_comm_diagnostics_table(print_empty_columns=False):
 
     """
     from arkouda import sum as ak_sum
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="printCommDiagnosticsTable",
@@ -233,7 +278,7 @@ def start_verbose_comm():
         Completion message.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="startVerboseComm",
@@ -252,7 +297,7 @@ def stop_verbose_comm():
         Completion message.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="stopVerboseComm",
@@ -272,7 +317,7 @@ def get_comm_diagnostics_put():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsPut",
@@ -292,7 +337,7 @@ def get_comm_diagnostics_get():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsGet",
@@ -312,7 +357,7 @@ def get_comm_diagnostics_put_nb():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsPutNb",
@@ -332,7 +377,7 @@ def get_comm_diagnostics_get_nb():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsGetNb",
@@ -352,7 +397,7 @@ def get_comm_diagnostics_test_nb():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsTestNb",
@@ -372,7 +417,7 @@ def get_comm_diagnostics_wait_nb():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsWaitNb",
@@ -392,7 +437,7 @@ def get_comm_diagnostics_try_nb():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsTryNb",
@@ -412,7 +457,7 @@ def get_comm_diagnostics_amo():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsAmo",
@@ -432,7 +477,7 @@ def get_comm_diagnostics_execute_on():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOn",
@@ -452,7 +497,7 @@ def get_comm_diagnostics_execute_on_fast():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOnFast",
@@ -472,7 +517,7 @@ def get_comm_diagnostics_execute_on_nb():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOnNb",
@@ -494,7 +539,7 @@ def get_comm_diagnostics_cache_get_hits():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheGetHits",
@@ -514,7 +559,7 @@ def get_comm_diagnostics_cache_get_misses():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheGetMisses",
@@ -534,7 +579,7 @@ def get_comm_diagnostics_cache_put_hits():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePutHits",
@@ -554,7 +599,7 @@ def get_comm_diagnostics_cache_put_misses():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePutMisses",
@@ -576,7 +621,7 @@ def get_comm_diagnostics_cache_num_prefetches():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheNumPrefetches",
@@ -596,7 +641,7 @@ def get_comm_diagnostics_cache_num_page_readaheads():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheNumPageReadaheads",
@@ -619,7 +664,7 @@ def get_comm_diagnostics_cache_prefetch_unused():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePrefetchUnused",
@@ -642,7 +687,7 @@ def get_comm_diagnostics_cache_prefetch_waited():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePrefetchWaited",
@@ -665,7 +710,7 @@ def get_comm_diagnostics_cache_readahead_unused():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheReadaheadUnused",
@@ -689,7 +734,7 @@ def get_comm_diagnostics_cache_readahead_waited():
         populated with the statistic value from each locale.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheReadaheadWaited",
