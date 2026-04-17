@@ -1281,20 +1281,24 @@ module ParquetMsg {
 
       var subdoms = getSubdomains(this.sizes);
 
+      pqLogger.debug(getM(), getR(), getL(),
+        "readInto with e.domain=%?, ty=%?, offsets=%?, subdoms=%?, filenames=%?"
+        .format(e.domain, this.ty, this.offsets, subdoms, this.filenames));
+
       coforall loc in Locales with (ref this) do on loc {
         const LocTypes = this.ty;
-        var CPtrsToData: [e.domain] c_ptr(void);
-        var CPtrsToWhereNulls: [e.domain] c_ptr(void);
 
         const ref DataDom = getDomain(e);
 
-        for (off, filedom, filename) in zip(this.offsets, subdoms, this.filenames) {
+        forall (off, filedom, filename) in zip(this.offsets, subdoms, this.filenames) with (ref this) {
+          var CPtrsToData: [e.domain] c_ptr(void);
+          var CPtrsToWhereNulls: [e.domain] c_ptr(void);
           for locdom in DataDom.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
               for colIdx in e.domain {
                 pqLogger.debug(getM(), getR(), getL(), "Locale " + here.id:string +
-                               " will read " + intersection:string);
+                               " will read " + intersection:string, " for column " + colIdx:string);
                 pqLogger.debug(getM(), getR(), getL(), "\tCTypes %?\n".format(LocTypes));
                 pqLogger.debug(getM(), getR(), getL(), "\tnullMode %?\n".format(nullMode));
                 CPtrsToData[colIdx] = getPtr(e=e[colIdx],
@@ -1308,6 +1312,9 @@ module ParquetMsg {
               }
 
               var pqErr = new parquetErrorMsg();
+              const startIdx = intersection.low - off;
+              pqLogger.debug(getM(), getR(), getL(), "about to call c_readAllCols for locale %? with filename=%?, startIdx=%?, ptrs=%?"
+                             .format(here.id, filename, startIdx, CPtrsToData));
               if c_readAllCols(filename.localize().c_str(),
                                c_ptrTo(CPtrsToData), c_ptrToConst(LocTypes),
                                c_ptrTo(CPtrsToWhereNulls),
