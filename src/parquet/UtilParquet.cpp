@@ -576,9 +576,15 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
     // Use threads for case when reading a table with many columns
     reader->set_use_threads(true);
 
+#if ARROW_VERSION_MAJOR < 24
     std::shared_ptr<arrow::Table> table;
     std::shared_ptr<arrow::Table>* hold_table = &table;
     ARROWSTATUS_OK(reader->ReadTable(hold_table));
+#else
+    std::shared_ptr<arrow::Table> table;
+    ARROWRESULT_OK(reader->ReadTable(), table);
+#endif
+    
 
     arrow::ArrayVector arrays;
     std::shared_ptr<arrow::Array> values;
