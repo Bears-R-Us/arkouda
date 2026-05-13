@@ -83,7 +83,7 @@ __all__ = [
     "write_log",
 ]
 
-loggers = {}
+loggers: dict[str, "ArkoudaLogger"] = {}
 
 
 class LogLevel(Enum):
