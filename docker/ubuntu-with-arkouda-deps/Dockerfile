@@ -28,7 +28,7 @@ RUN mv /opt/bashrc.local ~/.bashrc.local && echo 'source ~/.bashrc.local' >> ~/.
 
 RUN apt-get -y update && apt-get -y upgrade
 RUN apt-get install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get install -y python3.10 python3.10-venv python3.10-dev python3.11 python3.11-venv python3.11-dev python3.12 python3.12-venv python3.12-dev python3.13 python3.13-venv python3.13-dev
+RUN apt-get install -y python3.10 python3.10-venv python3.10-dev python3.11 python3.11-venv python3.11-dev python3.12 python3.12-venv python3.12-dev python3.13 python3.13-venv python3.13-dev python3.14 python3.14-venv python3.14-dev
 RUN apt-get install -y python3-pip python3-virtualenv
 
 #   Install arkouda dependencies
@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev pyth
 
 #   pip installs should use a virtual environment
 RUN python3 -m venv /venv
-RUN python3 -m pip install scikit-build versioneer setuptools wheel pytest-benchmark==3.2.2 py
+RUN python3 -m pip install scikit-build versioneer setuptools wheel pytest-benchmark py
 
 ###############################################################################
 ###                                                                         ###
