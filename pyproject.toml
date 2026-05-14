@@ -27,7 +27,7 @@ dependencies = [
   "h5py>=3.7.0",
   "types-tabulate",
   "tables>=3.10.0",
-  "pyarrow<21.0.0,>=6.0.1",
+  "pyarrow>=6.0.1",
   "scipy",
   "cloudpickle",
 ]
