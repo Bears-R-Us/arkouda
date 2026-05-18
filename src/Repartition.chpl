@@ -1,5 +1,4 @@
-module Repartition
-{
+module Repartition {
 
   // The goal of this module is to provide helper functions to facilitate redistributing data between
   // locales.
@@ -27,8 +26,7 @@ module Repartition
   // Note, the arrays passed here must have PrivateSpace domains.
   proc repartitionByHashString(const ref strOffsets: [] list(int),
                                  const ref strBytes: [] list(uint(8))):
-    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)))
-  {
+    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8))) {
     var destLocales: [PrivateSpace] list(int);
 
     coforall loc in Locales do on loc {
@@ -53,8 +51,7 @@ module Repartition
   // Note, the arrays passed here must have PrivateSpace domains.
   proc repartitionByHashStringArray(const ref strOffsets: [] innerArray(int),
                                  const ref strBytes: [] innerArray(uint(8))):
-    ([PrivateSpace] innerArray(int), [PrivateSpace] innerArray(uint(8)))
-  {
+    ([PrivateSpace] innerArray(int), [PrivateSpace] innerArray(uint(8))) {
     var destLocales: [PrivateSpace] innerArray(int);
 
     coforall loc in Locales do on loc {
@@ -76,8 +73,7 @@ module Repartition
   }
 
   // Note, the arrays passed here must have PrivateSpace domains.
-  proc repartitionByHashArray(type t, const ref vals: [] innerArray(t))
-  {
+  proc repartitionByHashArray(type t, const ref vals: [] innerArray(t)) {
     type eltType = vals.eltType.t;
     var destLocales: [PrivateSpace] innerArray(int);
 
@@ -103,8 +99,7 @@ module Repartition
   proc repartitionByLocaleString(const ref destLocales: [] list(int),
                                  const ref strOffsets: [] list(int),
                                  const ref strBytes: [] list(uint(8))):
-    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)))
-  {
+    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8))) {
     var maxBytesPerLocale: int;
     var maxStringsPerLocale: int;
     var numBytesReceivingByLocale: [PrivateSpace] [0..#numLocales] int;
@@ -116,8 +111,7 @@ module Repartition
 
     coforall loc in Locales 
       with (max reduce maxBytesPerLocale, max reduce maxStringsPerLocale) 
-      do on loc
-    {
+      do on loc {
       const myDestLocales = destLocales[here.id].toArray();
       const myStrOffsets = strOffsets[here.id].toArray();
       const myStrBytesSize = strBytes[here.id].size;
@@ -246,8 +240,7 @@ module Repartition
   proc repartitionByLocaleStringArray(const ref destLocales: [] innerArray(int),
                                  const ref strOffsets: [] innerArray(int),
                                  const ref strBytes: [] innerArray(uint(8))):
-    ([PrivateSpace] innerArray(int), [PrivateSpace] innerArray(uint(8)))
-  {
+    ([PrivateSpace] innerArray(int), [PrivateSpace] innerArray(uint(8))) {
     var numBytesSendingByLocale: [PrivateSpace] [0..#numLocales] int;
     var numStringsSendingByLocale: [PrivateSpace] [0..#numLocales] int;
     var allStrSizes: [PrivateSpace] innerArray(int);
@@ -257,8 +250,7 @@ module Repartition
     // First we need to figure out how many bytes and strings are getting transferred.
     // Also calculating the sizes of each string so that indexing is easier down the road.
 
-    coforall loc in Locales do on loc
-    {
+    coforall loc in Locales do on loc {
       const ref myDestLocales = destLocales[here.id].Arr;
       const ref myStrOffsets = strOffsets[here.id].Arr;
       const ref myStrBytes = strBytes[here.id].Arr;
@@ -383,8 +375,7 @@ module Repartition
   // Note, the arrays passed here must have PrivateSpace domains.
   proc repartitionByLocale(type t,
                            const ref destLocales: [] list(int),
-                           const ref vals: [] list(t))
-  {
+                           const ref vals: [] list(t)) {
     type eltType = vals.eltType.eltType;
 
     var maxValsPerLocale: int;
@@ -392,8 +383,7 @@ module Repartition
 
     coforall loc in Locales 
       with (max reduce maxValsPerLocale) 
-      do on loc
-    {
+      do on loc {
       const ref myDestLocales = destLocales[here.id];
       const ref myVals = vals[here.id];
       var valsPerLocale: [0..#numLocales] int = 0;
@@ -481,15 +471,13 @@ module Repartition
 
   proc repartitionByLocaleArray(type t,
                                 const ref destLocales: [] innerArray(int),
-                                const ref vals: [] innerArray(t))
-  {
+                                const ref vals: [] innerArray(t)) {
     type eltType = vals.eltType.t;
 
     var numValsSendingByLocale: [PrivateSpace] [0..#numLocales] int;
     var sendVals: [PrivateSpace] [0..#numLocales] innerArray(t);
 
-    coforall loc in Locales do on loc
-    {
+    coforall loc in Locales do on loc {
 
       const ref myDestLocales = destLocales[here.id].Arr;
       const ref myVals = vals[here.id].Arr;
@@ -575,8 +563,7 @@ module Repartition
 
   proc repartitionByLocaleMultiArray(type t,
                                     const ref destLocales: [] innerArray(int),
-                                    const ref vals: [] [] innerArray(t))
-  {
+                                    const ref vals: [] [] innerArray(t)) {
     // Notes:
     // - We assume `vals` is indexed as [field][PrivateSpace], i.e., vals[k][here.id]
     // - `innerArray(t)` is your existing wrapper with `.Arr` and
