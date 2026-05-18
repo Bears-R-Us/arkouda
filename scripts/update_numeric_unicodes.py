@@ -23,7 +23,7 @@ def _build_set_literal() -> str:
 
 
 def replace_numeric_unicodes(rc, root):
-    for (var, _) in each_matching(root, Variable):
+    for var, _ in each_matching(root, Variable):
         if var.name() == "allNumericUnicodes":
             yield (var, _build_set_literal())
 
