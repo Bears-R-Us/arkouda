@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 import pytest
 
@@ -181,32 +183,76 @@ class TestDTypes:
         for dt in "bool", "<class 'bool'>":
             assert dtypes.SeriesDTypes[dt] == np.bool_
 
+    def _assert_union(self, type_alias, *expected_types):
+        """Check that a TypeAlias is a Union containing exactly the expected types."""
+        assert typing.get_origin(type_alias) is typing.Union
+        assert set(typing.get_args(type_alias)) == set(expected_types)
+
     def test_scalars(self):
-        assert "typing.Union[bool, numpy.bool]" == str(ak.bool_scalars)
-        assert "typing.Union[bool, numpy.bool]" == str(ak.bool_scalars)
-        assert "typing.Union[float, numpy.float64, numpy.float32]" == str(ak.float_scalars)
-        assert (
-            "typing.Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, "
-            + "numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
-        ) == str(ak.int_scalars)
-
-        assert (
-            "typing.Union[float, numpy.float64, numpy.float32, int, numpy.int8, numpy.int16, "
-            + "numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]"
-        ) == str(ak.numeric_scalars)
-
-        assert "typing.Union[str, numpy.str_]" == str(ak.str_scalars)
-        assert (
-            "typing.Union[numpy.float64, numpy.float32, numpy.int8, numpy.int16, numpy.int32, "
-            + "numpy.int64, numpy.bool, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
-            + "numpy.uint64]"
-        ) == str(ak.numpy_scalars)
-
-        assert (
-            "typing.Union[bool, numpy.bool, float, numpy.float64, numpy.float32, int, numpy.int8, "
-            + "numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32,"
-            + " numpy.uint64, numpy.str_, str]"
-        ) == str(ak.all_scalars)
+        self._assert_union(ak.bool_scalars, bool, np.bool_)
+        self._assert_union(ak.float_scalars, float, np.float64, np.float32)
+        self._assert_union(
+            ak.int_scalars,
+            int,
+            np.int8,
+            np.int16,
+            np.int32,
+            np.int64,
+            np.uint8,
+            np.uint16,
+            np.uint32,
+            np.uint64,
+        )
+        self._assert_union(
+            ak.numeric_scalars,
+            float,
+            np.float64,
+            np.float32,
+            int,
+            np.int8,
+            np.int16,
+            np.int32,
+            np.int64,
+            np.uint8,
+            np.uint16,
+            np.uint32,
+            np.uint64,
+        )
+        self._assert_union(ak.str_scalars, str, np.str_)
+        self._assert_union(
+            ak.numpy_scalars,
+            np.float64,
+            np.float32,
+            np.int8,
+            np.int16,
+            np.int32,
+            np.int64,
+            np.bool_,
+            np.str_,
+            np.uint8,
+            np.uint16,
+            np.uint32,
+            np.uint64,
+        )
+        self._assert_union(
+            ak.all_scalars,
+            bool,
+            np.bool_,
+            float,
+            np.float64,
+            np.float32,
+            int,
+            np.int8,
+            np.int16,
+            np.int32,
+            np.int64,
+            np.uint8,
+            np.uint16,
+            np.uint32,
+            np.uint64,
+            np.str_,
+            str,
+        )
 
     def test_number_format_strings(self):
         assert "{}" == dtypes.NUMBER_FORMAT_STRINGS["bool"]
