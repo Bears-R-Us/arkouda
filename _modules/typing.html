@@ -1412,15 +1412,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forward reference must be a string -- got </span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="c1"># If we do `def f(*args: *Ts)`, then we&#39;ll have `arg = &#39;*Ts&#39;`.</span>
-        <span class="c1"># Unfortunately, this isn&#39;t a valid expression on its own, so we</span>
-        <span class="c1"># do the unpacking manually.</span>
-        <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
-            <span class="n">arg_to_compile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">,)[0]&#39;</span>  <span class="c1"># E.g. (*Ts,)[0] or (*tuple[int, int],)[0]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">arg_to_compile</span> <span class="o">=</span> <span class="n">arg</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">code</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">arg_to_compile</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">)</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">_rewrite_star_unpack</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">SyntaxError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forward reference must be an expression -- got </span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1505,6 +1498,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">module_repr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;, module=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__forward_module__</span><span class="si">!r}</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ForwardRef(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__forward_arg__</span><span class="si">!r}{</span><span class="n">module_repr</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_star_unpack</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If the given argument annotation expression is a star unpack e.g. `&#39;*Ts&#39;`</span>
+<span class="sd">       rewrite it to a valid expression.</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s2">,)[0]&quot;</span>  <span class="c1"># E.g. (*Ts,)[0] or (*tuple[int, int],)[0]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arg</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_unpacked_typevartuple</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -2027,9 +2030,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_nparams</span> <span class="o">=</span> <span class="n">nparams</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_defaults</span> <span class="o">=</span> <span class="n">defaults</span>
         <span class="k">if</span> <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s1">&#39;builtins&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;A generic version of </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s1">.&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Deprecated alias to </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s1">.&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;A generic version of </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s1">.&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Deprecated alias to </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s1">.&#39;</span>
 
     <span class="nd">@_tp_cache</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>

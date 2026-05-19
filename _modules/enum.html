@@ -503,7 +503,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">bin</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Like built-in bin(), except negative values are represented in</span>
-<span class="sd">    twos-compliment, and the leading bit always indicates sign</span>
+<span class="sd">    twos-complement, and the leading bit always indicates sign</span>
 <span class="sd">    (0=positive, 1=negative).</span>
 
 <span class="sd">    &gt;&gt;&gt; bin(10)</span>
@@ -512,6 +512,7 @@
 <span class="sd">    &#39;0b1 0101&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">num</span> <span class="o">=</span> <span class="n">num</span><span class="o">.</span><span class="fm">__index__</span><span class="p">()</span>
     <span class="n">ceiling</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">bltns</span><span class="o">.</span><span class="n">bin</span><span class="p">(</span><span class="n">num</span> <span class="o">+</span> <span class="n">ceiling</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
