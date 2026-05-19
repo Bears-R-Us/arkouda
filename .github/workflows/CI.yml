@@ -405,15 +405,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Clone the parquet tests
-      uses: actions/checkout@v4
-      with:
-        repository: apache/parquet-testing
-        ref: 4cf674fc589309ba8651ad676f3fb557582d9cab
-        path: parquet-testing
-    - name: Set the parquet testing path
-      run: |
-        echo "ARKOUDA_PARQUET_TEST_DATA_DIR=$(pwd)/parquet-testing/data" >> $GITHUB_ENV
     - name: Set Python version to 3.14
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
