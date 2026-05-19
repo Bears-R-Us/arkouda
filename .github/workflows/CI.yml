@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.7.0']
+        chpl-version: ['2.8.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -44,9 +44,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Ensure ignore file exists
       # .chplcheckignore should live at your repo root
       run: |
@@ -64,7 +64,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -79,16 +79,16 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.8.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Install dependencies
       run: |
         python3 -m ensurepip --default-pip
@@ -117,16 +117,16 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.8.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Install Dependencies
       uses: nick-fields/retry@v2
       with:
@@ -150,11 +150,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
     env:
-      CHPL_HOME: /opt/chapel-2.7.0
+      CHPL_HOME: /opt/chapel-2.8.0
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.8.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -186,7 +186,7 @@ jobs:
         python3 -m pip install .[dev]
     - name: pip list
       run: |
-        python3 -m pip list        
+        python3 -m pip list
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -195,7 +195,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.13']
+        python-version: ['3.14']
     container:
       image: ghcr.io/bears-r-us/almalinux-with-arkouda-deps:latest
       credentials:
@@ -213,7 +213,7 @@ jobs:
 
     # TODO: why does this need to build its own Python when the container has its own?
     # almalinux's python is old, so we build from source. But can we move this into the container build?
-    # Download and install Python from source (updated URL for Python 3.13)
+    # Download and install Python from source (updated URL for Python 3.14)
     - name: Download Python ${matrix.python-version} source
       run: |
         curl -O https://www.python.org/ftp/python/${{ matrix.python-version }}.0/Python-${{ matrix.python-version }}.0.tgz
@@ -301,7 +301,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.7.0']
+        chpl-version: ['2.8.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -310,9 +310,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
         python3 -m ensurepip --default-pip
     - name: Check python version
       run: |
@@ -392,12 +392,11 @@ jobs:
     #     command: |
     #       HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables DEP_BUILD_DIR=$DEP_BUILD_DIR
 
-
   arkouda_chpl_portability:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0','2.6.0','2.7.0']
+        chpl-version: ['2.5.0','2.6.0','2.7.0','2.8.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -406,9 +405,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -438,7 +437,7 @@ jobs:
       ARKOUDA_CONFIG_FILE: .configs/MultiDimTestServerModules.cfg
     strategy:
       matrix:
-        chpl-version: ['2.7.0']
+        chpl-version: ['2.8.0']
       max-parallel: 3
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
@@ -454,9 +453,9 @@ jobs:
         nproc
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -488,7 +487,7 @@ jobs:
 #    runs-on: ubuntu-latest
 #    strategy:
 #      matrix:
-#        chpl-version: ['2.7.0']
+#        chpl-version: ['2.8.0']
 #      max-parallel: 3
 #    container:
 #      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
@@ -504,9 +503,9 @@ jobs:
 #        nproc
 #    - name: Checkout Repository
 #      uses: actions/checkout@v4
-#    - name: Set Python version to 3.13
+#    - name: Set Python version to 3.14
 #      run: |
-#        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+#        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
 #    - name: Check Chapel version
 #      run: |
 #        chpl --version
@@ -572,7 +571,7 @@ jobs:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
     strategy:
       matrix:
-        chpl-version: ['2.7.0']
+        chpl-version: ['2.8.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -581,9 +580,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -621,7 +620,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.7.0']
+        chpl-version: ['2.8.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -630,9 +629,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.13
+    - name: Set Python version to 3.14
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Check Chapel version
       run: |
         chpl --version
