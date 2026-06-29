@@ -6,9 +6,14 @@ parquet-testing repository dataset. It categorizes files by expected behavior
 and provides detailed reporting on support status.
 
 IMPORTANT:
-Set ARKOUDA_PARQUET_TEST_DATA_DIR environment variable to enable these tests.
+Set ARKOUDA_PARQUET_TEST_DATA_DIR environment variable to enable these tests, it should be set
+to the `/data` directory of the cloned parquet-testing repository.
 
 Test data from: https://github.com/apache/parquet-testing/
+COMMIT: 4cf674fc589309ba8651ad676f3fb557582d9cab
+This test suite is tuned to specific tests, if new test files are added/removed from the parquet-testing
+repository, the categorization may need to be updated. Make sure to use the documented commit to ensure
+test stability.
 
 Test Categories:
 - Crash files: Known to crash the server (skipped entirely)
