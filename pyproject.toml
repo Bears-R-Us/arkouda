@@ -7,7 +7,7 @@ name = "arkouda"
 dynamic = ["version"]                # <-- Versioneer will supply this
 description = "Parallel, distributed NumPy-like arrays backed by Chapel"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,!=3.14.0,!=3.14.1,!=3.14.2,!=3.14.3,!=3.14.4"
 license = "MIT"
 authors = [{ name = "U.S. Government" }]
 keywords = ["HPC","workflow","exploratory","analysis","parallel","distribute","arrays","Chapel"]
