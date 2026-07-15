@@ -15,7 +15,6 @@ from arkouda.pandas.extension._series_accessor import (
 )
 from arkouda.pandas.index import MultiIndex
 from arkouda.pandas.series import Series as ak_Series
-from tests.apply_test import supports_apply
 
 
 def _assert_series_equal_values(s: pd.Series, values):
@@ -424,10 +423,6 @@ class TestArkoudaSeriesAccessorArgsort:
 
 @pytest.mark.requires_chapel_module("ApplyMsg")
 class TestArkoudaSeriesApply:
-    @classmethod
-    def setup_class(cls):
-        if not supports_apply():
-            pytest.skip("apply not supported")
 
     def test_series_accessor_apply_requires_arkouda_backed(self):
         s = pd.Series([1, 2, 3], name="x")
