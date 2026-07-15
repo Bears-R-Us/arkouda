@@ -16,7 +16,7 @@ module ApplyMsg {
   use Logging;
   use ServerConfig;
 
-  import Base64.b64Decode;
+  import this.Base64.b64Decode;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
