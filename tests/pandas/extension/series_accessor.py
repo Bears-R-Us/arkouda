@@ -423,7 +423,6 @@ class TestArkoudaSeriesAccessorArgsort:
 
 @pytest.mark.requires_chapel_module("ApplyMsg")
 class TestArkoudaSeriesApply:
-
     def test_series_accessor_apply_requires_arkouda_backed(self):
         s = pd.Series([1, 2, 3], name="x")
         with pytest.raises(TypeError, match="Series must be Arkouda-backed"):
