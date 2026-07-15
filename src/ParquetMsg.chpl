@@ -19,15 +19,23 @@ module ParquetMsg {
   use IOUtils;
   use ParquetSharedEnums;
 
-  enum CompressionType {
-    NONE=0,
-    SNAPPY=1,
-    GZIP=2,
-    BROTLI=3,
-    ZSTD=4,
-    LZ4=5
-  };
-
+  // The core Parquet I/O primitives now live in the standalone Mason `Parquet`
+  // package. ParquetMsg delegates to that API and only retains Arkouda-server
+  // specific plumbing (the message handlers, the optimized read-all path, and
+  // the multi-column writer) plus the few helpers Mason does not provide.
+  // These symbols are re-exported so existing importers (e.g. CheckpointMsg)
+  // keep resolving them through ParquetMsg.
+  public use Parquet only CompressionType, ArrowTypes,
+                          TRUNCATE, APPEND, ROWGROUPS,
+                          ARROWINT64, ARROWINT32, ARROWUINT64, ARROWUINT32,
+                          ARROWBOOLEAN, ARROWSTRING, ARROWFLOAT, ARROWDOUBLE,
+                          ARROWLIST, ARROWDECIMAL, ARROWERROR,
+                          readFilesByName, readStrFilesByName,
+                          readListFilesByName, calcListSizesandOffset,
+                          getNullIndices, getStrColSize, getStrListColSize,
+                          getArrSize, typeFromCType, getArrType,
+                          createEmptyParquetFile, writeStringsComponentToParquet,
+                          populateTagData, getDatasets, getByteLength;
 
   // Use reflection for error information
   import Reflection.{getModuleName as getM,
@@ -43,34 +51,14 @@ module ParquetMsg {
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const pqLogger = new Logger(logLevel, logChannel);
-  config const TRUNCATE: int = 0;
-  config const APPEND: int = 1;
-  
-  private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
+
   // Undocumented for now, just for internal experiments
   private config const batchSize = getEnvInt("ARKOUDA_SERVER_PARQUET_BATCH_SIZE", 8192);
-
-  extern var ARROWINT64: c_int;
-  extern var ARROWINT32: c_int;
-  extern var ARROWUINT64: c_int;
-  extern var ARROWUINT32: c_int;
-  extern var ARROWBOOLEAN: c_int;
-  extern var ARROWSTRING: c_int;
-  extern var ARROWFLOAT: c_int;
-  extern var ARROWLIST: c_int;
-  extern var ARROWDOUBLE: c_int;
-  extern var ARROWERROR: c_int;
-  extern var ARROWDECIMAL: c_int;
 
   extern record MyByteArray {
     var len: uint(32);
     var ptr: c_ptr(uint(8));
   };
-
-  enum ArrowTypes { int64, int32, uint64, uint32,
-                    stringArr, timestamp, boolean,
-                    double, float, list, decimal,
-                    notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -146,14 +134,6 @@ module ParquetMsg {
     return (rgSubdomains, offset);
   }
 
-  inline proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int,
-                              dsetname: string, ty, byteLength=-1,
-                              hasNonFloatNulls=false) throws {
-    var dummy = [false];
-    readFilesByName(A, dummy, filenames, sizes, dsetname, ty, byteLength,
-                    hasNonFloatNulls, hasWhereNull=false);
-  }
-
   class ParquetReadError: ErrorWithContext {
     proc init(msg: string, moduleName: string, routineName: string,
               lineNumber: int(64)) {
@@ -204,130 +184,6 @@ module ParquetMsg {
     return ret;
   }
 
-
-  /*
-     whereNull will be populated by the CPP interface, where `true` would mean a
-   0 (null) having been read.
-   */
-  proc readFilesByName(ref A: [] ?t, ref whereNull: [] bool,
-                       filenames: [] string, sizes: [] int, dsetname: string,
-                       ty, byteLength=-1, hasNonFloatNulls=false,
-                       param hasWhereNull=true) throws {
-    extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
-
-    var subdoms = getSubdomains(sizes);
-    var fileOffsets = (+ scan sizes) - sizes;
-    
-    coforall loc in A.targetLocales() with (ref A) do on loc {
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-      var locOffsets = fileOffsets;
-      
-      forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
-        for locdom in A.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var whereNullPtr = if hasWhereNull
-                                  then c_ptrTo(whereNull[intersection.low])
-                                  else nil;
-            if c_readColumnByName(filename.localize().c_str(),
-                                  c_ptrTo(A[intersection.low]),
-                                  whereNullPtr,
-                                  dsetname.localize().c_str(),
-                                  intersection.size, intersection.low - off,
-                                  batchSize, byteLength, hasNonFloatNulls,
-                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              pqErr.parquetError(getL(), getR(), getM());
-            }
-          }
-        }
-      }
-    }
-  }
-
-  proc readStrFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
-    extern proc c_readStrColumnByName(filename, arr_chpl, colname, numElems, batchSize, errMsg): int;
-    var subdoms = getSubdomains(sizes);
-    
-    coforall loc in A.targetLocales() do on loc {
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-
-      forall (filedom, filename) in zip(locFiledoms, locFiles) {
-        for locdom in A.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var col: [filedom] t;
-
-            if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                     dsetname.localize().c_str(), filedom.size,
-                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              pqErr.parquetError(getL(), getR(), getM());
-            }
-            A[filedom] = col;
-          }
-        }
-      }
-    }
-  }
-
-  proc readListFilesByName(A: [] ?t, rows_per_file: [] int, seg_sizes: [] int, offsets: [] int, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readListColumnByName(filename, arr_chpl, colNum, numElems, startIdx, batchSize, errMsg): int;
-    var subdoms = getSubdomains(sizes);
-    var fileOffsets = (+ scan sizes) - sizes;
-    var segmentOffsets = (+ scan rows_per_file) - rows_per_file;
-    
-    coforall loc in A.targetLocales() do on loc {
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-      var locOffsets = fileOffsets; // value count offset
-      var locSegOffsets = segmentOffsets; // indicates which segment index is first for the file
-
-      forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
-        for locdom in A.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var col: [filedom] t;
-            if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                  dsetname.localize().c_str(), filedom.size, 0,
-                                  batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              pqErr.parquetError(getL(), getR(), getM());
-            }
-            A[filedom] = col;
-          }
-        }
-      }
-    }
-  }
-
-  proc calcListSizesandOffset(seg_sizes: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
-    var subdoms = getSubdomains(sizes);
-
-    var listSizes: [filenames.domain] int;
-    var file_offset: int = 0;
-    coforall loc in seg_sizes.targetLocales() with (ref listSizes) do on loc{
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-      
-      forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
-        for locdom in seg_sizes.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          if intersection.size > 0 {
-            var col: [filedom] t;
-            listSizes[i] = getListColSize(filename, dsetname, col);
-            seg_sizes[filedom] = col; // this is actually segment sizes here
-          }
-        }
-      }
-    }
-    return listSizes;
-  }
-
   proc calcStrSizesAndOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
     var subdoms = getSubdomains(sizes);
 
@@ -374,106 +230,6 @@ module ParquetMsg {
     return byteSizes;
   }
 
-  proc getNullIndices(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_getStringColumnNullIndices(filename, colname, nulls_chpl, errMsg): int;
-    var subdoms = getSubdomains(sizes);
-    
-    coforall loc in A.targetLocales() do on loc {
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-      
-      forall (filedom, filename) in zip(locFiledoms, locFiles) {
-        for locdom in A.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var col: [filedom] t;
-            if c_getStringColumnNullIndices(filename.localize().c_str(), dsetname.localize().c_str(),
-                                            c_ptrTo(col), pqErr.errMsg) {
-              pqErr.parquetError(getL(), getR(), getM());
-            }
-            A[filedom] = col;
-          }
-        }
-      }
-    }
-  }
-
-  proc getStrColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
-    extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, batchSize, errMsg): int;
-    var pqErr = new parquetErrorMsg();
-
-    var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
-                                             dsetname.localize().c_str(),
-                                             c_ptrTo(offsets),
-                                             offsets.size, 0, 256,
-                                             c_ptrTo(pqErr.errMsg));
-    
-    if byteSize == ARROWERROR then
-      pqErr.parquetError(getL(), getR(), getM());
-    return byteSize;
-  }
-
-  proc getStrListColSize(filename: string, dsetname: string, ref offsets: [] int) throws {
-    extern proc c_getStringListColumnNumBytes(filename, colname, offsets, numElems, startIdx, batchSize, errMsg): int;
-    var pqErr = new parquetErrorMsg();
-
-    var byteSize = c_getStringListColumnNumBytes(filename.localize().c_str(),
-                                             dsetname.localize().c_str(),
-                                             c_ptrTo(offsets),
-                                             offsets.size, 0, 256,
-                                             c_ptrTo(pqErr.errMsg));
-    
-    if byteSize == ARROWERROR then
-      pqErr.parquetError(getL(), getR(), getM());
-    return byteSize;
-  }
-
-  proc getListColSize(filename: string, dsetname: string, ref seg_sizes: [] int) throws {
-    extern proc c_getListColumnSize(filename, colname, seg_sizes, numElems, startIdx, errMsg): int;
-    var pqErr = new parquetErrorMsg();
-
-    var listSize = c_getListColumnSize(filename.localize().c_str(),
-                                             dsetname.localize().c_str(),
-                                             c_ptrTo(seg_sizes),
-                                             seg_sizes.size, 0,
-                                             c_ptrTo(pqErr.errMsg));
-    
-    if listSize == ARROWERROR then
-      pqErr.parquetError(getL(), getR(), getM());
-    return listSize;
-  }
-  
-  proc getArrSize(filename: string) throws {
-    extern proc c_getNumRows(str_chpl, errMsg): int;
-    var pqErr = new parquetErrorMsg();
-
-    var size = c_getNumRows(filename.localize().c_str(),
-                            c_ptrTo(pqErr.errMsg));
-    if size == ARROWERROR {
-      pqErr.parquetError(getL(), getR(), getM());
-    }
-    return size;
-  }
-
-  proc typeFromCType(ctype: c_int) throws {
-    if ctype == ARROWINT64 then return ArrowTypes.int64;
-    else if ctype == ARROWINT32 then return ArrowTypes.int32;
-    else if ctype == ARROWUINT32 then return ArrowTypes.uint32;
-    else if ctype == ARROWUINT64 then return ArrowTypes.uint64;
-    else if ctype == ARROWBOOLEAN then return ArrowTypes.boolean;
-    else if ctype == ARROWSTRING then return ArrowTypes.stringArr;
-    else if ctype == ARROWDOUBLE then return ArrowTypes.double;
-    else if ctype == ARROWFLOAT then return ArrowTypes.float;
-    else if ctype == ARROWLIST then return ArrowTypes.list;
-    else if ctype == ARROWDECIMAL then return ArrowTypes.decimal;
-    throw getErrorWithContext(getL(), getM(), getR(),
-                              msg="Unrecognized Parquet data type",
-                              errorClass="ParquetError");
-    return ArrowTypes.notimplemented;
-  }
-
   proc ctypeFromType(t: ArrowTypes) throws {
     if      t == ArrowTypes.int64     then return ARROWINT64;
     else if t == ArrowTypes.int32     then return ARROWINT32;
@@ -491,20 +247,6 @@ module ParquetMsg {
     return ARROWERROR;
   }
 
-  proc getArrType(filename: string, colname: string) throws {
-    extern proc c_getType(filename, colname, errMsg): c_int;
-    var pqErr = new parquetErrorMsg();
-    var arrType = c_getType(filename.localize().c_str(),
-                            colname.localize().c_str(),
-                            c_ptrTo(pqErr.errMsg));
-
-    if arrType == ARROWERROR {
-      pqErr.parquetError(getL(), getR(), getM());
-    }
-    
-    return typeFromCType(arrType);
-  }
-
   proc getListData(filename: string, dsetname: string) throws {
     extern proc c_getListType(filename, dsetname, errMsg): c_int;
     var pqErr = new parquetErrorMsg();
@@ -519,104 +261,6 @@ module ParquetMsg {
     else if t == ARROWDOUBLE then return ArrowTypes.double;
     else if t == ARROWFLOAT then return ArrowTypes.float;
     return ArrowTypes.notimplemented;
-  }
-
-  proc toCDtype(dtype: string) throws {
-    select dtype {
-      when 'int64' {
-        return ARROWINT64;
-      } when 'uint32' {
-        return ARROWUINT32;
-      } when 'uint64' {
-        return ARROWUINT64;
-      } when 'bool' {
-        return ARROWBOOLEAN;
-      } when 'float64' {
-        return ARROWDOUBLE;
-      } when 'str' {
-        return ARROWSTRING;
-      } otherwise {
-        throw getErrorWithContext(getL(), getM(), getR(),
-                msg="Trying to convert unrecognized dtype to Parquet type",
-                errorClass="ParquetError");
-        return ARROWERROR;
-      }
-    }
-  }
-
-  proc writeDistArrayToParquet(A, filename, dsetname, dtype, rowGroupSize, compression, mode) throws {
-    extern proc c_writeColumnToParquet(filename, arr_chpl, colnum,
-                                       dsetname, numelems, rowGroupSize,
-                                       dtype, compression, errMsg): int;
-    extern proc c_appendColumnToParquet(filename, arr_chpl,
-                                        dsetname, numelems,
-                                        dtype, compression,
-                                        errMsg): int;
-    var dtypeRep = toCDtype(dtype);
-    var prefix: string;
-    var extension: string;
-  
-    (prefix, extension) = getFileMetadata(filename);
-
-    // Generate the filenames based upon the number of targetLocales.
-    var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
-    var numElemsPerFile: [filenames.domain] int;
-
-    //Generate a list of matching filenames to test against. 
-    var matchingFilenames = getMatchingFilenames(prefix, extension);
-
-    var filesExist = processParquetFilenames(filenames, matchingFilenames, mode);
-
-    if mode == APPEND {
-      if filesExist {
-        var datasets = getDatasets(filenames[0]);
-        if datasets.contains(dsetname) then
-          throw getErrorWithContext(getL(), getM(), getR(),
-                                    msg="A column with name " + dsetname +
-                                        " already exists in Parquet file",
-                                    errorClass='WriteModeError');
-      }
-    }
-    
-    coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
-        var pqErr = new parquetErrorMsg();
-        const myFilename = filenames[idx];
-
-        var locDom = A.localSubdomain();
-        var locArr = A[locDom];
-
-        numElemsPerFile[idx] = locDom.size;
-
-        var valPtr: c_ptr(void) = nil;
-        if locArr.size != 0 {
-          valPtr = c_ptrTo(locArr);
-        }
-        if mode == TRUNCATE || !filesExist {
-          if c_writeColumnToParquet(myFilename.localize().c_str(), valPtr, 0,
-                                    dsetname.localize().c_str(), locDom.size, rowGroupSize,
-                                    dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-            pqErr.parquetError(getL(), getR(), getM());
-          }
-        } else {
-          if c_appendColumnToParquet(myFilename.localize().c_str(), valPtr,
-                                     dsetname.localize().c_str(), locDom.size,
-                                     dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-            pqErr.parquetError(getL(), getR(), getM());
-          }
-        }
-      }
-    // Only warn when files are being overwritten in truncate mode
-    return (filesExist && mode == TRUNCATE, filenames, numElemsPerFile);
-  }
-
-  proc createEmptyParquetFile(filename: string, dsetname: string, dtype: int, compression: int) throws {
-    extern proc c_createEmptyParquetFile(filename, dsetname, dtype,
-                                         compression, errMsg): int;
-    var pqErr = new parquetErrorMsg();
-    if c_createEmptyParquetFile(filename.localize().c_str(), dsetname.localize().c_str(),
-                                dtype, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-      pqErr.parquetError(getL(), getR(), getM());
-    }
   }
   
   // TODO: do we want to add offset writing for Parquet string writes?
@@ -695,31 +339,6 @@ module ParquetMsg {
     return filesExist && mode == TRUNCATE;
   }
 
-  private proc writeStringsComponentToParquet(filename, dsetname, ref values: [] uint(8), ref offsets: [] int, rowGroupSize, compression, mode, filesExist) throws {
-    extern proc c_writeStrColumnToParquet(filename, arr_chpl, offsets_chpl,
-                                          dsetname, numelems, rowGroupSize,
-                                          dtype, compression, errMsg): int;
-    extern proc c_appendColumnToParquet(filename, arr_chpl,
-                                        dsetname, numelems,
-                                        dtype, compression,
-                                        errMsg): int;
-    var pqErr = new parquetErrorMsg();
-    var dtypeRep = ARROWSTRING;
-    if mode == TRUNCATE || !filesExist {
-      if c_writeStrColumnToParquet(filename.localize().c_str(), c_ptrTo(values), c_ptrTo(offsets),
-                                   dsetname.localize().c_str(), offsets.size-1, rowGroupSize,
-                                   dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-        pqErr.parquetError(getL(), getR(), getM());
-      }
-    } else if mode == APPEND {
-      if c_appendColumnToParquet(filename.localize().c_str(), c_ptrTo(values),
-                                 dsetname.localize().c_str(), offsets.size-1,
-                                 dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-        pqErr.parquetError(getL(), getR(), getM());
-      }
-    }
-  }
-
   proc processParquetFilenames(filenames: [] string, matchingFilenames: [] string, mode: int) throws {
     var filesExist: bool = true;
     if mode == APPEND {
@@ -748,8 +367,12 @@ module ParquetMsg {
     return filesExist;
   }
 
+  // `dtype` is retained for backward compatibility with existing callers
+  // (e.g. CheckpointMsg and pdarray_toParquetMsg); the Mason writer infers the
+  // Arrow type from the Chapel array element type, so it is no longer needed.
   proc write1DDistArrayParquet(filename: string, dsetname, dtype, compression, mode, A) throws {
-    return writeDistArrayToParquet(A, filename, dsetname, dtype, ROWGROUPS, compression, mode);
+    return Parquet.write1DDistArrayParquet(filename, dsetname,
+                                           compression: CompressionType, mode, A);
   }
 
   proc parseListDataset(filenames: [] string, dsetname: string, ty, len: int, sizes: [] int, st: borrowed SymTab) throws {
@@ -803,30 +426,6 @@ module ParquetMsg {
                                 errorClass='IllegalArgumentError');
     }
     return formatJson(rtnmap);
-  }
-
-  proc populateTagData(A, filenames: [?fD] string, sizes) throws {
-    var subdoms = getSubdomains(sizes);
-    var fileOffsets = (+ scan sizes) - sizes;
-    
-    coforall loc in A.targetLocales() do on loc {
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-      var locOffsets = fileOffsets;
-      
-      try {
-        forall (off, filedom, filename, tag) in zip(locOffsets, locFiledoms, locFiles, 0..) {
-          for locdom in A.localSubdomains() {
-            const intersection = domain_intersection(locdom, filedom);
-
-            if intersection.size > 0 {
-              // write the tag into the entry
-              A[intersection] = tag;
-            }
-          }
-        }
-      }
-    }
   }
 
   inline proc getReaderIdx(fileNum: int, rgNum: int) {
@@ -1610,76 +1209,6 @@ module ParquetMsg {
     return new MsgTuple(repMsg,MsgType.NORMAL);
   }
 
-  iter datasets(filename) {
-    extern proc c_getDatasetNames(filename, dsetResult, readNested, errMsg): int(32);
-    extern proc strlen(a): int;
-    var pqErr = new parquetErrorMsg();
-    var res: c_ptr(uint(8));
-    defer {
-      extern proc c_free_string(ptr);
-      c_free_string(res);
-    }
-    if c_getDatasetNames(filename.c_str(), c_ptrTo(res), false,
-                         c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-      pqErr.parquetError(getL(), getR(), getM());
-    }
-    var datasets: string;
-    try! datasets = string.createCopyingBuffer(res, strlen(res));
-    for s in datasets.split(",") do yield s;
-  }
-
-  // TODO remove this and use the iterator everywhere, or turn this into a
-  // list-returning version
-  proc getDatasets(filename) throws {
-    extern proc c_getDatasetNames(filename, dsetResult, readNested, errMsg): int(32);
-    extern proc strlen(a): int;
-    var pqErr = new parquetErrorMsg();
-    var res: c_ptr(uint(8));
-    defer {
-      extern proc c_free_string(ptr);
-      c_free_string(res);
-    }
-    if c_getDatasetNames(filename.c_str(), c_ptrTo(res), false,
-                         c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-      pqErr.parquetError(getL(), getR(), getM());
-    }
-    var datasets: string;
-    datasets = string.createCopyingBuffer(res, strlen(res));
-    return new list(datasets.split(","));
-  }
-
-  // Decimal columns in Parquet have a fixed number of bytes based on the precision,
-  // but there isn't a way in Parquet to get the precision. Since the byte length
-  // will always remain the same for each precision value, here we just created a
-  // lookup table that maps from the precision to the byte value.
-  proc getByteLength(filename, colname) throws {
-    extern proc c_getPrecision(filename, colname, errMsg): int(32);
-    var pqErr = new parquetErrorMsg();
-    var res: c_ptr(uint(8));
-    defer {
-      extern proc c_free_string(ptr);
-      c_free_string(res);
-    }
-
-    var precision = c_getPrecision(filename.c_str(), colname.c_str(), c_ptrTo(pqErr.errMsg));
-    if precision < 3 then return 1;
-    else if precision < 5 then return 2;
-    else if precision < 7 then return 3;
-    else if precision < 10 then return 4;
-    else if precision < 12 then return 5;
-    else if precision < 15 then return 6;
-    else if precision < 17 then return 7;
-    else if precision < 19 then return 8;
-    else if precision < 22 then return 9;
-    else if precision < 24 then return 10;
-    else if precision < 27 then return 11;
-    else if precision < 29 then return 12;
-    else if precision < 32 then return 13;
-    else if precision < 34 then return 14;
-    else if precision < 36 then return 15;
-    return 16;
-  }
-
   proc pdarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
@@ -1744,188 +1273,22 @@ module ParquetMsg {
     return warnFlag;
   }
 
-  proc createEmptyListParquetFile(filename: string, dsetname: string, dtype: int, compression: int) throws {
-    extern proc c_createEmptyListParquetFile(filename, dsetname, dtype,
-                                         compression, errMsg): int;
-    var pqErr = new parquetErrorMsg();
-    if c_createEmptyListParquetFile(filename.localize().c_str(), dsetname.localize().c_str(),
-                                dtype, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-      pqErr.parquetError(getL(), getR(), getM());
-    }
-  }
-
-  proc writeSegArrayComponent(filename: string, dsetname: string, const ref distVals: [] ?t, valIdxRange, segments, locDom, 
-                              extraOffset, lastOffset, lastValId, c_dtype, compression) throws {
-    extern proc c_writeListColumnToParquet(filename, arr_chpl, offsets_chpl,
-                                          dsetname, numelems, rowGroupSize,
-                                          dtype, compression, errMsg): int;
-    var localVals: [valIdxRange] t = distVals[valIdxRange];
-    var locOffsets: [0..#locDom.size+1] int;
-    locOffsets[0..#locDom.size] = segments[locDom];
-    if locDom.high == segments.domain.high then
-      locOffsets[locOffsets.domain.high] = extraOffset;
-    else
-      locOffsets[locOffsets.domain.high] = segments[locDom.high+1];
-
-    var pqErr = new parquetErrorMsg();
-
-    var valPtr: c_ptr(void) = nil;
-    if localVals.size != 0 {
-      valPtr = c_ptrTo(localVals);
-    }
-
-    if c_writeListColumnToParquet(filename.localize().c_str(), c_ptrTo(locOffsets), valPtr,
-                                   dsetname.localize().c_str(), locOffsets.size-1, ROWGROUPS,
-                                   c_dtype, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-        pqErr.parquetError(getL(), getR(), getM());
-      }
-  }
-
   proc writeSegArrayParquet(filename: string, dsetName: string, c_dtype, segments_entry, values_entry, compression: int): bool throws {
-    // get the array of segments
-    var segments = segments_entry.a;
-
-    var prefix: string;
-    var extension: string;
-  
-    (prefix, extension) = getFileMetadata(filename);
-
-    // Generate the filenames based upon the number of targetLocales.
-    var filenames = generateFilenames(prefix, extension, segments.targetLocales().size);
-
-    //Generate a list of matching filenames to test against. 
-    var matchingFilenames = getMatchingFilenames(prefix, extension);
-
-    var filesExist = processParquetFilenames(filenames, matchingFilenames, TRUNCATE);
-    
-    const extraOffset = values_entry.size;
-    const lastOffset = if segments.size == 0 then 0 else segments[segments.domain.high]; // prevent index error when empty
-    const lastValIdx = values_entry.a.domain.high;
-    ref olda = values_entry.a;
-
-    // pull values to the locale of the offset
-    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref olda) do on loc {
-      const myFilename = filenames[idx];
-      const locDom = segments.localSubdomain();
-      var dims: [0..#1] int;
-      dims[0] = locDom.size: int;
-
-      if (locDom.isEmpty() || locDom.size <= 0) {
-        // we know append is not supported so creating new empty file
-        createEmptyListParquetFile(myFilename, dsetName, c_dtype, compression);
-      } else {
-        var localSegments = segments[locDom];
-        var startValIdx = localSegments[locDom.low];
-
-        var endValIdx = if (lastOffset == localSegments[locDom.high]) then lastValIdx else segments[locDom.high + 1] - 1;
-              
-        var valIdxRange = startValIdx..endValIdx;
-        writeSegArrayComponent(myFilename, dsetName, olda, valIdxRange, segments, locDom, extraOffset, lastOffset, lastValIdx, c_dtype, compression);
-      }
-    }
-    return filesExist; // trigger warning if overwrite occuring
+    // Delegates to the Mason Parquet package. `c_dtype` is retained for the
+    // caller's dispatch but is unused here: writeListColumn infers the Arrow
+    // type from the value array's Chapel element type.
+    return Parquet.writeListColumn(filename, dsetName, segments_entry.a,
+                                   values_entry.a, compression: CompressionType);
   }
 
   proc writeStrSegArrayParquet(filename: string, dsetName: string, segments_entry, values_entry, compression: int): bool throws {
-    extern proc c_writeStrListColumnToParquet(filename, segs_chpl, offsets_chpl, arr_chpl,
-                                          dsetname, numelems, rowGroupSize,
-                                          dtype, compression, errMsg): int;
-    // get the array of segments
-    var segments = segments_entry.a;
-
-    var prefix: string;
-    var extension: string;
-  
-    (prefix, extension) = getFileMetadata(filename);
-
-    // Generate the filenames based upon the number of targetLocales.
-    var filenames = generateFilenames(prefix, extension, segments.targetLocales().size);
-
-    //Generate a list of matching filenames to test against. 
-    var matchingFilenames = getMatchingFilenames(prefix, extension);
-
-    var filesExist = processParquetFilenames(filenames, matchingFilenames, TRUNCATE); // we know append is not supported
-
-    // Note - seg/segment refers to segarray offsets and off/offsets refers to string object offsets
-    ref oldOff = values_entry.offsetsEntry.a;
-    ref oldVal = values_entry.bytesEntry.a;
-    const extraSegment = values_entry.offsetsEntry.size;
-    const extraOffset = values_entry.bytesEntry.size;
-    const lastOffset = if segments.size == 0 then 0 else segments[segments.domain.high]; // prevent index error when empty
-    const lastOffsetIdx = oldOff.domain.high;
-    const lastValIdx = oldVal.domain.high;
-
-    // pull values to the locale of the offset
-    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref oldOff, ref oldVal) do on loc {
-      const myFilename = filenames[idx];
-
-      const locDom = segments.localSubdomain();
-
-      if (locDom.isEmpty() || locDom.size <= 0) {
-        // we know append is not supported so creating new empty file
-        var c_dtype = ARROWSTRING;
-        createEmptyListParquetFile(myFilename, dsetName, c_dtype, compression);
-      }
-      else {
-        var localSegments = segments[locDom];        
-        var locSegments: [0..#locDom.size+1] int;
-        locSegments[0..#locDom.size] = segments[locDom];
-        if locDom.high == segments.domain.high then
-          locSegments[locSegments.domain.high] = extraSegment;
-        else
-          locSegments[locSegments.domain.high] = segments[locDom.high+1];
-
-        var startOffsetIdx = localSegments[locDom.low];
-        var endOffsetIdx = if (lastOffset == localSegments[locDom.high]) then lastOffsetIdx else segments[locDom.high + 1] - 1;
-        var offIdxRange = startOffsetIdx..endOffsetIdx;
-
-        var pqErr = new parquetErrorMsg();
-        var dtypeRep = ARROWSTRING;
-        var valPtr: c_ptr(void) = nil;
-        var offPtr: c_ptr(void) = nil;
-
-        // need to get the local string values
-        if offIdxRange.size > 0 {
-          var localOffsets: [offIdxRange] int = oldOff[offIdxRange];
-          var startValIdx = oldOff[offIdxRange.low];
-          var endValIdx = if (lastOffsetIdx == offIdxRange.high) then lastValIdx else oldOff[offIdxRange.high + 1] - 1;
-          var valIdxRange = startValIdx..endValIdx;
-          var localVals: [valIdxRange] uint(8) = oldVal[valIdxRange];
-
-          var locOffsets: [0..#offIdxRange.size+1] int;
-          locOffsets[0..#offIdxRange.size] = oldOff[offIdxRange];
-          
-          if offIdxRange.high == oldOff.domain.high {
-            locOffsets[locOffsets.domain.high] = extraOffset;
-          } else {
-            locOffsets[locOffsets.domain.high] = oldOff[offIdxRange.high+1];
-          }
-          
-          if localVals.size > 0 {
-            valPtr = c_ptrTo(localVals);
-          }
-          if locOffsets.size > 0 {
-            offPtr = c_ptrTo(locOffsets);
-          }
-          // the call to c must be within the if block so the arrays stay in scope
-          if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), offPtr, 
-                                      valPtr, dsetName.localize().c_str(), locSegments.size-1, 
-                                      ROWGROUPS, dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-            pqErr.parquetError(getL(), getR(), getM());
-          }
-        }
-        else {
-          // empty segment case
-          if c_writeStrListColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locSegments), offPtr, 
-                                      valPtr, dsetName.localize().c_str(), locSegments.size-1, 
-                                      ROWGROUPS, dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-            pqErr.parquetError(getL(), getR(), getM());
-          }
-        }
-        
-      }
-    }
-    return filesExist; // trigger warning if overwrite occuring
+    // Delegates to the Mason Parquet package. For a SegArray of strings,
+    // `segments` indexes into the string offsets, `offsets` into the raw byte
+    // values, matching Arkouda's SegString layout.
+    return Parquet.writeStrListColumn(filename, dsetName, segments_entry.a,
+                                      values_entry.offsetsEntry.a,
+                                      values_entry.bytesEntry.a,
+                                      compression: CompressionType);
   }
 
   proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
