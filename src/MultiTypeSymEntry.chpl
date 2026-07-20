@@ -315,7 +315,7 @@ module MultiTypeSymEntry
         Verbose flag utility method
         */
         proc deinit() {
-            if logLevel == LogLevel.DEBUG {writeln("deinit SymEntry");try! stdout.flush();}
+          genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "deinit SymEntry");
         }
 
         /*
@@ -734,7 +734,7 @@ module MultiTypeSymEntry
         Verbose flag utility method
         */
         proc deinit() {
-            if logLevel == LogLevel.DEBUG {writeln("deinit SparseSymEntry");try! stdout.flush();}
+          genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "deinit SparseSymEntry");
         }
     }
 
