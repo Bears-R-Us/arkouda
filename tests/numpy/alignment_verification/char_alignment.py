@@ -44,7 +44,8 @@ class TestArkoudaNumpyCharAlignment:
             pytest.param(
                 ["", "0", "00", "  ", "3.14", "-1", "+2", "１２３", "٣", "二"],  # noqa: RUF001
                 marks=pytest.mark.xfail(
-                    reason="Known mismatch: empty string treated as numeric in Arkouda (should be False like NumPy). Issue #5243"
+                    reason="Known mismatch: empty string treated as numeric in Arkouda "
+                    + "(should be False like NumPy). Issue #5243"
                 ),
             ),
             ["1e3", "⅕", "²", "₇", "2³₇", "2³x₇", "٣٤٥", "१२३"],
