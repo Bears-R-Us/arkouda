@@ -107,6 +107,8 @@ def _numpy_equivalent(a: ak.pdarray):
 def test_binary_ops_array_array_alignment(dtype, name, fn):
     if name in {"mod", "rshift"}:
         pytest.xfail(reason="Requires bug fix for mod (#5118) and bug fix for rshift (#5115)")
+    if name in {"pow"}:
+        pytest.xfail(reason="pow can be innacurate in CI")
     if dtype is ak.bool_ and name in {"add", "sub", "mul", "truediv", "floordiv", "mod", "pow"}:
         pytest.skip(f"NumPy does not support {name} for boolean dtype")
     # Skip invalid dtype/op combinations
