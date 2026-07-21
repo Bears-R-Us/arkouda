@@ -10,15 +10,6 @@ Encapsulates a variety of arkouda apply test cases.
 """
 
 
-def supports_apply():
-    try:
-        return ak.numpy.pdarrayclass.parse_single_value(
-            ak.core.client.generic_msg("isPythonModuleSupported")
-        )
-    except Exception:
-        return False
-
-
 @pytest.mark.requires_chapel_module("ApplyMsg")
 class TestApply:
     def test_apply_docstrings(self):
@@ -29,11 +20,6 @@ class TestApply:
             apply_module, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
         )
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
-
-    @classmethod
-    def setup_class(cls):
-        if not supports_apply():
-            pytest.skip("apply not supported")
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])
