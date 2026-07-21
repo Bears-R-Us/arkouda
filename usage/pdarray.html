@@ -538,7 +538,8 @@ value, but proceed with caution.</p>
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/numeric.html#cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Cast an array to another dtype.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Overloads<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<span class="sphinx_autodoc_typehints-type">pdarray</span>), <strong>dt</strong> (<span class="sphinx_autodoc_typehints-type">StringDTypeTypes</span>), <strong>errors</strong> (<span class="sphinx_autodoc_typehints-type">Literal[ErrorMode.strict, ErrorMode.ignore]</span>) → <span class="sphinx_autodoc_typehints-type">Strings</span></p></li>
@@ -552,11 +553,8 @@ value, but proceed with caution.</p>
 <li><p><strong>pda</strong> (<span class="sphinx_autodoc_typehints-type">_Union[pdarray, Strings, ‘Categorical’, numeric_scalars]</span>), <strong>dt</strong> (<span class="sphinx_autodoc_typehints-type">str</span>), <strong>errors</strong> (<span class="sphinx_autodoc_typehints-type">Literal[ErrorMode.strict, ErrorMode.ignore]</span>) → <span class="sphinx_autodoc_typehints-type">_Union[pdarray, Strings, ‘Categorical’]</span></p></li>
 </ul>
 </dd>
-</dl>
-<p>Cast an array to another dtype.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>pda</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>]</span>) – The array of values to cast.</p></li>
 <li><p><strong>dt</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtype" title="arkouda.numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bigint</span></code>]</span>) – The target dtype to cast values to.</p></li>
 <li><p><strong>errors</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.numeric.ErrorMode" title="arkouda.numpy.numeric.ErrorMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorMode</span></code></a></span>) – <p>Controls how errors are handled when casting strings to a numeric type
@@ -573,8 +571,8 @@ was successful.</p></li>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
 <li><p><strong>result</strong> (<em>pdarray, Strings, or Categorical</em>) – Array of values cast to the desired dtype.</p></li>
 <li><p><strong>validity</strong> (<em>pdarray(bool), optional</em>) – If <code class="docutils literal notranslate"><span class="pre">errors=&quot;return_validity&quot;</span></code> and the input is <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, a second
 array is returned with <code class="docutils literal notranslate"><span class="pre">True</span></code> where the cast succeeded and <code class="docutils literal notranslate"><span class="pre">False</span></code>
@@ -614,7 +612,8 @@ dtype has the precision and capacity to hold the desired result.</p>
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">arkouda.pdarray.</span></span><span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span></dt>
-<dd><dl class="field-list simple">
+<dd><p>Gives a new shape to an array without changing its data.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Overloads<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>self</strong>, <strong>shape</strong> (<span class="sphinx_autodoc_typehints-type">Sequence[int_scalars]</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
@@ -623,17 +622,14 @@ dtype has the precision and capacity to hold the desired result.</p>
 <li><p><strong>self</strong>, <strong>shape</strong> (<span class="sphinx_autodoc_typehints-type">np.ndarray</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
 </ul>
 </dd>
-</dl>
-<p>Gives a new shape to an array without changing its data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>shape</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint64</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span>) – The new shape should be compatible with the original shape.</p>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>shape</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">uint64</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>]</span>) – The new shape should be compatible with the original shape.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a pdarray with the same data, reshaped to the new shape</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a pdarray with the same data, reshaped to the new shape</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
