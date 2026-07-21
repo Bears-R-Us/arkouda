@@ -98,10 +98,6 @@ def test_integers_dtype_and_bounds(dtype):
     assert (out <= 19).all()
 
 
-@pytest.mark.xfail(
-    reason="Bug: integers dtype guard uses `is` after dtype normalization; "
-    "float dtypes not rejected. Issue #5298."
-)
 def test_integers_rejects_float64_dtype():
     rng = ak.random.default_rng(SEED)
     with pytest.raises(TypeError):

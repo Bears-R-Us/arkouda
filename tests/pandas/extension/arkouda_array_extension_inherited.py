@@ -403,18 +403,26 @@ class TestArkoudaArrayHashInherited:
         owner = next(base for base in ArkoudaArray.mro() if "_hash_pandas_object" in base.__dict__)
         assert owner is PandasExtensionArray
 
-    @pytest.mark.xfail(reason=("Fails because Depends on ArkoudaCategorical.to_factorize_view #5101"))
     @pytest.mark.parametrize(
         "EA, make_data",
         [
             # numeric EA
             (ArkoudaArray, lambda: ak.array([10, 20, 10, 30])),
             # string EA
-            (ArkoudaStringArray, lambda: ak.array(["a", "b", "a", "c"])),
+            pytest.param(
+                ArkoudaStringArray,
+                lambda: ak.array(["a", "b", "a", "c"]),
+                marks=pytest.mark.xfail(
+                    reason="Fails because ArkoudaCategorical.to_factorize_view #5101"
+                ),
+            ),
             # categorical EA
-            (
+            pytest.param(
                 ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x", "z"])),
+                marks=pytest.mark.xfail(
+                    reason="Fails because ArkoudaCategorical.to_factorize_view #5101"
+                ),
             ),
         ],
     )
@@ -447,15 +455,23 @@ class TestArkoudaArrayHashInherited:
             # Each logical value should map to a single hash
             assert len(hset) == 1, f"value {v!r} had multiple hashes: {hset}"
 
-    @pytest.mark.xfail(reason=("Fails because Depends on ArkoudaCategorical.to_factorize_view #5101"))
     @pytest.mark.parametrize(
         "EA, make_data",
         [
             (ArkoudaArray, lambda: ak.array([1, 2, 3, 4])),
-            (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d"])),
-            (
+            pytest.param(
+                ArkoudaStringArray,
+                lambda: ak.array(["a", "b", "c", "d"]),
+                marks=pytest.mark.xfail(
+                    reason="Fails because ArkoudaCategorical.to_factorize_view #5101"
+                ),
+            ),
+            pytest.param(
                 ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["p", "q", "r", "q"])),
+                marks=pytest.mark.xfail(
+                    reason="Fails because ArkoudaCategorical.to_factorize_view #5101"
+                ),
             ),
         ],
     )
@@ -1625,13 +1641,6 @@ class TestArkoudaArrayMap:
             np.asarray(expected),
         )
 
-    @pytest.mark.xfail(
-        reason=(
-            "ArkoudaCategorical.map currently fails because "
-            "Index.astype(object, copy=...) calls ArkoudaCategorical.astype "
-            "with an unsupported 'copy' keyword."
-        )
-    )
     def test_map_dict_categorical_not_supported_yet(self):
         """
         Document current failure mode for ArkoudaCategorical.map with dict
@@ -1672,12 +1681,6 @@ class TestArkoudaArrayMap:
             np.asarray(expected),
         )
 
-    @pytest.mark.xfail(
-        reason=(
-            "ArkoudaCategorical.map with callable is blocked by the same "
-            "astype(copy=...) issue as the dict-mapping case."
-        )
-    )
     def test_map_callable_categorical_not_supported_yet(self):
         """
         Current behavior: callable mapping on ArkoudaCategorical also
@@ -2582,7 +2585,6 @@ class TestArkoudaArrayUnique:
     # String and Categorical examples
     # ------------------------------------------------------------------
 
-    @pytest.mark.xfail(reason=("Fails because ArkoudaCategorical.astype() is not yet implemented."))
     @pytest.mark.parametrize(
         "EA, make_data, pandas_constructor",
         [
@@ -2621,7 +2623,6 @@ class TestArkoudaArrayUnique:
 
         assert result_list == expected_list
 
-    @pytest.mark.xfail(reason=("Fails because ArkoudaCategorical.astype() is not yet implemented."))
     @pytest.mark.parametrize(
         "EA, values",
         [
@@ -2645,7 +2646,6 @@ class TestArkoudaArrayUnique:
 
         assert result_list == [values[0]]
 
-    @pytest.mark.xfail(reason=("Fails because ArkoudaCategorical.astype() is not yet implemented."))
     @pytest.mark.parametrize(
         "EA, values",
         [
