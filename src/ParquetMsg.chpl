@@ -35,18 +35,17 @@ module ParquetMsg {
                           getNullIndices, getStrColSize, getStrListColSize,
                           getArrSize, typeFromCType, getArrType,
                           createEmptyParquetFile, writeStringsComponentToParquet,
-                          populateTagData, getDatasets, getByteLength;
+                          populateTagData, getDatasets, getByteLength,
+                          write1DDistArrayParquet as masonWrite1DDistArrayParquet,
+                          writeListColumn, writeStrListColumn;
 
   // Use reflection for error information
   import Reflection.{getModuleName as getM,
                      getRoutineName as getR,
                      getLineNumber as getL};
-  require "ReadParquet.h";
-  require "ReadParquet.o";
-  require "WriteParquet.h";
-  require "WriteParquet.o";
-  require "UtilParquet.h";
-  require "UtilParquet.o";
+  // The C++ Parquet prerequisites (headers and objects) are supplied on the
+  // `chpl` command line by scripts/get_parquet_package.sh via the Makefile, so
+  // no `require` statements are needed here.
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -91,23 +90,13 @@ module ParquetMsg {
     }
   }
   
-  proc getVersionInfo() {
-    extern proc c_getVersionInfo(): c_ptrConst(c_char);
-    extern proc strlen(str): c_int;
-    extern proc c_free_string(ptr);
-    var cVersionString = c_getVersionInfo();
-    defer {
-      c_free_string(cVersionString: c_ptr(void));
-    }
-    var ret: string;
-    try {
-      ret = string.createCopyingBuffer(cVersionString,
-                                strlen(cVersionString));
-    } catch e {
-      ret = "Error converting Arrow version message to Chapel string";
-    }
-    return ret;
-  }
+  // The Arrow/Parquet version is supplied at build time via the `arrowVersion`
+  // config param (set from pkg-config by the Makefile). The external Parquet
+  // Mason package does not expose a runtime version accessor, so this replaces
+  // the former `c_getVersionInfo()` C call.
+  config param arrowVersion: string = "unknown";
+
+  proc getVersionInfo() do return arrowVersion;
   
   proc getSubdomains(lengths: [?FD] int) {
     var subdoms: [FD] domain(1);
@@ -371,8 +360,27 @@ module ParquetMsg {
   // (e.g. CheckpointMsg and pdarray_toParquetMsg); the Mason writer infers the
   // Arrow type from the Chapel array element type, so it is no longer needed.
   proc write1DDistArrayParquet(filename: string, dsetname, dtype, compression, mode, A) throws {
-    return Parquet.write1DDistArrayParquet(filename, dsetname,
-                                           compression: CompressionType, mode, A);
+    if A.eltType == uint(8) {
+      // The Mason `Parquet` writer does not support `uint(8)` arrays; its
+      // `writeColumn` raises a compile-time error for this element type. Guard
+      // against it here so the Mason path is never instantiated with `uint(8)`
+      // (this branch is param-folded out for every other element type). This
+      // preserves the pre-migration behavior, which rejected `uint(8)` Parquet
+      // writes at runtime. The throw is gated on an always-true runtime check
+      // so the trailing `return` stays reachable, giving this instantiation the
+      // same tuple return type as the Mason path for generic callers such as
+      // CheckpointMsg.
+      var noFilenames: [1..0] string;
+      var noNumElems: [1..0] int;
+      if A.size >= 0 then
+        throw getErrorWithContext(getL(), getM(), getR(),
+                  msg="Writing a uint(8) array to Parquet is not supported",
+                  errorClass="ParquetError");
+      return (false, noFilenames, noNumElems);
+    } else {
+      return masonWrite1DDistArrayParquet(filename, dsetname,
+                                          compression: CompressionType, mode, A);
+    }
   }
 
   proc parseListDataset(filenames: [] string, dsetname: string, ty, len: int, sizes: [] int, st: borrowed SymTab) throws {
@@ -1277,18 +1285,18 @@ module ParquetMsg {
     // Delegates to the Mason Parquet package. `c_dtype` is retained for the
     // caller's dispatch but is unused here: writeListColumn infers the Arrow
     // type from the value array's Chapel element type.
-    return Parquet.writeListColumn(filename, dsetName, segments_entry.a,
-                                   values_entry.a, compression: CompressionType);
+    return writeListColumn(filename, dsetName, segments_entry.a,
+                           values_entry.a, compression: CompressionType);
   }
 
   proc writeStrSegArrayParquet(filename: string, dsetName: string, segments_entry, values_entry, compression: int): bool throws {
     // Delegates to the Mason Parquet package. For a SegArray of strings,
     // `segments` indexes into the string offsets, `offsets` into the raw byte
     // values, matching Arkouda's SegString layout.
-    return Parquet.writeStrListColumn(filename, dsetName, segments_entry.a,
-                                      values_entry.offsetsEntry.a,
-                                      values_entry.bytesEntry.a,
-                                      compression: CompressionType);
+    return writeStrListColumn(filename, dsetName, segments_entry.a,
+                              values_entry.offsetsEntry.a,
+                              values_entry.bytesEntry.a,
+                              compression: CompressionType);
   }
 
   proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
