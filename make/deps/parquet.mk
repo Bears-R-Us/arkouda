@@ -8,7 +8,8 @@
 PARQUET_PACKAGE_SCRIPT := $(ARKOUDA_PROJECT_DIR)/scripts/get_parquet_package.sh
 PARQUET_INSTALL_DIR ?= $(DEP_BUILD_DIR)/Parquet
 
-# Lazily evaluated (recursive `=`): the script only runs when this variable is
-# expanded inside a recipe (the server build and the Arrow dependency check),
-# not at parse time, so targets like `clean` don't trigger a clone/build.
-PARQUET_PKG_FLAGS = $(shell $(PARQUET_PACKAGE_SCRIPT) $(PARQUET_INSTALL_DIR))
+# Keep this as a shell command rather than Make's `$(shell ...)`: Make discards
+# the command's exit status, which would let a failed package build continue
+# into a misleading Chapel compile failure.
+PARQUET_PACKAGE_FLAGS_CMD = env CHPL_HOME="$(ARKOUDA_CHPL_HOME)" \
+	"$(PARQUET_PACKAGE_SCRIPT)" "$(PARQUET_INSTALL_DIR)"

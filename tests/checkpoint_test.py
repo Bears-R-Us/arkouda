@@ -6,6 +6,7 @@ from datetime import datetime
 from os import path
 from shutil import rmtree
 
+import numpy as np
 import pytest
 
 import arkouda as ak
@@ -41,13 +42,17 @@ class TestCheckpoint:
         reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable",
     )
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", ["int64", "float64", "bool"])
+    @pytest.mark.parametrize("dtype", ["int64", "float64", "bool", "uint8"])
     def test_checkpoint(self, prob_size, dtype):
         rmtree(".akdata", ignore_errors=True)  # start from clean
         val2 = 2 if dtype != "bool" else True
         val3 = 3 if dtype != "bool" else False
 
-        arr = ak.zeros(prob_size, dtype)
+        arr = (
+            ak.array(np.zeros(prob_size, dtype=np.uint8))
+            if dtype == "uint8"
+            else ak.zeros(prob_size, dtype)
+        )
         arr[2] = val2
 
         cp_name = ak.save_checkpoint()
@@ -161,6 +166,21 @@ class TestCheckpoint:
             raise AssertionError("Expected RuntimeError was not raised")
         except RuntimeError as err:
             assert "field 'size' not found" in str(err)
+        finally:
+            clean_fake_cp(cp_name)
+
+    def test_unknown_entry_type(self):
+        cp_name = "test_unknown_entry_type_cp"
+        create_fake_cp(cp_name)
+        metadata_name = path.join(get_def_cp_path(cp_name), "unknown.md")
+        with open(metadata_name, "w") as metadata_file:
+            metadata_file.write(
+                json.dumps({"entryName": "unknown", "entryType": "NotAnEntryType"}) + "\n"
+            )
+
+        try:
+            with pytest.raises(RuntimeError, match="Unknown checkpoint entry type"):
+                ak.load_checkpoint(cp_name)
         finally:
             clean_fake_cp(cp_name)
 

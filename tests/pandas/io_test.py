@@ -671,6 +671,12 @@ class TestParquet:
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
+            # Arkouda Strings cannot represent null, so an empty string must be
+            # encoded as a defined zero-length value rather than a Parquet null.
+            for parquet_path in glob.glob(f"{tmp_dirname}/multi_col_parquet*"):
+                string_column = pq.read_table(parquet_path, columns=["c_9"])["c_9"]
+                assert string_column.null_count == 0
+
             # test save with index true
             akdf.to_parquet(f"{tmp_dirname}/idx_multi_col_parquet", index=True, compression=comp)
             rd_data = ak.read_parquet(f"{tmp_dirname}/idx_multi_col_parquet*")
@@ -692,6 +698,59 @@ class TestParquet:
             df_ak = ak.DataFrame(ak.read_parquet(f"{file_name}*"))
             for c in df_ak.columns.values:
                 assert df_ak[c].tolist() == df_pd[c].tolist()
+
+    def test_uint8_round_trip(self, par_test_base_tmp):
+        values = np.array([0, 1, 127, 128, 255], dtype=np.uint8)
+        byte_array = ak.array(values)
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/uint8_array"
+            byte_array.to_parquet(file_name, "bytes")
+            byte_array.to_parquet(file_name, "bytes_appended", mode="append")
+
+            result = ak.read_parquet(f"{file_name}*")
+            assert result["bytes"].dtype == np.dtype("uint8")
+            assert result["bytes"].tolist() == values.tolist()
+            assert result["bytes_appended"].dtype == np.dtype("uint8")
+            assert result["bytes_appended"].tolist() == values.tolist()
+
+            parquet_file = pq.ParquetFile(glob.glob(f"{file_name}*")[0])
+            assert parquet_file.schema_arrow.field("bytes").type == pa.uint8()
+            assert parquet_file.schema_arrow.field("bytes_appended").type == pa.uint8()
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/pyarrow_uint8.parquet"
+            pq.write_table(pa.table({"bytes": values}), file_name)
+
+            result = ak.read_parquet(file_name)["bytes"]
+            assert result.dtype == np.dtype("uint8")
+            assert result.tolist() == values.tolist()
+
+            nullable_file = f"{tmp_dirname}/pyarrow_nullable_uint8.parquet"
+            nullable_values = pa.array([0, None, 255], type=pa.uint8())
+            pq.write_table(pa.table({"bytes": nullable_values}), nullable_file)
+
+            result = ak.read_parquet(nullable_file, null_handling="all")["bytes"]
+            assert result.dtype == np.dtype("float64")
+            assert np.allclose(result.to_ndarray(), [0.0, np.nan, 255.0], equal_nan=True)
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/uint8_list"
+            byte_list = ak.SegArray(ak.array([0, 3, 3]), byte_array)
+            byte_list.to_parquet(file_name, "bytes")
+
+            result = ak.read_parquet(f"{file_name}*")["bytes"]
+            assert result.values.dtype == np.dtype("uint8")
+            assert result.tolist() == [[0, 1, 127], [], [128, 255]]
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/uint8_multi"
+            frame = ak.DataFrame({"bytes": byte_array, "ints": ak.arange(5)})
+            frame.to_parquet(file_name)
+
+            result = ak.read_parquet(f"{file_name}*")
+            assert result["bytes"].dtype == np.dtype("uint8")
+            assert result["bytes"].tolist() == values.tolist()
 
     def test_read_nested(self, par_test_base_tmp):
         df = ak.DataFrame(
@@ -897,13 +956,7 @@ class TestParquet:
             columns = ak.get_datasets(filename)
             assert columns == ans
             # Merely test that read succeeds, do not check output
-            if "delta_byte_array.parquet" not in filename:
-                ak.read_parquet(filename, datasets=columns)
-            else:
-                # Since delta encoding is not supported, the columns in
-                # this file should raise an error and not crash the server
-                with pytest.raises(RuntimeError):
-                    ak.read_parquet(filename, datasets=columns)
+            ak.read_parquet(filename, datasets=columns)
 
     def test_null_handling_all(self, par_test_base_tmp):
         df = pd.DataFrame(

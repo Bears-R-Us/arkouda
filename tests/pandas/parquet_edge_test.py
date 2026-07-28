@@ -117,7 +117,6 @@ EXPECTED_CORRECTNESS_FAILURES = frozenset(
         "plain-dict-uncompressed-checksum.parquet",
         "rle-dict-uncompressed-corrupt-checksum.parquet",
         "binary_truncated_min_max.parquet",
-        "concatenated_gzip_members.parquet",  # Arrow v9 correctness issue
     ]
 )
 

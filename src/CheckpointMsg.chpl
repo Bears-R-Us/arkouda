@@ -168,21 +168,29 @@ module CheckpointMsg {
       var mdReader = IO.open(mdName, ioMode.r).reader(locking=false);
       const entryMD = readJson(mdReader, entryMetadata, "entry metadata", mdName);
 
-      const entry: shared AbstractSymEntry;
-      select entryMD.entryType {
-        when SymEntryType:string do
-          entry = loadSymEntry(mdName, entryMD, mdReader);
-        otherwise do
-          // we should be able to load everything we saved
-          throw new NotImplementedError(cpNotImplementedMsg("Loading",
-            entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
+      var entryType: SymbolEntryType;
+      try {
+        entryType = entryMD.entryType: SymbolEntryType;
+      } catch {
+        throw new LoadCheckpointError(
+            "Unknown checkpoint entry type " + entryMD.entryType +
+            " in " + mdName);
       }
 
-      if entry.name.isEmpty() then
-        throw new LoadCheckpointError("Entry in " + mdName + " has empty name");
+      select entryType {
+        when SymEntryType {
+          const entry = loadSymEntry(mdName, entryMD, mdReader);
 
-      st.addEntry(entry.name, entry);
-      cpLogger.debug(M(), R(), L(), "Added entry with metadata ", mdName);
+          if entry.name.isEmpty() then
+            throw new LoadCheckpointError("Entry in " + mdName + " has empty name");
+
+          st.addEntry(entry.name, entry);
+          cpLogger.debug(M(), R(), L(), "Added entry with metadata ", mdName);
+        }
+        otherwise do
+          cpLogger.debug(M(), R(), L(), cpNotImplementedMsg("Loading",
+            entryMD.entryName, entryType:string, mdName));
+      }
     }
 
     updateLastCkptCompletion();
