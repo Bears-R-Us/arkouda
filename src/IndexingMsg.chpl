@@ -130,22 +130,56 @@ module IndexingMsg
     }
 
     @arkouda.registerCommand("[slice]")
-    proc sliceIndex(const ref array: [?d] ?t, starts: d.rank*int, stops: d.rank*int, strides: d.rank*int, max_bits: int): SymEntry(t, d.rank) throws {
-        var rngs: d.rank*range(strides=strideKind.any),
-            outSizes: d.rank*int;
-        for param dim in 0..<d.rank {
-            rngs[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
-            outSizes[dim] = rngs[dim].size;
+    proc sliceIndex(const ref array: [?d] ?t,
+                    starts: d.rank*int, stops: d.rank*int, strides: d.rank*int,
+                    max_bits: int): SymEntry(t, d.rank) throws {
+        inline proc allEq(x, ys) {
+            var r = true;
+            for param i in 0..<x.size do r &= x[i] == ys;
+            return r;
         }
+        if allEq(strides, 1) {
+            // If all strides are 1, we can use strideKind.one, which is more efficient.
+            // we can also use whole-array ops, which when not strided are faster
+            var rngs: d.rank*range(strides=strideKind.one),
+                outSizes: d.rank*int;
+            for param dim in 0..<d.rank {
+                rngs[dim] = starts[dim]..stops[dim]-1;
+                outSizes[dim] = rngs[dim].size;
+            }
 
-        const sliceDom = makeDistDom({(...rngs)});
-        var arraySlice = makeDistArray((...outSizes), t);
+            const sliceDom = {(...rngs)}; // we don't need a distributed dom for this
+            var arraySlice = makeDistArray((...outSizes), t);
+            arraySlice = array[{(...rngs)}];
+            return new shared SymEntry(arraySlice, max_bits=max_bits);
+        } else if allEq(strides, -1) {
+            // same as above but with strideKind.negOne
+            var rngs: d.rank*range(strides=strideKind.negOne),
+                outSizes: d.rank*int;
+            for param dim in 0..<d.rank {
+                rngs[dim] = stops[dim]-1..starts[dim] by -1;
+                outSizes[dim] = rngs[dim].size;
+            }
 
-        forall (elt,j) in zip(arraySlice, sliceDom) with (var agg = newSrcAggregator(t)) {
-            agg.copy(elt,array[j]);
+            const sliceDom = {(...rngs)}; // we don't need a distributed dom for this
+            var arraySlice = makeDistArray((...outSizes), t);
+            arraySlice = array[{(...rngs)}];
+            return new shared SymEntry(arraySlice, max_bits=max_bits);
+        } else {
+            var rngs: d.rank*range(strides=strideKind.any),
+                outSizes: d.rank*int;
+            for param dim in 0..<d.rank {
+                rngs[dim] = convertSlice(starts[dim], stops[dim], strides[dim]);
+                outSizes[dim] = rngs[dim].size;
+            }
+
+            const sliceDom = {(...rngs)}; // we don't need a distributed dom for this
+            var arraySlice = makeDistArray((...outSizes), t);
+            forall (elt,j) in zip(arraySlice, sliceDom) with (var agg = newSrcAggregator(t)) {
+                agg.copy(elt,array[j]);
+            }
+            return new shared SymEntry(arraySlice, max_bits=max_bits);
         }
-
-        return new shared SymEntry(arraySlice, max_bits=max_bits);
     }
 
     /*
