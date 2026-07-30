@@ -330,7 +330,7 @@ class TestParquet:
             # Explicit filenames deliberately reverse the file order to verify
             # that tag codes follow the request rather than lexical ordering.
             if use_glob:
-                source = f"{tmp_dirname}/tagged_large_*.parquet"
+                source = f"{tmp_dirname}/tagged_large_*"
             else:
                 source = filenames[::-1]
                 frames = frames[::-1]
@@ -352,7 +352,7 @@ class TestParquet:
             second.to_parquet(f"{tmp_dirname}/tagged_explicit_1.parquet")
 
             tagged = ak.read_parquet(
-                f"{tmp_dirname}/tagged_explicit_*.parquet",
+                f"{tmp_dirname}/tagged_explicit_*",
                 datasets=["labels", "values"],
                 tag_data=True,
             )
@@ -371,7 +371,7 @@ class TestParquet:
             for file_idx, frame in enumerate(frames):
                 frame.to_parquet(f"{tmp_dirname}/tagged_strings_{file_idx}.parquet")
 
-            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_strings_*.parquet", tag_data=True)
+            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_strings_*", tag_data=True)
 
             assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 1, 1]
             assert tagged["values"].tolist() == [1, 2, 3, 4, 5]
@@ -389,7 +389,7 @@ class TestParquet:
                     f"{tmp_dirname}/tagged_lists_{file_idx}.parquet",
                 )
 
-            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_lists_*.parquet", tag_data=True)
+            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_lists_*", tag_data=True)
 
             assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 1, 1]
             assert tagged["ids"].tolist() == [10, 11, 12, 20, 21]
@@ -405,7 +405,7 @@ class TestParquet:
             for file_idx, frame in enumerate(frames):
                 frame.to_parquet(f"{tmp_dirname}/tagged_empty_{file_idx}.parquet")
 
-            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_empty_*.parquet", tag_data=True)
+            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_empty_*", tag_data=True)
 
             assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 2, 2]
             assert tagged["values"].tolist() == [1, 2, 3, 4, 5]
@@ -421,7 +421,7 @@ class TestParquet:
                 frame.to_parquet(f"{tmp_dirname}/tagged_nulls_{file_idx}.parquet")
 
             tagged = ak.read_parquet(
-                f"{tmp_dirname}/tagged_nulls_*.parquet",
+                f"{tmp_dirname}/tagged_nulls_*",
                 tag_data=True,
                 null_handling=null_handling,
             )
@@ -441,7 +441,7 @@ class TestParquet:
             pd.DataFrame({"values": [10, 11]}).to_parquet(filenames[0])
             pd.DataFrame({"values": [20, 21, 22]}).to_parquet(filenames[1])
 
-            tagged, file_categorical = ak.read_tagged_data(f"{tmp_dirname}/tagged_wrapper_*.parquet")
+            tagged, file_categorical = ak.read_tagged_data(f"{tmp_dirname}/tagged_wrapper_*")
 
             assert tagged["Filename_Codes"].tolist() == [0, 0, 1, 1, 1]
             assert tagged["values"].tolist() == [10, 11, 20, 21, 22]
