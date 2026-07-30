@@ -157,7 +157,7 @@ module IndexingMsg
             var rngs: d.rank*range(strides=strideKind.negOne),
                 outSizes: d.rank*int;
             for param dim in 0..<d.rank {
-                rngs[dim] = stops[dim]-1..starts[dim] by -1;
+                rngs[dim] = stops[dim]+1..starts[dim] by -1;
                 outSizes[dim] = rngs[dim].size;
             }
 
