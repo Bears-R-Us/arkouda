@@ -38,11 +38,7 @@ def time_ak_slice(size_per_locale, trials, dtype):
     print(">>> arkouda {} slice".format(dtype))
     cfg = ak.get_config()
     size = size_per_locale * cfg["numNodes"]
-    print(
-        "numLocales = {}, numNodes {}, N = {:,}".format(
-            cfg["numLocales"], cfg["numNodes"], size
-        )
-    )
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], size))
     a = create_ak_array(size, dtype)
 
     for label, key in SLICE_CASES:

@@ -27,11 +27,7 @@ def time_ak_diff(size_per_locale, trials, dtype):
     print(">>> arkouda {} diff".format(dtype))
     cfg = ak.get_config()
     size = size_per_locale * cfg["numNodes"]
-    print(
-        "numLocales = {}, numNodes {}, N = {:,}".format(
-            cfg["numLocales"], cfg["numNodes"], size
-        )
-    )
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], size))
     a = create_ak_array(size, dtype)
 
     timings = []
