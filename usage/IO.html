@@ -444,7 +444,7 @@ is already a <cite>pdarray</cite>. <strong>Note</strong>: Arkouda does not curre
 This differs from NumPy. Also, the default (<cite>False</cite>) is chosen to reduce performance overhead.</p>
 </dd>
 <dt class="field-even">type copy<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-odd">param max_bits<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The maximum number of bits for bigint arrays. Ignored for other dtypes.</p>
@@ -460,13 +460,13 @@ full-array scans. If hints are not supplied, Arkouda will still do a single-pass
 <p>WARNING: If unsafe=True and provided hints are wrong, results may be incorrect.</p>
 </dd>
 <dt class="field-even">type unsafe<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-odd">param any_neg<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Bigint hint: whether any value is negative. Only used when dtype=bigint and a is numeric/object.</p>
 </dd>
 <dt class="field-even">type any_neg<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">param num_bits<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Bigint hint: required bit-width for values (including sign bit if signed).
@@ -504,7 +504,7 @@ If provided with unsafe=True, Arkouda can compute number of limbs without scanni
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></dt><dd><p>Convert back from Arkouda to NumPy.</p>
+<dt><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></a></dt><dd><p>Convert back from Arkouda to NumPy.</p>
 </dd>
 </dl>
 </div>
@@ -565,7 +565,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray.tolist" title="arkouda.pdarray.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -630,26 +630,26 @@ value, but proceed with caution.</p>
 <li><p><strong>filenames</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Either a list of filenames or a shell expression.</p></li>
 <li><p><strong>datasets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – Name or list of names of datasets to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all
 available datasets are read.</p></li>
-<li><p><strong>iterative</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make iterative function calls to the server. If
+<li><p><strong>iterative</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, make iterative function calls to the server. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, make a single function call to the server.</p></li>
-<li><p><strong>strictTypes</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
+<li><p><strong>strictTypes</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, require all dtypes of a given dataset to have the
 same precision and sign. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, allow dtypes of different
 precision and sign across different files. For example, if one
 file contains a <code class="docutils literal notranslate"><span class="pre">uint32</span></code> dataset and another contains an
 <code class="docutils literal notranslate"><span class="pre">int64</span></code> dataset with the same name, the contents of both will
 be read into an <code class="docutils literal notranslate"><span class="pre">int64</span></code> <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
-<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
+<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, files with read errors may be skipped instead of
 causing the operation to fail. A warning will be included in the
 return containing the total number of files skipped due to failure
 and up to 10 filenames.</p></li>
-<li><p><strong>calc_string_offsets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, instruct the server to calculate the offsets or
+<li><p><strong>calc_string_offsets</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, instruct the server to calculate the offsets or
 segments array instead of loading it from HDF5 files.</p></li>
 <li><p><strong>column_delim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Column delimiter to use if the dataset is CSV. Otherwise unused.</p></li>
-<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are read from the file. If
+<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are read from the file. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects and other nested Parquet columns
 are ignored. Ignored if <code class="docutils literal notranslate"><span class="pre">datasets</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>. Parquet
 only.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to read non-float Parquet columns that
+<li><p><strong>has_non_float_nulls</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to read non-float Parquet columns that
 contain null values.</p></li>
 <li><p><strong>fixed_len</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Fixed string length to use when reading Parquet string columns
 if the length of each string is known at runtime. This can avoid
@@ -713,10 +713,10 @@ of datasets in HDF5 or Parquet files.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filenames</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Name of the file/s from which to return datasets</p></li>
-<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default: False
+<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Default: False
 Whether or not to allow errors while accessing datasets</p></li>
 <li><p><strong>column_delim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default True, when True, SegArray objects will be read from the file. When False,
+<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Only used for Parquet Files.</p></li>
 </ul>
@@ -771,8 +771,8 @@ a file formatted to be read by Arkouda.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>read_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
 <li><p><strong>write_file</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
-<li><p><strong>return_obj</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
+<li><p><strong>return_obj</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
+<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -817,8 +817,8 @@ to Pandas object or file formatted to be readable by Pandas.</p>
 <li><p><strong>dataset_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – name to store dataset under</p></li>
 <li><p><strong>write_file</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – path to file to write pandas formatted data to. Only write the file if this is set.
 Default is None.</p></li>
-<li><p><strong>return_obj</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
-<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
+<li><p><strong>return_obj</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
+<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
