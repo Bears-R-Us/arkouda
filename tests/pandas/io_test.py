@@ -304,6 +304,163 @@ class TestParquet:
             pq_arr = ak.read_parquet(f"{file_name}*", "test-dset")["test-dset"]
             assert (ak_arr == pq_arr).all()
 
+    @pytest.mark.parametrize("use_glob", [True, False])
+    def test_tag_data_optimized_all_columns_large(self, par_test_base_tmp, use_glob):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            sizes = [128, 173]
+            frames = []
+            filenames = []
+            for file_idx, size in enumerate(sizes):
+                base = file_idx * 1000
+                frame = pd.DataFrame(
+                    {
+                        "int64s": np.arange(base, base + size, dtype=np.int64),
+                        "int32s": np.arange(base, base + size, dtype=np.int32),
+                        "uint32s": np.arange(base, base + size, dtype=np.uint32),
+                        "float32s": np.arange(base, base + size, dtype=np.float32) / 3,
+                        "float64s": np.arange(base, base + size, dtype=np.float64) / 7,
+                        "bools": np.arange(size) % 2 == 0,
+                    }
+                )
+                filename = f"{tmp_dirname}/tagged_large_{file_idx}.parquet"
+                frame.to_parquet(filename)
+                frames.append(frame)
+                filenames.append(filename)
+
+            # Explicit filenames deliberately reverse the file order to verify
+            # that tag codes follow the request rather than lexical ordering.
+            if use_glob:
+                source = f"{tmp_dirname}/tagged_large_*.parquet"
+            else:
+                source = filenames[::-1]
+                frames = frames[::-1]
+
+            tagged = ak.read_parquet(source, tag_data=True)
+            expected = pd.concat(frames, ignore_index=True)
+
+            assert tagged["Filename_Codes"].tolist() == [0] * len(frames[0]) + [1] * len(frames[1])
+            for column in expected.columns:
+                assert np.allclose(tagged[column].to_ndarray(), expected[column], equal_nan=True)
+
+    def test_tag_data_explicit_datasets(self, par_test_base_tmp):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            first = pd.DataFrame(
+                {"values": [10, 11, 12], "labels": [100, 101, 102], "ignored": [1, 2, 3]}
+            )
+            second = pd.DataFrame(
+                {"values": [20, 21], "labels": [200, 201], "ignored": [4, 5]}
+            )
+            first.to_parquet(f"{tmp_dirname}/tagged_explicit_0.parquet")
+            second.to_parquet(f"{tmp_dirname}/tagged_explicit_1.parquet")
+
+            tagged = ak.read_parquet(
+                f"{tmp_dirname}/tagged_explicit_*.parquet",
+                datasets=["labels", "values"],
+                tag_data=True,
+            )
+
+            assert set(tagged) == {"Filename_Codes", "labels", "values"}
+            assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 1, 1]
+            assert tagged["values"].tolist() == [10, 11, 12, 20, 21]
+            assert tagged["labels"].tolist() == [100, 101, 102, 200, 201]
+
+    def test_tag_data_all_columns_with_strings(self, par_test_base_tmp):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            frames = [
+                pd.DataFrame({"values": [1, 2, 3], "words": ["one", "", "three"]}),
+                pd.DataFrame({"values": [4, 5], "words": ["four", "five"]}),
+            ]
+            for file_idx, frame in enumerate(frames):
+                frame.to_parquet(f"{tmp_dirname}/tagged_strings_{file_idx}.parquet")
+
+            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_strings_*.parquet", tag_data=True)
+
+            assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 1, 1]
+            assert tagged["values"].tolist() == [1, 2, 3, 4, 5]
+            assert tagged["words"].tolist() == ["one", "", "three", "four", "five"]
+
+    def test_tag_data_all_columns_with_segarray(self, par_test_base_tmp):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            frames = [
+                pd.DataFrame({"ids": [10, 11, 12], "lists": [[1, 2], [], [3, 4, 5]]}),
+                pd.DataFrame({"ids": [20, 21], "lists": [[6], [7, 8]]}),
+            ]
+            for file_idx, frame in enumerate(frames):
+                pq.write_table(
+                    pa.Table.from_pandas(frame),
+                    f"{tmp_dirname}/tagged_lists_{file_idx}.parquet",
+                )
+
+            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_lists_*.parquet", tag_data=True)
+
+            assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 1, 1]
+            assert tagged["ids"].tolist() == [10, 11, 12, 20, 21]
+            assert tagged["lists"].tolist() == [[1, 2], [], [3, 4, 5], [6], [7, 8]]
+
+    def test_tag_data_with_empty_file(self, par_test_base_tmp):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            frames = [
+                pd.DataFrame({"values": pd.Series([1, 2, 3], dtype=np.int64)}),
+                pd.DataFrame({"values": pd.Series([], dtype=np.int64)}),
+                pd.DataFrame({"values": pd.Series([4, 5], dtype=np.int64)}),
+            ]
+            for file_idx, frame in enumerate(frames):
+                frame.to_parquet(f"{tmp_dirname}/tagged_empty_{file_idx}.parquet")
+
+            tagged = ak.read_parquet(f"{tmp_dirname}/tagged_empty_*.parquet", tag_data=True)
+
+            assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 2, 2]
+            assert tagged["values"].tolist() == [1, 2, 3, 4, 5]
+
+    @pytest.mark.parametrize("null_handling", ["only floats", "all"])
+    def test_tag_data_with_null_handling(self, par_test_base_tmp, null_handling):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            frames = [
+                pd.DataFrame({"values": [1, 2, 3], "floats": [1.0, np.nan, 3.0]}),
+                pd.DataFrame({"values": [4, 5], "floats": [np.nan, 5.0]}),
+            ]
+            for file_idx, frame in enumerate(frames):
+                frame.to_parquet(f"{tmp_dirname}/tagged_nulls_{file_idx}.parquet")
+
+            tagged = ak.read_parquet(
+                f"{tmp_dirname}/tagged_nulls_*.parquet",
+                tag_data=True,
+                null_handling=null_handling,
+            )
+
+            assert tagged["Filename_Codes"].tolist() == [0, 0, 0, 1, 1]
+            assert tagged["values"].tolist() == [1, 2, 3, 4, 5]
+            assert np.allclose(
+                tagged["floats"].to_ndarray(), [1.0, np.nan, 3.0, np.nan, 5.0], equal_nan=True
+            )
+
+    def test_read_tagged_data_parquet(self, par_test_base_tmp):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            filenames = [
+                f"{tmp_dirname}/tagged_wrapper_0.parquet",
+                f"{tmp_dirname}/tagged_wrapper_1.parquet",
+            ]
+            pd.DataFrame({"values": [10, 11]}).to_parquet(filenames[0])
+            pd.DataFrame({"values": [20, 21, 22]}).to_parquet(filenames[1])
+
+            tagged, file_categorical = ak.read_tagged_data(
+                f"{tmp_dirname}/tagged_wrapper_*.parquet"
+            )
+
+            assert tagged["Filename_Codes"].tolist() == [0, 0, 1, 1, 1]
+            assert tagged["values"].tolist() == [10, 11, 20, 21, 22]
+            assert file_categorical.codes.tolist() == [0, 1]
+            assert file_categorical.tolist() == filenames
+
+    @pytest.mark.parametrize("datasets", [None, ["values"]])
+    def test_tag_data_rejects_iterative_read(self, par_test_base_tmp, datasets):
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            filename = f"{tmp_dirname}/tagged_iterative.parquet"
+            pd.DataFrame({"values": [1, 2, 3]}).to_parquet(filename)
+
+            with pytest.raises(RuntimeError, match="Cannot tag data with iterative read"):
+                ak.read_parquet(filename, datasets=datasets, iterative=True, tag_data=True)
+
     def test_wrong_dset_name(self, par_test_base_tmp):
         ak_arr = ak.randint(0, 2**32, 100)
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
