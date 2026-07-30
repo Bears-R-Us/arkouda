@@ -347,9 +347,7 @@ class TestParquet:
             first = pd.DataFrame(
                 {"values": [10, 11, 12], "labels": [100, 101, 102], "ignored": [1, 2, 3]}
             )
-            second = pd.DataFrame(
-                {"values": [20, 21], "labels": [200, 201], "ignored": [4, 5]}
-            )
+            second = pd.DataFrame({"values": [20, 21], "labels": [200, 201], "ignored": [4, 5]})
             first.to_parquet(f"{tmp_dirname}/tagged_explicit_0.parquet")
             second.to_parquet(f"{tmp_dirname}/tagged_explicit_1.parquet")
 
@@ -443,9 +441,7 @@ class TestParquet:
             pd.DataFrame({"values": [10, 11]}).to_parquet(filenames[0])
             pd.DataFrame({"values": [20, 21, 22]}).to_parquet(filenames[1])
 
-            tagged, file_categorical = ak.read_tagged_data(
-                f"{tmp_dirname}/tagged_wrapper_*.parquet"
-            )
+            tagged, file_categorical = ak.read_tagged_data(f"{tmp_dirname}/tagged_wrapper_*.parquet")
 
             assert tagged["Filename_Codes"].tolist() == [0, 0, 1, 1, 1]
             assert tagged["values"].tolist() == [10, 11, 20, 21, 22]
