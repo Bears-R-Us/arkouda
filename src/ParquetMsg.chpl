@@ -38,6 +38,7 @@ module ParquetMsg {
                           getArrSize, typeFromCType, typeToCType, getArrType,
                           getListData, getNumCols, getAllTypes,
                           populateTagData, getDatasets, getByteLength,
+                          getVersionInfo,
                           write1DDistArrayParquet as masonWrite1DDistArrayParquet,
                           writeStringsColumn, writeListColumn,
                           writeStrListColumn, filesExistForWrite, pqWriteOp;
@@ -57,14 +58,6 @@ module ParquetMsg {
   // Undocumented for now, just for internal experiments
   private config const batchSize = getEnvInt("ARKOUDA_SERVER_PARQUET_BATCH_SIZE", 8192);
 
-  // The Arrow/Parquet version is supplied at build time via the `arrowVersion`
-  // config param (set from pkg-config by the Makefile). The external Parquet
-  // Mason package does not expose a runtime version accessor, so this replaces
-  // the former `c_getVersionInfo()` C call.
-  config param arrowVersion: string = "unknown";
-
-  proc getVersionInfo() do return arrowVersion;
-  
   class ParquetReadError: ErrorWithContext {
     proc init(msg: string, moduleName: string, routineName: string,
               lineNumber: int(64)) {

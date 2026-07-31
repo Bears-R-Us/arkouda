@@ -6,7 +6,6 @@ from datetime import datetime
 from os import path
 from shutil import rmtree
 
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -48,11 +47,7 @@ class TestCheckpoint:
         val2 = 2 if dtype != "bool" else True
         val3 = 3 if dtype != "bool" else False
 
-        arr = (
-            ak.array(np.zeros(prob_size, dtype=np.uint8))
-            if dtype == "uint8"
-            else ak.zeros(prob_size, dtype)
-        )
+        arr = ak.zeros(prob_size, dtype)
         arr[2] = val2
 
         cp_name = ak.save_checkpoint()

@@ -65,7 +65,7 @@ PREREQ_DIR="${PARQUET_ROOT}/prereqs/cpp"
 PARQUET_MODULE="${PARQUET_ROOT}/src/Parquet.chpl"
 
 if [[ ! -d "${PREREQ_DIR}" ]]; then
-  log "ERROR: expected C++ prerequisites at ${PREREQ_DIR}, but it is missing"
+  log "ERROR: expected C++ prerequisites at ${PREREQ_DIR}, but they are missing"
   exit 1
 fi
 

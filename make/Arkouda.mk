@@ -20,14 +20,9 @@ $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 # Set the arkouda server version from the VERSION file
 VERSION=$(shell python3 -c "import versioneer; print(versioneer.get_versions()[\"version\"])")
 
-# Arrow/Parquet version reported by the server (formerly via c_getVersionInfo,
-# which the external Parquet Mason package no longer provides). Sourced from
-# pkg-config, matching the Arrow the Parquet package links against.
-ARROW_VERSION=$(shell pkg-config --modversion arrow 2>/dev/null)
-
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
-CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\"" -spythonVersion="\""$(PYTHON_VERSION)"\"" -sarrowVersion="\"$(ARROW_VERSION)\""
+CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\"" -spythonVersion="\""$(PYTHON_VERSION)"\""
 
 ifdef ARKOUDA_PRINT_PASSES_FILE
 	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
