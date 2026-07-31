@@ -59,7 +59,7 @@ module UtilMsg {
       var y = makeDistArray(outDom, t);
       for axisSliceIdx in domOffAxis(d, axis) {
         const slice = domOnAxis(outDom, tuplify(axisSliceIdx), axis);
-        for i in slice {
+        forall i in slice {
           var idxp = tuplify(i);
           idxp[axis] += 1;
           y[i] = (x[idxp] - x[i]): t;
@@ -75,10 +75,9 @@ module UtilMsg {
           d1 <=> d2;
           const diffSubDom = subDomain(x.shape, axis, m);
 
-          forall axisSliceIdx in domOffAxis(d, axis) {
+          for axisSliceIdx in domOffAxis(d, axis) {
             const slice = domOnAxis(diffSubDom, tuplify(axisSliceIdx), axis);
-
-            for i in slice {
+            forall i in slice {
               var idxp = tuplify(i);
               idxp[axis] += 1;
               d1[i] = (d2[idxp] - d2[i]): t;
