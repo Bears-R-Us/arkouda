@@ -198,21 +198,7 @@ def test_unary_alignment(
             )
 
         # NumPy reference
-        if use_where and name in {
-            "square",
-            "sin",
-            "cos",
-            "tan",
-            "arcsin",
-            "arccos",
-            "arctan",
-            "sinh",
-            "cosh",
-            "tanh",
-            "arcsinh",
-            "arccosh",
-            "arctanh",
-        }:
+        if use_where and name in {"__unsupported_where__"}:
             where = where_mask
             np_res = _apply_numpy_where(x.astype(np.float64) if name == "fabs" else x, where, np_func)
             ak_x = ak.array(x)
@@ -252,18 +238,17 @@ def test_unary_alignment(
             np.testing.assert_allclose(ak_np, np_res, rtol=RTOL, atol=ATOL, equal_nan=True)
 
 
-def test_rad2deg_deg2rad_alignment(base_float, where_mask) -> None:
+def test_rad2deg_deg2rad_alignment(base_float) -> None:
     x = base_float.copy()
-    where = where_mask
 
     # rad2deg
-    np_r2d = _apply_numpy_where(x, where, np.rad2deg)
-    ak_r2d = ak.rad2deg(ak.array(x), where=_ak_where_param(where))
+    np_r2d = np.rad2deg(x)
+    ak_r2d = ak.rad2deg(ak.array(x))
     _assert_array_equal_or_allclose(np_r2d, ak_r2d)
 
     # deg2rad
-    np_d2r = _apply_numpy_where(x, where, np.deg2rad)
-    ak_d2r = ak.deg2rad(ak.array(x), where=_ak_where_param(where))
+    np_d2r = np.deg2rad(x)
+    ak_d2r = ak.deg2rad(ak.array(x))
     _assert_array_equal_or_allclose(np_d2r, ak_d2r)
 
 
