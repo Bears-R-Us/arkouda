@@ -1774,6 +1774,7 @@ module SegmentedString {
   }
 
   inline proc isNumericString (s: string) {
+      if s.isEmpty() then return false;
       var good = true;
       for letter in s {
         good = isNumericChar(letter);
