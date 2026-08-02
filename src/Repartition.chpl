@@ -275,64 +275,25 @@ module Repartition {
       numBytesSendingByLocale[here.id] = bytesPerLocale;
       numStringsSendingByLocale[here.id] = stringsPerLocale;
 
-      var currLocIndAllLocales: [myDestLocales.domain] int;
-      var currLocOffsetAllLocales: [myDestLocales.domain] int;
-
-      /*
-      // It would be very cool if we could do things this way:
-
       for i in 0..#numLocales {
         sendOffsets[here.id][i] = new innerArray({0..#stringsPerLocale[i]}, int);
         sendBytes[here.id][i] = new innerArray({0..#bytesPerLocale[i]}, uint(8));
-
-        const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
-        const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
-        const currLocSizes = doCurrLoc * sizes;
-        const currLocOffsets = (+ scan currLocSizes) - currLocSizes;
-
-        currLocIndAllLocales += doCurrLoc * currLocInd;
-        currLocOffsetAllLocales += doCurrLoc * currLocOffsets;
       }
 
-      ref currSendOffsets = [i in 0..#numLocales] sendOffsets[here.id][i].Arr;
-      ref currSendBytes = [i in 0..#numLocales] sendBytes[here.id][i].Arr;
+      var currLocInd: [0..#numLocales] int;
+      var currLocOffset: [0..#numLocales] int;
 
-      forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
+      for (j, dl) in zip(myDestLocales.domain, myDestLocales) {
         const currSize = sizes[j];
-        currSendOffsets[dl][currLocIndAllLocales[j]] = currLocOffsetAllLocales[j];
-        currSendBytes[dl][currLocOffsetAllLocales[j]..#currSize]
-                      = myStrBytes[myStrOffsets[j]..#currSize];
-      }
+        ref currSendOffsets = sendOffsets[here.id][dl].Arr;
+        ref currSendBytes = sendBytes[here.id][dl].Arr;
+        const currInd = currLocInd[dl];
+        const currOffset = currLocOffset[dl];
 
-      // Notice that there's only one forall at the end. This would potentially be faster.
-      // But because we can't do an array of refs (currently, at least), there's going to be a forall
-      // inside the for, and we do a forall for each of the locales. With all the vectorized stuff
-      // we're kind of already doing that so I'm not convinced what follows is significantly slower.
-      */
-
-      for i in 0..#numLocales {
-        sendOffsets[here.id][i] = new innerArray({0..#stringsPerLocale[i]}, int);
-        sendBytes[here.id][i] = new innerArray({0..#bytesPerLocale[i]}, uint(8));
-
-        const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
-        const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
-        const currLocSizes = doCurrLoc * sizes;
-        const currLocOffsets = (+ scan currLocSizes) - currLocSizes;
-
-        currLocIndAllLocales += doCurrLoc * currLocInd;
-        currLocOffsetAllLocales += doCurrLoc * currLocOffsets;
-
-        ref currSendOffsets = sendOffsets[here.id][i].Arr;
-        ref currSendBytes = sendBytes[here.id][i].Arr;
-
-        forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
-          if dl == i {
-            const currSize = sizes[j];
-            currSendOffsets[currLocIndAllLocales[j]] = currLocOffsetAllLocales[j];
-            currSendBytes[currLocOffsetAllLocales[j]..#currSize]
-                        = myStrBytes[myStrOffsets[j]..#currSize];
-          }
-        }
+        currSendOffsets[currInd] = currOffset;
+        currSendBytes[currOffset..#currSize] = myStrBytes[myStrOffsets[j]..#currSize];
+        currLocInd[dl] += 1;
+        currLocOffset[dl] += currSize;
       }
       
     }
