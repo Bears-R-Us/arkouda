@@ -3178,7 +3178,7 @@ def _matmul2d(pda_L: pdarray, pda_R: pdarray) -> pdarray:
 
 
 @typechecked
-def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
+def matmul(pda_L: pdarray, pda_R: pdarray) -> Union[numeric_scalars, np.bool, pdarray]:
     """
     Compute the product of two matrices.
     If both are 1D, this returns a simple dot product.
@@ -3196,8 +3196,8 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
 
     Returns
     -------
-    pdarray
-        the matrix product pda_L x pda_R
+    pdarray or scalar
+        the matrix product pda_L x pda_R; scalar for two 1D inputs, pdarray otherwise
 
     Examples
     --------
