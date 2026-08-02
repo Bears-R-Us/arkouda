@@ -345,6 +345,13 @@ class TestPdarrayCreation:
             ak_arr = ak.array([bi + i for i in range(size)]).reshape(shape)
             assert_arkouda_array_equal(ak_arr, ak.array(np_arr))
 
+            np_obj_arr = np.array([bi + i for i in range(size)], dtype=object).reshape(shape)
+            assert_arkouda_array_equal(ak_arr, ak.array(np_obj_arr, dtype=ak.bigint))
+
+            np_neg_obj_arr = np.array([-bi - i for i in range(size)], dtype=object).reshape(shape)
+            ak_neg_arr = ak.array([-bi - i for i in range(size)], dtype=ak.bigint).reshape(shape)
+            assert_arkouda_array_equal(ak_neg_arr, ak.array(np_neg_obj_arr, dtype=ak.bigint))
+
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_newaxis(self, size):
