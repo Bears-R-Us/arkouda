@@ -850,6 +850,10 @@ class TestNumeric:
         assert (np.isinf(nda_blowup) == ak.isinf(pda_blowup).to_ndarray()).all()
         assert (np.isfinite(nda_blowup) == ak.isfinite(pda_blowup).to_ndarray()).all()
 
+        for dtype in ["int64", "uint64", "bool"]:
+            nda = np.array([0, 1, 2, 3], dtype=dtype)
+            assert (np.isinf(nda) == ak.isinf(ak.array(nda)).to_ndarray()).all()
+
     def test_str_cat_cast(self):
         test_strs = [
             ak.array([f"str {i}" for i in range(101)]),
