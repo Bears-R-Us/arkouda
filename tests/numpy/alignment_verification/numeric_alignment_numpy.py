@@ -452,14 +452,6 @@ def test_matmul_alignment_2d(rng: np.random.Generator) -> None:
     _assert_array_equal_or_allclose(np_res, ak_res)
 
 
-@pytest.mark.xfail(
-    reason=(
-        "NumPy semantics: 1D @ 1D returns a scalar. "
-        "ak.matmul returns a scalar too, but is annotated as returning pdarray, "
-        "triggering typeguard. This is a typing bug, not an alignment failure."
-    ),
-    strict=True,
-)
 def test_matmul_alignment_1d_1d(rng: np.random.Generator) -> None:
     a = rng.integers(-5, 5, size=20, dtype=np.int64)
     b = rng.integers(-5, 5, size=20, dtype=np.int64)
