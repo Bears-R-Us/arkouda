@@ -459,18 +459,18 @@ class TestNumeric:
 
         assert_arkouda_array_equivalent(ak.fabs(x), ak.array([1, 2**63, 1], dtype=ak.float64))
 
-    @pytest.mark.parametrize("num_type", NO_BOOL)
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_square(self, prob_size, num_type):
-        nda = np.arange(prob_size).astype(num_type)
-        if num_type != ak.uint64:
+        if num_type == ak.bool_:
+            nda = (np.arange(prob_size) % 2).astype(num_type)
+        else:
+            nda = np.arange(prob_size).astype(num_type)
+        if num_type not in (ak.bool_, ak.uint64):
             nda = nda - prob_size // 2
         pda = ak.array(nda)
 
         assert np.allclose(np.square(nda), ak.square(pda).to_ndarray())
-
-        with pytest.raises(TypeError):
-            ak.square(np.array([range(-10, 10)]).astype(ak.bool_))
 
     @pytest.mark.parametrize("num_type", INT_FLOAT)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)

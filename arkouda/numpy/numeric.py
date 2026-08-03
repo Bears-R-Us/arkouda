@@ -998,6 +998,8 @@ def square(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     array([1 4 9 16])
     """
     _datatype_check(pda.dtype, NUMERIC_TYPES, "floor")
+    if pda.dtype == ak_bool:
+        pda = cast(pda, ak_int64)
     return _general_helper(pda, "square", where)
 
 

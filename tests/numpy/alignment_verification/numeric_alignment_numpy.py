@@ -190,13 +190,6 @@ def test_unary_alignment(
                 "backend dispatch/casting bug: isinf<1> cannot cast runtime types. Issue #5249."
             )
 
-        if name == "square" and kind == "b":
-            pytest.xfail(
-                "ak.square does not support bool dtype "
-                "(NumPy supports np.square on bool via 0/1 semantics). "
-                "Client dtype gate in _general_helper/_datatype_check. Issue #5250."
-            )
-
         # NumPy reference
         if use_where and name in {
             "square",
