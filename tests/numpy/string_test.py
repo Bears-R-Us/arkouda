@@ -957,6 +957,16 @@ class TestString:
 
         assert set(output.to_ndarray()) == correct
 
+        dup_lists = [
+            ["apple", "banana", "apple", "kiwi", "banana", "fig"],
+            ["kiwi", "date", "date", "apple", "grape", "grape"],
+            ["banana", "elderberry", "fig", "fig", "apple", "honeydew"],
+        ]
+        dup_output = Strings.concatenate_uniquely([ak.array(vals) for vals in dup_lists])
+        dup_correct = set().union(*(set(vals) for vals in dup_lists))
+
+        assert set(dup_output.to_ndarray()) == dup_correct
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_argsort(self, size):
         base_words, _ = self.base_words(size)
