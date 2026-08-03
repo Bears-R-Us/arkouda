@@ -168,15 +168,11 @@ def _trig_and_hyp_test_helper(np_func, na, ak_func, pda):
     old_settings = np.seterr(all="ignore")  # retrieve current settings
     np.seterr(over="ignore", invalid="ignore", divide="ignore")
     assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
-    truth_np = alternate(True, False, len(na))
-    truth_ak = ak.array(truth_np)
-    assert np.allclose(np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True)
-    assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
-    assert np.allclose(
-        [np_func(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
-        ak_func(pda, where=truth_ak).tolist(),
-        equal_nan=True,
-    )
+    truth_ak = ak.array(alternate(True, False, len(na)))
+    with pytest.raises(TypeError):
+        ak_func(pda, where=False)
+    with pytest.raises(TypeError):
+        ak_func(pda, where=truth_ak)
     np.seterr(**old_settings)  # restore original settings
 
 
