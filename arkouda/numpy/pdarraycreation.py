@@ -480,7 +480,6 @@ def _bigint_from_numpy(
 
     a = np.asarray(np_a)
     out_shape = a.shape
-    flat = a.ravel()  # ndarray (view when possible)
 
     # Empty → empty bigint (shape-preserving)
     if a.size == 0:
@@ -597,24 +596,25 @@ def _bigint_from_numpy(
     # Attempt to break bigint into multiple uint64 limb arrays.
     # NOTE: This loop is inherently heavy for dtype=object inputs (Python big ints),
     # but we minimize overhead by avoiding extra pre-scans of the data.
+    limbs = a
     for _ in range(req_limbs):
-        low = flat & mask
-        flat = flat >> 64  # type: ignore
+        low = limbs & mask
+        limbs = limbs >> 64  # type: ignore
         uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
 
     # Server expects shape of the resulting bigint array (original shape).
     return create_pdarray(
         generic_msg(
-            cmd=f"big_int_creation_multi_limb<{uint_arrays[0].dtype},1>",
+            cmd=f"big_int_creation_multi_limb<{uint_arrays[0].dtype},{uint_arrays[0].ndim}>",
             args={
                 "arrays": uint_arrays,
                 "num_arrays": len(uint_arrays),
                 "signed": bool(any_neg),
-                "shape": flat.shape,
+                "shape": out_shape,
                 "max_bits": max_bits,
             },
         )
-    ).reshape(out_shape)
+    )
 
 
 @typechecked
