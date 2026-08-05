@@ -48,7 +48,6 @@ module ApplyMsg {
         "Initializing Python interpreters");
 
       forall interp in interpreters do
-        if interp == nil then
           interp = new Interpreter();
     }
   }
