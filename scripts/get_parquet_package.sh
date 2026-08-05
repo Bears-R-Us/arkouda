@@ -42,11 +42,6 @@ if [[ -z "${CHPL_HOME:-}" ]]; then
   CHPL_HOME="$(chpl --print-chpl-home)"
 fi
 
-if [[ ! -x "${CHPL_HOME}/util/config/compileline" ]]; then
-  log "ERROR: invalid CHPL_HOME: ${CHPL_HOME}"
-  exit 1
-fi
-
 # Allow pointing at an existing checkout (e.g. a Mason clone) to skip cloning.
 PARQUET_SRC="${ARKOUDA_PARQUET_SRC_DIR:-${INSTALL_DIR}}"
 
@@ -74,21 +69,14 @@ if [[ ! -f "${PARQUET_MODULE}" ]]; then
   exit 1
 fi
 
-# Build the C++ prerequisite objects (no-op if already up to date).
 log "Building C++ prerequisites in ${PREREQ_DIR}"
 make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME:-}" >&2
 
 # Gather the chpl flags the package needs.
-RAW_FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME:-}" printchplflags)"
-if [[ -z "${RAW_FLAGS}" ]]; then
+FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME:-}" printchplflags)"
+if [[ -z "${FLAGS}" ]]; then
   log "ERROR: the Parquet prerequisite build returned no Chapel flags"
   exit 1
 fi
 
-# `printchplflags` emits `-I./src/util/` relative to the package root; rewrite it
-# to an absolute path so chpl (invoked from the Arkouda root) resolves it.
-FLAGS="$(printf '%s' "${RAW_FLAGS}" | sed "s|-I\./|-I${PARQUET_ROOT}/|g")"
-
-# Emit the flags followed by the Parquet module source. This is the only line
-# written to stdout.
 printf '%s %s\n' "${FLAGS}" "${PARQUET_MODULE}"
