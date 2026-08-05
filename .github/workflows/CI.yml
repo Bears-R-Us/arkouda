@@ -658,3 +658,18 @@ jobs:
     - name: Arkouda benchmark -- Numpy
       run: |
         python3 -m pytest -c benchmark.ini --size=10 --numpy
+
+
+  # This job exists to have a single check for which failure means merging
+  # should be blocked, for GH required status checks purposes.
+  checks-alert-failure:
+    if: ${{ cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-slim
+    needs:
+      - arkouda_benchmark_linux
+      - arkouda_multi-dim
+    steps:
+      - name: Fail
+        run: |
+          echo "A required status check has failed"
+          exit 1
