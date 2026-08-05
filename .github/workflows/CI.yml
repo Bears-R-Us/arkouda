@@ -666,6 +666,12 @@ jobs:
     if: ${{ cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}
     runs-on: ubuntu-slim
     needs:
+      - lint
+      - mypy
+      - flake8
+      - ruff-format
+      - arkouda_python_portability
+      - arkouda_chpl_portability
       - arkouda_benchmark_linux
       - arkouda_multi-dim
     steps:
