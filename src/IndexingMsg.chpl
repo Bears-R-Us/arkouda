@@ -152,19 +152,6 @@ module IndexingMsg
             var arraySlice = makeDistArray((...outSizes), t);
             arraySlice = array[{(...rngs)}];
             return new shared SymEntry(arraySlice, max_bits=max_bits);
-        } else if allEq(strides, -1) {
-            // same as above but with strideKind.negOne
-            var rngs: d.rank*range(strides=strideKind.negOne),
-                outSizes: d.rank*int;
-            for param dim in 0..<d.rank {
-                rngs[dim] = stops[dim]+1..starts[dim] by -1;
-                outSizes[dim] = rngs[dim].size;
-            }
-
-            const sliceDom = {(...rngs)}; // we don't need a distributed dom for this
-            var arraySlice = makeDistArray((...outSizes), t);
-            arraySlice = array[{(...rngs)}];
-            return new shared SymEntry(arraySlice, max_bits=max_bits);
         } else {
             var rngs: d.rank*range(strides=strideKind.any),
                 outSizes: d.rank*int;
