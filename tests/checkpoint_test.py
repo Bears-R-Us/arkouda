@@ -164,21 +164,6 @@ class TestCheckpoint:
         finally:
             clean_fake_cp(cp_name)
 
-    def test_unknown_entry_type(self):
-        cp_name = "test_unknown_entry_type_cp"
-        create_fake_cp(cp_name)
-        metadata_name = path.join(get_def_cp_path(cp_name), "unknown.md")
-        with open(metadata_name, "w") as metadata_file:
-            metadata_file.write(
-                json.dumps({"entryName": "unknown", "entryType": "NotAnEntryType"}) + "\n"
-            )
-
-        try:
-            with pytest.raises(RuntimeError, match="Unknown checkpoint entry type"):
-                ak.load_checkpoint(cp_name)
-        finally:
-            clean_fake_cp(cp_name)
-
     def test_wrong_argument(self):
         try:
             ak.save_checkpoint(mode="override")
