@@ -254,8 +254,7 @@ def get_shell_mode():
         shell_mode = ShellMode(get_ipython().__class__.__name__)
     except NameError:
         shell_mode = ShellMode.REPL_SHELL
-    finally:
-        return shell_mode
+    return shell_mode
 
 
 # Get ClientMode, defaulting to UI
