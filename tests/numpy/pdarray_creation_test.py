@@ -590,10 +590,7 @@ class TestPdarrayCreation:
         zeros = ak.zeros(size, dtype)
         assert isinstance(zeros, ak.pdarray)
         assert dtype == zeros.dtype
-        if dtype == ak.uint8:
-            assert zeros.tolist() == [0] * size
-        else:
-            assert (0 == zeros).all()
+        assert (0 == zeros).all()
 
     def test_zeros_uint8_string_dtype(self):
         zeros = ak.zeros(5, "uint8")
