@@ -880,17 +880,11 @@ module ParquetMsg {
   }
 
   proc writeSegArrayParquet(filename: string, dsetName: string, c_dtype, segments_entry, values_entry, compression: int): bool throws {
-    // Delegates to the Mason Parquet package. `c_dtype` is retained for the
-    // caller's dispatch but is unused here: writeListColumn infers the Arrow
-    // type from the value array's Chapel element type.
     return writeListColumn(filename, dsetName, segments_entry.a,
                            values_entry.a, compression: CompressionType);
   }
 
   proc writeStrSegArrayParquet(filename: string, dsetName: string, segments_entry, values_entry, compression: int): bool throws {
-    // Delegates to the Mason Parquet package. For a SegArray of strings,
-    // `segments` indexes into the string offsets, `offsets` into the raw byte
-    // values, matching Arkouda's SegString layout.
     return writeStrListColumn(filename, dsetName, segments_entry.a,
                               values_entry.offsetsEntry.a,
                               values_entry.bytesEntry.a,
