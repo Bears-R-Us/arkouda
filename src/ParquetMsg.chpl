@@ -1061,7 +1061,7 @@ module ParquetMsg {
     }
   }
 
-  private proc writeMultiColWithDomain(filename: string,
+  private proc writeMultiColWithOps(filename: string,
                                        colNames: [] string,
                                        symNames: [] string,
                                        colObjTypes: [] string,
@@ -1079,7 +1079,7 @@ module ParquetMsg {
     return filesExist;
   }
 
-  private proc writeMultiColWithMason(filename: string,
+  private proc writeMultiColParquet(filename: string,
                                       colNames: [] string,
                                       symNames: [] string,
                                       colObjTypes: [] string,
@@ -1089,7 +1089,7 @@ module ParquetMsg {
     select colObjTypes[colObjTypes.domain.low].toUpper(): ObjType {
       when ObjType.STRINGS {
         const first = toSegStringSymEntry(st[firstName]);
-        return writeMultiColWithDomain(filename, colNames, symNames,
+        return writeMultiColWithOps(filename, colNames, symNames,
                                        colObjTypes, compression, st,
                                        first.offsetsEntry.a.domain);
       }
@@ -1097,7 +1097,7 @@ module ParquetMsg {
         const components = jsonToMap(firstName);
         const first = toSymEntry(
             getGenericTypedArrayEntry(components["segments"], st), int);
-        return writeMultiColWithDomain(filename, colNames, symNames,
+        return writeMultiColWithOps(filename, colNames, symNames,
                                        colObjTypes, compression, st,
                                        first.a.domain);
       }
@@ -1105,19 +1105,19 @@ module ParquetMsg {
         const first = getGenericTypedArrayEntry(firstName, st);
         select first.dtype {
           when DType.Int64 do
-            return writeMultiColWithDomain(filename, colNames, symNames,
+            return writeMultiColWithOps(filename, colNames, symNames,
                 colObjTypes, compression, st,
                 toSymEntry(first, int).a.domain);
           when DType.UInt64 do
-            return writeMultiColWithDomain(filename, colNames, symNames,
+            return writeMultiColWithOps(filename, colNames, symNames,
                 colObjTypes, compression, st,
                 toSymEntry(first, uint).a.domain);
           when DType.Float64 do
-            return writeMultiColWithDomain(filename, colNames, symNames,
+            return writeMultiColWithOps(filename, colNames, symNames,
                 colObjTypes, compression, st,
                 toSymEntry(first, real).a.domain);
           when DType.Bool do
-            return writeMultiColWithDomain(filename, colNames, symNames,
+            return writeMultiColWithOps(filename, colNames, symNames,
                 colObjTypes, compression, st,
                 toSymEntry(first, bool).a.domain);
           otherwise do
@@ -1154,7 +1154,7 @@ module ParquetMsg {
 
     var warnFlag: bool;
     try {
-      warnFlag = writeMultiColWithMason(filename, col_names, sym_names,
+      warnFlag = writeMultiColParquet(filename, col_names, sym_names,
                                         col_objType_strs, compression:int, st);
     } catch e: FileNotFoundError {
       var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
