@@ -18,12 +18,6 @@ module ParquetMsg {
   use IOUtils;
   use ParquetSharedEnums;
 
-  // The core Parquet I/O primitives now live in the standalone Mason `Parquet`
-  // package. ParquetMsg delegates to that API and only retains Arkouda-server
-  // specific plumbing (the message handlers, the optimized read-all path, and
-  // the multi-column writer) plus the few helpers Mason does not provide.
-  // These symbols are re-exported so existing importers (e.g. CheckpointMsg)
-  // keep resolving them through ParquetMsg.
   public use Parquet only CompressionType, ArrowTypes,
                           TRUNCATE, APPEND, ROWGROUPS,
                           ARROWINT64, ARROWINT32, ARROWUINT64, ARROWUINT32,
@@ -46,9 +40,6 @@ module ParquetMsg {
   import Reflection.{getModuleName as getM,
                      getRoutineName as getR,
                      getLineNumber as getL};
-  // The C++ Parquet prerequisites (headers and objects) are supplied on the
-  // `chpl` command line by scripts/get_parquet_package.sh via the Makefile, so
-  // no `require` statements are needed here.
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -101,9 +92,6 @@ module ParquetMsg {
                               compression: CompressionType, mode);
   }
 
-  // `dtype` is retained for backward compatibility with existing callers
-  // (e.g. CheckpointMsg and pdarray_toParquetMsg); the Mason writer infers the
-  // Arrow type from the Chapel array element type, so it is no longer needed.
   proc write1DDistArrayParquet(filename: string, dsetname, dtype, compression, mode, A) throws {
     return masonWrite1DDistArrayParquet(filename, dsetname,
                                         compression: CompressionType, mode, A);
@@ -916,7 +904,6 @@ module ParquetMsg {
     var dsetname = msgArgs.getValueOf("dset");
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
-    // because append has been depreacted, support is not being added for SegArray. 
     if mode == APPEND {
       throw getErrorWithContext(getL(), getM(), getR(),
                                 msg="APPEND write mode is not supported for SegArray.",
