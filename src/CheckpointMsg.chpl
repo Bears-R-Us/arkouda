@@ -178,12 +178,12 @@ module CheckpointMsg {
             entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
       }
 
-          if entry.name.isEmpty() then
-            throw new LoadCheckpointError("Entry in " + mdName + " has empty name");
+      if entry.name.isEmpty() then
+        throw new LoadCheckpointError("Entry in " + mdName + " has empty name");
 
-          st.addEntry(entry.name, entry);
-          cpLogger.debug(M(), R(), L(), "Added entry with metadata ", mdName);
-        }
+      st.addEntry(entry.name, entry);
+      cpLogger.debug(M(), R(), L(), "Added entry with metadata ", mdName);
+    }
 
     updateLastCkptCompletion();
     return Msg.send(nameArg);
