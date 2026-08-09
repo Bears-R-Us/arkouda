@@ -27,7 +27,6 @@ module ParquetMsg {
   public use Parquet only CompressionType, ArrowTypes,
                           TRUNCATE, APPEND, ROWGROUPS,
                           ARROWINT64, ARROWINT32, ARROWUINT64, ARROWUINT32,
-                          ARROWUINT8,
                           ARROWBOOLEAN, ARROWSTRING, ARROWFLOAT, ARROWDOUBLE,
                           ARROWLIST, ARROWDECIMAL, ARROWERROR,
                           readFilesByName, readStrFilesByName,
@@ -130,12 +129,6 @@ module ParquetMsg {
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
-      readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
-      st.addEntry(vname, createSymEntry(values));
-      rtnmap.add("values", "created " + st.attrib(vname));
-    }
-    else if ty == ArrowTypes.uint8 {
-      var values = makeDistArray((+ reduce listSizes), uint(8));
       readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       st.addEntry(vname, createSymEntry(values));
       rtnmap.add("values", "created " + st.attrib(vname));
@@ -316,7 +309,7 @@ module ParquetMsg {
   }
 
   proc validUIntType(type t) param {
-    return t==uint(8) || t==uint(32) || t==uint(64);
+    return t==uint(32) || t==uint(64);
   }
 
   proc validRealType(type t) param {
@@ -390,7 +383,7 @@ module ParquetMsg {
 
     proc type canHandleType(ty: c_int) {
       return ty == ARROWINT64   || ty == ARROWINT32  ||
-             ty == ARROWUINT64  || ty == ARROWUINT32 || ty == ARROWUINT8 ||
+             ty == ARROWUINT64  || ty == ARROWUINT32 ||
              ty == ARROWDOUBLE  || ty == ARROWFLOAT  ||
              ty == ARROWBOOLEAN ||
              ty == ARROWDECIMAL;
@@ -409,7 +402,6 @@ module ParquetMsg {
         when ARROWINT32   do return createSymEntry(this.len, int(64));
         when ARROWUINT64  do return createSymEntry(this.len, uint(64));
         when ARROWUINT32  do return createSymEntry(this.len, uint(64));
-        when ARROWUINT8   do return createSymEntry(this.len, uint(8));
         when ARROWDOUBLE  do return createSymEntry(this.len, real(64));
         when ARROWFLOAT   do return createSymEntry(this.len, real(64));
         when ARROWBOOLEAN do return createSymEntry(this.len, bool);
@@ -560,7 +552,6 @@ module ParquetMsg {
         when ARROWINT32   do return (e:(SE(int(64) , 1))).a.domain;
         when ARROWUINT64  do return (e:(SE(uint(64), 1))).a.domain;
         when ARROWUINT32  do return (e:(SE(uint(64), 1))).a.domain;
-        when ARROWUINT8   do return (e:(SE(uint(8) , 1))).a.domain;
         when ARROWDOUBLE  do return (e:(SE(real(64), 1))).a.domain;
         when ARROWFLOAT   do return (e:(SE(real(64), 1))).a.domain;
         when ARROWBOOLEAN do return (e:(SE(bool    , 1))).a.domain;
@@ -587,7 +578,6 @@ module ParquetMsg {
         when ARROWINT32   do return c_ptrTo((e:(BSE(int(64) , 1))).a[off]);
         when ARROWUINT64  do return c_ptrTo((e:(BSE(uint(64), 1))).a[off]);
         when ARROWUINT32  do return c_ptrTo((e:(BSE(uint(64), 1))).a[off]);
-        when ARROWUINT8   do return c_ptrTo((e:(BSE(uint(8) , 1))).a[off]);
         when ARROWDOUBLE  do return c_ptrTo((e:(BSE(real(64), 1))).a[off]);
         when ARROWFLOAT   do return c_ptrTo((e:(BSE(real(64), 1))).a[off]);
         when ARROWBOOLEAN do return c_ptrTo((e:(BSE(bool    , 1))).a[off]);
@@ -619,7 +609,6 @@ module ParquetMsg {
         when ARROWINT32   do return _postProcess(e:(SSE(int(64) , 1)), colIdx);
         when ARROWUINT64  do return _postProcess(e:(SSE(uint(64), 1)), colIdx);
         when ARROWUINT32  do return _postProcess(e:(SSE(uint(64), 1)), colIdx);
-        when ARROWUINT8   do return _postProcess(e:(SSE(uint(8) , 1)), colIdx);
         when ARROWDOUBLE  do return _postProcess(e:(SSE(real(64), 1)), colIdx);
         when ARROWFLOAT   do return _postProcess(e:(SSE(real(64), 1)), colIdx);
         when ARROWBOOLEAN do return _postProcess(e:(SSE(bool    , 1)), colIdx);
@@ -864,11 +853,6 @@ module ParquetMsg {
         warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
                                            compression:int, mode, e.a)[0];
       }
-      when DType.UInt8 {
-        var e = toSymEntry(toGenSymEntry(entry), uint(8));
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
-                                           compression:int, mode, e.a)[0];
-      }
       when DType.Bool {
         var e = toSymEntry(toGenSymEntry(entry), bool);
         warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
@@ -953,10 +937,6 @@ module ParquetMsg {
       when DType.UInt64 {
         var values = toSymEntry(genVal, uint);
         warnFlag = writeSegArrayParquet(filename, dsetname, ARROWUINT64, segments, values, compression:int);
-      }
-      when DType.UInt8 {
-        var values = toSymEntry(genVal, uint(8));
-        warnFlag = writeSegArrayParquet(filename, dsetname, ARROWUINT8, segments, values, compression:int);
       }
       when DType.Bool {
         var values = toSymEntry(genVal, bool);
@@ -1044,8 +1024,6 @@ module ParquetMsg {
               op.registerColumn(toSymEntry(entry, int).a, colName);
             when DType.UInt64 do
               op.registerColumn(toSymEntry(entry, uint).a, colName);
-            when DType.UInt8 do
-              op.registerColumn(toSymEntry(entry, uint(8)).a, colName);
             when DType.Float64 do
               op.registerColumn(toSymEntry(entry, real).a, colName);
             when DType.Bool do
@@ -1075,9 +1053,6 @@ module ParquetMsg {
             when DType.UInt64 do
               op.registerListColumn(segments.a,
                                     toSymEntry(values, uint).a, colName);
-            when DType.UInt8 do
-              op.registerListColumn(segments.a,
-                                    toSymEntry(values, uint(8)).a, colName);
             when DType.Float64 do
               op.registerListColumn(segments.a,
                                     toSymEntry(values, real).a, colName);
@@ -1156,10 +1131,6 @@ module ParquetMsg {
             return writeMultiColWithDomain(filename, colNames, symNames,
                 colObjTypes, compression, st,
                 toSymEntry(first, uint).a.domain);
-          when DType.UInt8 do
-            return writeMultiColWithDomain(filename, colNames, symNames,
-                colObjTypes, compression, st,
-                toSymEntry(first, uint(8)).a.domain);
           when DType.Float64 do
             return writeMultiColWithDomain(filename, colNames, symNames,
                 colObjTypes, compression, st,

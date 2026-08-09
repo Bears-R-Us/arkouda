@@ -41,7 +41,7 @@ class TestCheckpoint:
         reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable",
     )
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", ["int64", "float64", "bool", "uint8"])
+    @pytest.mark.parametrize("dtype", ["int64", "float64", "bool"])
     def test_checkpoint(self, prob_size, dtype):
         rmtree(".akdata", ignore_errors=True)  # start from clean
         val2 = 2 if dtype != "bool" else True

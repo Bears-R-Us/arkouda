@@ -762,7 +762,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 @overload
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    dtype: Union[NumericDTypeTypes, type[np.uint8], type[bigint]] = ...,
+    dtype: Union[NumericDTypeTypes, type[bigint]] = ...,
     max_bits: Optional[int] = ...,
 ) -> pdarray: ...
 
@@ -779,7 +779,7 @@ def zeros(
 @typechecked
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    dtype: Union[NumericDTypeTypes, type[np.uint8], type[bigint]] = float64,
+    dtype: Union[NumericDTypeTypes, type[bigint]] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -837,7 +837,7 @@ def zeros(
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
-    if dtype_name not in NumericDTypes and dtype_name != "uint8":
+    if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
     from arkouda.numpy.util import (

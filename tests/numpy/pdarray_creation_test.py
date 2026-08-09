@@ -585,17 +585,12 @@ class TestPdarrayCreation:
         assert (uint_arr == int_arr).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint8, float, ak.float64, bool, ak.bool_, ak.bigint])
+    @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     def test_zeros_dtype(self, size, dtype):
         zeros = ak.zeros(size, dtype)
         assert isinstance(zeros, ak.pdarray)
         assert dtype == zeros.dtype
         assert (0 == zeros).all()
-
-    def test_zeros_uint8_string_dtype(self):
-        zeros = ak.zeros(5, "uint8")
-        assert zeros.dtype == ak.uint8
-        assert zeros.tolist() == [0, 0, 0, 0, 0]
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -627,6 +622,9 @@ class TestPdarrayCreation:
     def test_zeros_misc(self):
         zeros = ak.ones("5")
         assert 5 == len(zeros)
+
+        with pytest.raises(TypeError):
+            ak.zeros(5, dtype=ak.uint8)
 
         with pytest.raises(TypeError):
             ak.zeros(5, dtype=str)
