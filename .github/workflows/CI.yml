@@ -434,7 +434,13 @@ jobs:
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
     - name: Build/Install Arkouda
       run: |
-        make
+        cat > UsedModules.cfg <<'EOF'
+        SequenceMsg
+        ParquetMsg
+        CastMsg
+        SegmentedMsg
+        EOF
+        ARKOUDA_CONFIG_FILE=UsedModules.cfg make
         python3 -m pip install .[dev]
     - name: Arkouda unit tests
       env:
