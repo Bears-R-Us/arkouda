@@ -4,16 +4,16 @@ on:
     branches: [ main ]
     # This limits the action so it only builds when this file changes
     paths:
-      - docker/ubuntu-with-arkouda-deps/Dockerfile
-      - docker/almalinux-with-arkouda-deps/Dockerfile
+      - docker/ci/ubuntu-with-arkouda-deps/Dockerfile
+      - docker/ci/almalinux-with-arkouda-deps/Dockerfile
       # also trigger on changes to this workflow file itself
       - .github/workflows/build-CI-container.yml
       - .github/workflows/build-CI-container-jobs.yml
   pull_request:
     paths:
       # same as for pushes above
-      - docker/ubuntu-with-arkouda-deps/Dockerfile
-      - docker/almalinux-with-arkouda-deps/Dockerfile
+      - docker/ci/ubuntu-with-arkouda-deps/Dockerfile
+      - docker/ci/almalinux-with-arkouda-deps/Dockerfile
       - .github/workflows/build-CI-container.yml
       - .github/workflows/build-CI-container-jobs.yml
   # Adds a "manual run" option in the GH UI
@@ -23,49 +23,49 @@ jobs:
   build-ubuntu-with-arkouda-deps-240:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.4.0
-      CONTEXTPATH: docker/ubuntu-with-arkouda-deps
+      CONTEXTPATH: docker/ci/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.4.0
   build-ubuntu-with-arkouda-deps-250:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.5.0
-      CONTEXTPATH: docker/ubuntu-with-arkouda-deps
+      CONTEXTPATH: docker/ci/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.5.0
   build-ubuntu-with-arkouda-deps-260:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.6.0
-      CONTEXTPATH: docker/ubuntu-with-arkouda-deps
+      CONTEXTPATH: docker/ci/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.6.0
   build-ubuntu-with-arkouda-deps-270:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.7.0
-      CONTEXTPATH: docker/ubuntu-with-arkouda-deps
+      CONTEXTPATH: docker/ci/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.7.0
   build-ubuntu-with-arkouda-deps-280:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.8.0
-      CONTEXTPATH: docker/ubuntu-with-arkouda-deps
+      CONTEXTPATH: docker/ci/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.8.0
   build-ubuntu-with-arkouda-deps-290:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.9.0
-      CONTEXTPATH: docker/ubuntu-with-arkouda-deps
+      CONTEXTPATH: docker/ci/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.9.0
   build-almalinux-with-arkouda-deps:
     uses: ./.github/workflows/build-CI-container.yml
     with:
-      DOCKERFILE: docker/almalinux-with-arkouda-deps/Dockerfile
+      DOCKERFILE: docker/ci/almalinux-with-arkouda-deps/Dockerfile
       IMAGE_NAME: almalinux-with-arkouda-deps
-      CONTEXTPATH: docker/almalinux-with-arkouda-deps
+      CONTEXTPATH: docker/ci/almalinux-with-arkouda-deps
       CHPL_VERSION: 2.9.0
