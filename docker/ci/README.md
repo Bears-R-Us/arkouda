@@ -20,7 +20,7 @@ When making changes to the CI that require updates to the images, please follow 
 
 To add a new CI image, follow these steps:
 
-1. Create a new directory in this `docker/` directory for the new image.
+1. Create a new directory in this `docker/ci` directory for the new image.
 2. Add a Dockerfile to the new directory that defines the image.
 3. Update `.github/workflows/build-CI-container-jobs.yml` to include jobs for building and pushing the new image. You can copy and modify the existing jobs for the other images as needed.
 4. Open a PR with the new directory, Dockerfile, and workflow changes. The new image will be built and pushed automatically when the PR is merged.
