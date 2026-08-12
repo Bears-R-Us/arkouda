@@ -442,7 +442,7 @@ jobs:
         EOF
         ARKOUDA_CONFIG_FILE=UsedModules.cfg make
         python3 -m pip install .[dev]
-        python3 -m pip uninstall pyarrow
+        python3 -m pip uninstall pyarrow -y
         python3 -m pip install pyarrow==19.0.1
     - name: Arkouda unit tests
       env:
