@@ -295,13 +295,34 @@ Module Contents
    Bases: :py:obj:`_GenericAlias`
 
 
-   The central part of the internal API.
+   The type of parameterized generics.
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated;
-   this is used by e.g. typing.List and typing.Dict.
+   That is, for example, `type(List[int])` is `_GenericAlias`.
+
+   Objects which are instances of this class include:
+   * Parameterized container types, e.g. `Tuple[int]`, `List[int]`.
+    * Note that native container types, e.g. `tuple`, `list`, use
+      `types.GenericAlias` instead.
+   * Parameterized classes:
+       class C[T]: pass
+       # C[int] is a _GenericAlias
+   * `Callable` aliases, generic `Callable` aliases, and
+     parameterized `Callable` aliases:
+       T = TypeVar('T')
+       # _CallableGenericAlias inherits from _GenericAlias.
+       A = Callable[[], None]  # _CallableGenericAlias
+       B = Callable[[T], None]  # _CallableGenericAlias
+       C = B[int]  # _CallableGenericAlias
+   * Parameterized `Final`, `ClassVar`, `TypeForm`, `TypeGuard`, and `TypeIs`:
+       # All _GenericAlias
+       Final[int]
+       ClassVar[float]
+       TypeForm[bytearray]
+       TypeGuard[bool]
+       TypeIs[range]
+
+   Note that instances of this class are not classes (e.g by `inspect.isclass`),
+   even though they behave like them.
 
 
 .. py:class:: Complex128DType
@@ -908,7 +929,7 @@ Module Contents
    Bases: :py:obj:`_Final`
 
 
-   Optional[X] is equivalent to Union[X, None].
+   Optional[X] is equivalent to X | None.
 
 
 .. py:class:: ScalarDTypes
@@ -1107,7 +1128,7 @@ Module Contents
 
    Special form for marking type aliases.
 
-   Use TypeAlias to indicate that an assignment should
+   TypeAlias can be used to indicate that an assignment should
    be recognized as a proper type alias definition by type
    checkers.
 
@@ -1392,7 +1413,8 @@ Module Contents
       bytes, or bytearray instance representing an integer literal in the
       given base.  The literal can be preceded by '+' or '-' and be surrounded
       by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-      Base 0 means to interpret the base from the string as an integer literal.
+      Base 0 means to interpret the base from the string as an integer
+      iteral.
       >>> int('0b100', base=0)
       4
 
@@ -1522,7 +1544,8 @@ Module Contents
       bytes, or bytearray instance representing an integer literal in the
       given base.  The literal can be preceded by '+' or '-' and be surrounded
       by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-      Base 0 means to interpret the base from the string as an integer literal.
+      Base 0 means to interpret the base from the string as an integer
+      iteral.
       >>> int('0b100', base=0)
       4
 
@@ -1571,7 +1594,8 @@ Module Contents
       bytes, or bytearray instance representing an integer literal in the
       given base.  The literal can be preceded by '+' or '-' and be surrounded
       by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-      Base 0 means to interpret the base from the string as an integer literal.
+      Base 0 means to interpret the base from the string as an integer
+      iteral.
       >>> int('0b100', base=0)
       4
 
@@ -2580,7 +2604,7 @@ Module Contents
 
 
 
-   .. py:method:: argsort(/, axis=-1, kind=None, order=None, *, stable=None)
+   .. py:method:: argsort(/, axis=-1, kind=None, order=None, *, stable=None, descending=None)
 
       Scalar method identical to `ndarray.argsort`.
 
@@ -2844,7 +2868,7 @@ Module Contents
 
 
 
-   .. py:method:: sort(/, axis=-1, kind=None, order=None, *, stable=None)
+   .. py:method:: sort(/, axis=-1, kind=None, order=None, *, stable=None, descending=None)
 
       Scalar method identical to `ndarray.sort`.
 

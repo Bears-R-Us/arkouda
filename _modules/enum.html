@@ -1070,9 +1070,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Either returns an existing member, or creates a new enum class.</span>
 
-<span class="sd">        This method is used both when an enum class is given a value to match</span>
-<span class="sd">        to an enumeration member (i.e. Color(3)) and for the functional API</span>
-<span class="sd">        (i.e. Color = Enum(&#39;Color&#39;, names=&#39;RED GREEN BLUE&#39;)).</span>
+<span class="sd">        This method is used both when an enum class is given a value to</span>
+<span class="sd">        match to an enumeration member (i.e. Color(3)) and for the</span>
+<span class="sd">        functional API (i.e. Color = Enum(&#39;Color&#39;, names=&#39;RED GREEN BLUE&#39;)).</span>
 
 <span class="sd">        The value lookup branch is chosen if the enum is final.</span>
 
@@ -1080,16 +1080,17 @@
 
 <span class="sd">        `value` will be the name of the new class.</span>
 
-<span class="sd">        `names` should be either a string of white-space/comma delimited names</span>
-<span class="sd">        (values will start at `start`), or an iterator/mapping of name, value pairs.</span>
+<span class="sd">        `names` should be either a string of white-space/comma delimited</span>
+<span class="sd">        names (values will start at `start`), or an iterator/mapping of</span>
+<span class="sd">        name, value pairs.</span>
 
 <span class="sd">        `module` should be set to the module this class is being created in;</span>
-<span class="sd">        if it is not set, an attempt to find that module will be made, but if</span>
-<span class="sd">        it fails the class will not be picklable.</span>
+<span class="sd">        if it is not set, an attempt to find that module will be made, but</span>
+<span class="sd">        if it fails the class will not be picklable.</span>
 
-<span class="sd">        `qualname` should be set to the actual location this class can be found</span>
-<span class="sd">        at in its module; by default it is set to the global scope.  If this is</span>
-<span class="sd">        not correct, unpickling will fail in some circumstances.</span>
+<span class="sd">        `qualname` should be set to the actual location this class can be</span>
+<span class="sd">        found at in its module; by default it is set to the global scope.</span>
+<span class="sd">        If this is not correct, unpickling will fail in some circumstances.</span>
 
 <span class="sd">        `type`, if set, will be mixed in as the first base class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1183,8 +1184,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a mapping of member name-&gt;value.</span>
 
-<span class="sd">        This mapping lists all enum members, including aliases. Note that this</span>
-<span class="sd">        is a read-only view of the internal mapping.</span>
+<span class="sd">        This mapping lists all enum members, including aliases.  Note that</span>
+<span class="sd">        this is a read-only view of the internal mapping.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_member_map_</span><span class="p">)</span>
 

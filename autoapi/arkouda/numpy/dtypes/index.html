@@ -412,7 +412,7 @@
 <td><p>CLongDoubleDType()</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.CastingKind" title="arkouda.numpy.dtypes.CastingKind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CastingKind</span></code></a></p></td>
-<td><p>The central part of the internal API.</p></td>
+<td><p>The type of parameterized generics.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.Complex128DType" title="arkouda.numpy.dtypes.Complex128DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Complex128DType</span></code></a></p></td>
 <td><p>Complex128DType()</p></td>
@@ -481,7 +481,7 @@
 <td><p>ObjectDType()</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Optional</span></code></a></p></td>
-<td><p>Optional[X] is equivalent to Union[X, None].</p></td>
+<td><p>Optional[X] is equivalent to X | None.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ScalarDTypes" title="arkouda.numpy.dtypes.ScalarDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarDTypes</span></code></a></p></td>
 <td><p>Build an immutable unordered collection of unique elements.</p></td>
@@ -836,12 +836,46 @@ and <span class="xref std std-ref">arrays.dtypes</span> for additional informati
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.CastingKind">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">CastingKind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">inst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.CastingKind" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_GenericAlias</span></code></p>
-<p>The central part of the internal API.</p>
-<p>This represents a generic version of type ‘origin’ with type arguments ‘params’.
-There are two kind of these aliases: user defined and special. The special ones
-are wrappers around builtin collections and ABCs in collections.abc. These must
-have ‘name’ always set. If ‘inst’ is False, then the alias can’t be instantiated;
-this is used by e.g. typing.List and typing.Dict.</p>
+<p>The type of parameterized generics.</p>
+<p>That is, for example, <cite>type(List[int])</cite> is <cite>_GenericAlias</cite>.</p>
+<p>Objects which are instances of this class include:
+* Parameterized container types, e.g. <cite>Tuple[int]</cite>, <cite>List[int]</cite>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Note that native container types, e.g. <cite>tuple</cite>, <cite>list</cite>, use
+<cite>types.GenericAlias</cite> instead.</p></li>
+</ul>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>Parameterized classes:</dt><dd><p>class C[T]: pass
+# C[int] is a _GenericAlias</p>
+</dd>
+</dl>
+</li>
+<li><p><cite>Callable</cite> aliases, generic <cite>Callable</cite> aliases, and
+parameterized <cite>Callable</cite> aliases:</p>
+<blockquote>
+<div><p>T = TypeVar(‘T’)
+# _CallableGenericAlias inherits from _GenericAlias.
+A = Callable[[], None]  # _CallableGenericAlias
+B = Callable[[T], None]  # _CallableGenericAlias
+C = B[int]  # _CallableGenericAlias</p>
+</div></blockquote>
+</li>
+<li><dl class="simple">
+<dt>Parameterized <cite>Final</cite>, <cite>ClassVar</cite>, <cite>TypeForm</cite>, <cite>TypeGuard</cite>, and <cite>TypeIs</cite>:</dt><dd><p># All _GenericAlias
+Final[int]
+ClassVar[float]
+TypeForm[bytearray]
+TypeGuard[bool]
+TypeIs[range]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Note that instances of this class are not classes (e.g by <cite>inspect.isclass</cite>),
+even though they behave like them.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1450,7 +1484,7 @@ and <span class="xref std std-ref">arrays.dtypes</span> for additional informati
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.Optional">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">Optional</span></span><a class="reference internal" href="../../../../_modules/typing.html#Optional"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.Optional" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_Final</span></code></p>
-<p>Optional[X] is equivalent to Union[X, None].</p>
+<p>Optional[X] is equivalent to X | None.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1644,7 +1678,7 @@ and <span class="xref std std-ref">arrays.dtypes</span> for additional informati
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">TypeAlias</span></span><a class="reference internal" href="../../../../_modules/typing.html#TypeAlias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.TypeAlias" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_Final</span></code></p>
 <p>Special form for marking type aliases.</p>
-<p>Use TypeAlias to indicate that an assignment should
+<p>TypeAlias can be used to indicate that an assignment should
 be recognized as a proper type alias definition by type
 checkers.</p>
 <p>For example:</p>
@@ -1894,7 +1928,8 @@ numbers, this truncates towards zero.</p>
 bytes, or bytearray instance representing an integer literal in the
 given base.  The literal can be preceded by ‘+’ or ‘-’ and be surrounded
 by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-Base 0 means to interpret the base from the string as an integer literal.
+Base 0 means to interpret the base from the string as an integer
+iteral.
 &gt;&gt;&gt; int(‘0b100’, base=0)
 4</p>
 </dd></dl>
@@ -2043,7 +2078,8 @@ numbers, this truncates towards zero.</p>
 bytes, or bytearray instance representing an integer literal in the
 given base.  The literal can be preceded by ‘+’ or ‘-’ and be surrounded
 by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-Base 0 means to interpret the base from the string as an integer literal.
+Base 0 means to interpret the base from the string as an integer
+iteral.
 &gt;&gt;&gt; int(‘0b100’, base=0)
 4</p>
 </dd></dl>
@@ -2088,7 +2124,8 @@ numbers, this truncates towards zero.</p>
 bytes, or bytearray instance representing an integer literal in the
 given base.  The literal can be preceded by ‘+’ or ‘-’ and be surrounded
 by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-Base 0 means to interpret the base from the string as an integer literal.
+Base 0 means to interpret the base from the string as an integer
+iteral.
 &gt;&gt;&gt; int(‘0b100’, base=0)
 4</p>
 </dd></dl>
@@ -3219,7 +3256,7 @@ dtype(‘bool’)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.str_.argsort">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.str_.argsort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.str_.argsort" title="Link to this definition">¶</a></dt>
 <dd><p>Scalar method identical to <cite>ndarray.argsort</cite>.</p>
 </dd></dl>
 
@@ -3487,7 +3524,7 @@ dtype(‘bool’)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.str_.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.str_.sort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.str_.sort" title="Link to this definition">¶</a></dt>
 <dd><p>Scalar method identical to <cite>ndarray.sort</cite>.</p>
 </dd></dl>
 
