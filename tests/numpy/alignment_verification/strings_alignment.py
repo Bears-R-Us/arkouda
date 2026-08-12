@@ -52,7 +52,7 @@ def test_strings_case_ops_ascii(op):
     np_arr = data.astype(str)
 
     ak_res = getattr(ak_arr, op)()
-    np_res = np.char.__dict__[op](np_arr)
+    np_res = getattr(np.char, op)(np_arr)
 
     assert_ak_np_equal(ak_res, np_res)
 
@@ -75,7 +75,7 @@ def test_strings_case_ops_unicode_expected_mismatch(op):
     np_arr = data.astype(str)
 
     ak_res = getattr(ak_arr, op)()
-    np_res = np.char.__dict__[op](np_arr)
+    np_res = getattr(np.char, op)(np_arr)
 
     assert_ak_np_equal(ak_res, np_res)
 
