@@ -386,7 +386,7 @@ module CheckpointMsg {
         return;
     }
 
-    if hasPrimitiveElements(entry) {
+    if hasPrimitiveElements(entry) && entry.etype != uint(8) {
         saveSymEntryPrimitive(entry, name, path, mdName, mdWriter);
 
     } else if entry.etype == bigint {
