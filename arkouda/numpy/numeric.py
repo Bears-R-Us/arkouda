@@ -606,6 +606,14 @@ def isinf(pda: pdarray) -> pdarray:
     array([False False True])
     """
     from arkouda.core.client import generic_msg
+    from arkouda.numpy.util import is_float
+
+    _datatype_check(pda.dtype, NUMERIC_TYPES, "isinf")
+
+    if not is_float(pda):
+        from arkouda.numpy.pdarraycreation import full
+
+        return full(pda.shape, False, dtype=bool)
 
     rep_msg = generic_msg(
         cmd=f"isinf<{pda.ndim}>",
