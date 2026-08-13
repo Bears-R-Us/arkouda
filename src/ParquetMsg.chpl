@@ -18,7 +18,7 @@ module ParquetMsg {
   use IOUtils;
   use ParquetSharedEnums;
 
-  public use Parquet only CompressionType, ArrowTypes,
+  public use Parquet only CompressionType, ArrowTypes, ParquetError,
                           TRUNCATE, APPEND, ROWGROUPS,
                           ARROWINT64, ARROWINT32, ARROWUINT64, ARROWUINT32,
                           ARROWBOOLEAN, ARROWSTRING, ARROWFLOAT, ARROWDOUBLE,
@@ -801,9 +801,9 @@ module ParquetMsg {
             continue;
           }
 
-            var create_str: string = parseListDataset(filenames, dsetname,
-                                                      list_ty, len, sizes, st);
-            rnames.pushBack((dsetname, ObjType.SEGARRAY, create_str));
+          var create_str: string = parseListDataset(filenames, dsetname,
+                                                    list_ty, len, sizes, st);
+          rnames.pushBack((dsetname, ObjType.SEGARRAY, create_str));
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".format(ty);
           pqLogger.error(getM(),getR(),getL(),errorMsg);
@@ -1345,5 +1345,5 @@ module ParquetMsg {
   registerFunction("writeParquet", toparquetMsg, getM());
   registerFunction("lspq", lspqMsg, getM());
   registerFunction("getnullparquet", nullIndicesMsg, getM());
-  ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
+  ServerConfig.appendToConfigStr("ARROW_VERSION", try! getVersionInfo());
 }
