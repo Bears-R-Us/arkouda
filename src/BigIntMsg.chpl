@@ -169,7 +169,7 @@ module BigIntMsg {
                                     st: borrowed SymTab,
                                     type array_dtype,
                                     param array_nd: int): MsgTuple throws
-    where (array_dtype == uint(64) && array_nd == 1)
+    where (array_dtype == uint(64))
     {
         var repMsg: string;
 
