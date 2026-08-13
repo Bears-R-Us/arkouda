@@ -52,6 +52,18 @@ files: scatter.dat
 graphtitle: Scatter Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: exclude-last Average rate =, exclude-first Average rate =, stride-2 Average rate =, interior-stride-3 Average rate =, reverse Average rate =
+graphkeys: [:-1] GiB/s, [1:] GiB/s, [::2] GiB/s, [1:-1:3] GiB/s, [::-1] GiB/s
+repeat-files: slice.dat
+graphtitle: Slice Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average rate =
+graphkeys: Diff GiB/s
+files: diff.dat
+graphtitle: Diff Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: cumsum Average rate =, cumprod Average rate =
 graphkeys: Cumsum GiB/s, Cumprod GiB/s
 files: scan.dat, scan.dat

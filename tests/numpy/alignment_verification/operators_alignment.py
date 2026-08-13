@@ -66,9 +66,9 @@ def _rand_array(dtype, nonzero: bool = False, nonneg: bool = False, seed=SEED):
         data = rng.uniform(low, high, size=N)
         if nonzero:
             # push away from zero to avoid div-by-zero in denominator cases
-            data = np.where(np.abs(data) < 1e-6, 1.0, data)
+            data = ak.where(ak.abs(data) < 1e-6, 1.0, data)
         if nonneg:
-            data = np.abs(data)
+            data = ak.abs(data)
         return ak.array(data)
 
     # Integer types
@@ -76,7 +76,7 @@ def _rand_array(dtype, nonzero: bool = False, nonneg: bool = False, seed=SEED):
         low, high = (0, 1 << 31)
         data = rng.integers(low, high, size=N, dtype=np.uint64)
         if nonzero:
-            data = np.where(data == 0, 1, data)
+            data = ak.where(data == 0, 1, data)
         if nonneg:
             # already nonnegative
             pass
@@ -86,9 +86,9 @@ def _rand_array(dtype, nonzero: bool = False, nonneg: bool = False, seed=SEED):
         low, high = (-1 << 31, 1 << 31)
         data = rng.integers(low, high, size=N, dtype=np.int64)
         if nonzero:
-            data = np.where(data == 0, 1, data)
+            data = ak.where(data == 0, 1, data)
         if nonneg:
-            data = np.abs(data)
+            data = ak.abs(data)
         return ak.array(data)
 
     raise NotImplementedError(f"Unhandled dtype {dtype}")
@@ -102,10 +102,13 @@ def _numpy_equivalent(a: ak.pdarray):
 
 
 # --- Parametrized binary op tests (array ⊗ array) ---
-@pytest.mark.xfail(reason="Requires ak.minimum (#5118) and bug fix for rshift (#5115)")
 @pytest.mark.parametrize("dtype", DTYPES)
 @pytest.mark.parametrize("name,fn", BINARY_OPS)
 def test_binary_ops_array_array_alignment(dtype, name, fn):
+    if name in {"mod", "rshift"}:
+        pytest.xfail(reason="Requires bug fix for mod (#5118) and bug fix for rshift (#5115)")
+    if name in {"pow"}:
+        pytest.xfail(reason="pow can be innacurate in CI")
     if dtype is ak.bool_ and name in {"add", "sub", "mul", "truediv", "floordiv", "mod", "pow"}:
         pytest.skip(f"NumPy does not support {name} for boolean dtype")
     # Skip invalid dtype/op combinations
@@ -146,10 +149,12 @@ def test_binary_ops_array_array_alignment(dtype, name, fn):
 
 
 # --- Scalar broadcasting (array ⊗ scalar and scalar ⊗ array) ---
-@pytest.mark.xfail(reason="Requires bug fixes for floordiv, mod, pow (#5113, #5112, #5114)")
 @pytest.mark.parametrize("dtype", DTYPES)
 @pytest.mark.parametrize("name,fn", BINARY_OPS)
 def test_binary_ops_array_scalar_alignment(dtype, name, fn):
+    if name in {"mod", "pow"}:
+        pytest.xfail(reason="Requires bug fixes for mod and pow (#5112, #5114)")
+
     # Arithmetic on booleans is not supported by NumPy
     if dtype is ak.bool_ and name in {"add", "sub", "mul", "truediv", "floordiv", "mod", "pow"}:
         pytest.skip(f"NumPy does not support {name} for boolean dtype")
@@ -211,7 +216,6 @@ def test_comparison_ops_alignment(dtype, name, fn):
 
 
 # --- Unary operator alignment ---
-@pytest.mark.xfail(reason="Requires pdarray.__pos__ (#5116) and bug fixes in __neg__ (#5117, #5119)")
 @pytest.mark.parametrize("dtype", DTYPES)
 @pytest.mark.parametrize("name,fn", UNARY_OPS)
 def test_unary_ops_alignment(dtype, name, fn):

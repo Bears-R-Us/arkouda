@@ -136,16 +136,6 @@ def apply(
     from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray
 
-    if getattr(apply, "is_apply_supported", None) is None:
-        res = generic_msg("isPythonModuleSupported")
-        is_supported = parse_single_value(cast(str, res))
-        setattr(apply, "is_apply_supported", is_supported)
-
-    if not getattr(apply, "is_apply_supported", False):
-        raise RuntimeError(
-            "The apply module is not supported by the version of Chapel " + "this server was built with."
-        )
-
     vers_supported = getattr(apply, "is_version_supported", None)
     if vers_supported is None:
         interp_version = f"{sys.version_info.major}.{sys.version_info.minor}"

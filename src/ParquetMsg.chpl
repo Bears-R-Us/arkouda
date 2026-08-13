@@ -244,19 +244,21 @@ module ParquetMsg {
     const ColDomain = {0..#numCols};
     const CTypes: [ColDomain] c_int = getAllTypes(Filenames[0]);
 
-    pqLogger.debug(getM(),getR(),getL(), "will try tagging data");
-
-    // If tagging is turned on, tag the data
-    if tagData {
-      throw new NotImplementedError("Reading all columns while tagging " +
-                                    "data is not implemented.", getL(), getR(), getM());
-    }
-
     var op = new pqReadColOp(Filenames, len, CTypes, Sizes, Offsets,
                              hasNonFloatNulls, nullMode);
 
     if op.isOptimizable() {
       pqLogger.debug(getM(),getR(),getL(), "doing optimized reads");
+
+      if tagData {
+        pqLogger.debug(getM(),getR(),getL(), "Tagging Data with File Code");
+        var tagEntry = createSymEntry(len, int);
+        populateTagData(tagEntry.a, Filenames, Sizes);
+        var tagName = st.nextName();
+        st.addEntry(tagName, tagEntry);
+        rnames.pushBack(("Filename_Codes", ObjType.PDARRAY, tagName));
+      }
+
       var Entries = op.generateEntries();
       op.readInto(Entries);
 

@@ -34,6 +34,8 @@ BENCHMARKS = [
     "aggregate",
     "gather",
     "scatter",
+    "slice",
+    "diff",
     "reduce",
     "in1d",
     "scan",

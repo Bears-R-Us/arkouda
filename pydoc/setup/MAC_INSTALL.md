@@ -31,6 +31,10 @@ To provide a different name for the environment, use the `-n` or `--name` parame
 # We recommend running the full Anaconda 
 brew install --cask anaconda
 
+# Add Anaconda to PATH to use the conda command
+echo 'export PATH="/opt/homebrew/anaconda3/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
 # Note - the exact path may vary based on the most current release of Anaconda and your mac's chipset
 # Run the script to install Anaconda.
 /opt/homebrew/Caskroom/anaconda/2022.10/Anaconda3-2022.10-MacOSX-arm64.sh
