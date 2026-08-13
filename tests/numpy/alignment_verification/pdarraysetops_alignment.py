@@ -113,12 +113,6 @@ def test_in1d_assume_unique_raises_when_not_unique(dtype):
 @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])
 @pytest.mark.parametrize("n1,n2", [(0, 0), (0, 10), (10, 0), (10, 10), (50, 40)])
 def test_union1d_matches_numpy(dtype, n1, n2):
-    if (n1 == 0 and n2 > 0) or (n2 == 0 and n1 > 0):
-        pytest.xfail(
-            "Known bug: ak.union1d returns non-unique/unsorted when one input is empty; "
-            "should match np.union1d (sorted unique). Issue #5273."
-        )
-
     rng = np.random.default_rng(999)
     a_np = rng.integers(0, 25, size=n1, dtype=np.int64)
     b_np = rng.integers(0, 25, size=n2, dtype=np.int64)
@@ -134,15 +128,13 @@ def test_union1d_matches_numpy(dtype, n1, n2):
     assert np.array_equal(got.to_ndarray(), exp)
 
 
-@pytest.mark.xfail(
-    reason="Known bug: ak.union1d returns non-unique/unsorted when one input is empty; "
-    "should match np.union1d (sorted unique).. Issue #5273.",
-    strict=False,
-)
-def test_union1d_empty_left_matches_numpy():
-    b_np = np.array([20, 19, 4, 4, 4, 17, 2, 18, 3, 4], dtype=np.int64)
-    got = ak.union1d(ak.array(np.array([], dtype=np.int64)), ak.array(b_np))
-    assert np.array_equal(got.to_ndarray(), np.union1d(np.array([], dtype=np.int64), b_np))
+@pytest.mark.parametrize("empty_side", ["left", "right"])
+def test_union1d_empty_input_matches_numpy(empty_side):
+    values_np = np.array([20, 19, 4, 4, 4, 17, 2, 18, 3, 4], dtype=np.int64)
+    empty_np = np.array([], dtype=np.int64)
+    a_np, b_np = (empty_np, values_np) if empty_side == "left" else (values_np, empty_np)
+    got = ak.union1d(ak.array(a_np), ak.array(b_np))
+    assert np.array_equal(got.to_ndarray(), np.union1d(a_np, b_np))
 
 
 @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])

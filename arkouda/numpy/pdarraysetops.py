@@ -648,10 +648,6 @@ def union1d(
         and isinstance(ar2, (pdarray, Strings, Categorical_))
         and type(ar1) is type(ar2)
     ):
-        if ar1.size == 0:
-            return ar2  # union is ar2
-        if ar2.size == 0:
-            return ar1  # union is ar1
         if ar1.dtype == int and ar2.dtype == int or (ar1.dtype == akuint64 and ar2.dtype == akuint64):
             rep_msg = generic_msg(cmd="union1d", args={"arg1": ar1, "arg2": ar2})
             return cast(pdarray, create_pdarray(rep_msg))
