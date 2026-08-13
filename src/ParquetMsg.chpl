@@ -876,8 +876,7 @@ module ParquetMsg {
     }
 
     var segString:SegStringSymEntry = toSegStringSymEntry(entry);
-    var warnFlag: bool = write1DDistStrings(filename, mode, dsetname,
-                        segString, compression:int);
+    var warnFlag: bool = write1DDistStrings(filename, mode, dsetname, segString, compression:int);
     return warnFlag;
   }
 
@@ -900,7 +899,7 @@ module ParquetMsg {
     var dsetname = msgArgs.getValueOf("dset");
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
-    // because append has been depreacted, support is not being added for SegArray.
+    // because append has been depreacted, support is not being added for SegArray. 
     if mode == APPEND {
       throw getErrorWithContext(getL(), getM(), getR(),
                                 msg="APPEND write mode is not supported for SegArray.",
