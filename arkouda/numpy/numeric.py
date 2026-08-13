@@ -1576,26 +1576,15 @@ def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True)
     from arkouda.core.client import generic_msg
 
     _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
-    if where is True:
-        rep_msg = generic_msg(
-            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-            args={
-                "x": pda,
-            },
-        )
-        return create_pdarray(rep_msg)
-    elif where is False:
-        return pda
-    else:
-        if where.dtype != bool:
-            raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        rep_msg = generic_msg(
-            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-            args={
-                "x": pda[where],
-            },
-        )
-        return _merge_where(pda[:], where, create_pdarray(rep_msg))
+    if where is not True:
+        raise TypeError("where is not supported without out")
+    rep_msg = generic_msg(
+        cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda,
+        },
+    )
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1629,12 +1618,9 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.rad2deg(a)
     array([0.00000000... 119.939165... 239.878330... 359.817495...])
     """
-    if where is True:
-        return 180 * (pda / np.pi)
-    elif where is False:
-        return pda
-    else:
-        return _merge_where(pda[:], where, 180 * (pda[where] / np.pi))
+    if where is not True:
+        raise TypeError("where is not supported without out")
+    return 180 * (pda / np.pi)
 
 
 @typechecked
@@ -1668,12 +1654,9 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.deg2rad(a)
     array([0.00000000... 2.08857733... 4.17715467... 6.26573201...])
     """
-    if where is True:
-        return np.pi * pda / 180
-    elif where is False:
-        return pda
-    else:
-        return _merge_where(pda[:], where, (np.pi * pda[where] / 180))
+    if where is not True:
+        raise TypeError("where is not supported without out")
+    return np.pi * pda / 180
 
 
 def _hash_helper(a):
