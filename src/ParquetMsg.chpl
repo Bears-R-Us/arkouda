@@ -790,18 +790,20 @@ module ParquetMsg {
                            "%s+%?".format(stringsEntry.name,
                                           stringsEntry.nBytes)));
         } else if ty == ArrowTypes.list {
-          var list_ty = getListData(filenames[0], dsetname,
-                                    unsupportedAsNotImplemented=true);
+          var list_ty: ArrowTypes;
+          try {
+            list_ty = getListData(filenames[0], dsetname);
           // check for and skip further nested datasets
-          if list_ty == ArrowTypes.notimplemented {
+          } catch e: ParquetError {
             pqLogger.info(getM(),getR(),getL(),
-                          "Invalid list datatype found in %s. Skipping.".format(dsetname));
+                          "Invalid list datatype found in %s (%s). Skipping."
+                          .format(dsetname, e.message()));
+            continue;
           }
-          else {
+
             var create_str: string = parseListDataset(filenames, dsetname,
                                                       list_ty, len, sizes, st);
             rnames.pushBack((dsetname, ObjType.SEGARRAY, create_str));
-          }
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".format(ty);
           pqLogger.error(getM(),getR(),getL(),errorMsg);
