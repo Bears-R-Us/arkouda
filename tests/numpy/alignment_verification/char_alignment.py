@@ -41,13 +41,7 @@ class TestArkoudaNumpyCharAlignment:
         "py_list",
         [
             ["Strings 0", "Strings 1", "Strings 2", "120", "121", "122"],
-            pytest.param(
-                ["", "0", "00", "  ", "3.14", "-1", "+2", "１２３", "٣", "二"],  # noqa: RUF001
-                marks=pytest.mark.xfail(
-                    reason="Known mismatch: empty string treated as numeric in Arkouda "
-                    + "(should be False like NumPy). Issue #5243"
-                ),
-            ),
+            ["", "0", "00", "  ", "3.14", "-1", "+2", "１２３", "٣", "二"],  # noqa: RUF001
             ["1e3", "⅕", "²", "₇", "2³₇", "2³x₇", "٣٤٥", "१२३"],
         ],
     )
@@ -69,10 +63,6 @@ class TestArkoudaNumpyCharAlignment:
 
         np.testing.assert_array_equal(got, exp)
 
-    @pytest.mark.xfail(
-        reason="Known mismatch: empty string treated as numeric in Arkouda "
-        "(should be False like NumPy). Issue #5243"
-    )
     def test_isnumeric_randomized_matches_python_and_numpy(self):
         # Keep this deterministic and cheap
         rng = random.Random(0)
