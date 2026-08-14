@@ -116,8 +116,10 @@ The server build downloads and compiles the Chapel `Parquet` package into
 `dep/build/Parquet`. Arrow and Parquet C++ libraries must still be available
 through `pkg-config` as described above.
 
-Developers can build against an existing package checkout or select a different
-repository reference:
+You can optionally build against an existing package checkout or select a different
+repository reference. You can also download the `Parquet` source ahead of time
+using `wget https://github.com/chapel-lang/Parquet/archive/refs/heads/main.tar.gz`,
+untar it, and then point `ARKOUDA_PARQUET_SRC_DIR` to the untarred location before running `make`.
 
 ```bash
 # Use an existing checkout without cloning it into dep/build.
