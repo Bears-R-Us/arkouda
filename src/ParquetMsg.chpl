@@ -1346,5 +1346,11 @@ module ParquetMsg {
   registerFunction("writeParquet", toparquetMsg, getM());
   registerFunction("lspq", lspqMsg, getM());
   registerFunction("getnullparquet", nullIndicesMsg, getM());
-  ServerConfig.appendToConfigStr("ARROW_VERSION", try! getVersionInfo());
+  try {
+    ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
+  } catch e: Error {
+    ServerConfig.appendNullToConfigStr("ARROW_VERSION");
+    pqLogger.error(getM(), getR(), getL(),
+                   "Failed to retrieve Arrow version: ", e.message());
+  }
 }
