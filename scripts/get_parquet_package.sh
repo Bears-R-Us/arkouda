@@ -34,14 +34,6 @@ if [[ -z "${INSTALL_DIR}" ]]; then
   exit 1
 fi
 
-if [[ -z "${CHPL_HOME:-}" ]]; then
-  if ! command -v chpl >/dev/null 2>&1; then
-    log "ERROR: CHPL_HOME is unset and chpl is not available on PATH"
-    exit 1
-  fi
-  CHPL_HOME="$(chpl --print-chpl-home)"
-fi
-
 # Allow pointing at an existing checkout (e.g. a Mason clone) to skip cloning.
 PARQUET_SRC="${ARKOUDA_PARQUET_SRC_DIR:-${INSTALL_DIR}}"
 
@@ -73,7 +65,7 @@ log "Building C++ prerequisites in ${PREREQ_DIR}"
 make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME:-}" >&2
 
 # Gather the chpl flags the package needs.
-FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME:-}" printchplflags)"
+FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME}" printchplflags)"
 if [[ -z "${FLAGS}" ]]; then
   log "ERROR: the Parquet prerequisite build returned no Chapel flags"
   exit 1
