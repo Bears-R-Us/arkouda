@@ -19,7 +19,7 @@
 #   ARKOUDA_PARQUET_REPO      git URL to clone (default: chapel-lang/Parquet)
 #   ARKOUDA_PARQUET_REF       branch or tag to check out (default: repo HEAD)
 #   ARKOUDA_PARQUET_SRC_DIR   use an existing checkout instead of cloning
-#   CHPL_HOME                 used to select Chapel's C++ compiler for prereqs
+#   ARKOUDA_CHPL_HOME                 used to select Chapel's C++ compiler for prereqs
 
 set -euo pipefail
 
@@ -62,10 +62,10 @@ if [[ ! -f "${PARQUET_MODULE}" ]]; then
 fi
 
 log "Building C++ prerequisites in ${PREREQ_DIR}"
-make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME:-}" >&2
+make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${ARKOUDA_CHPL_HOME:-}" >&2
 
 # Gather the chpl flags the package needs.
-FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${CHPL_HOME}" printchplflags)"
+FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${ARKOUDA_CHPL_HOME}" printchplflags)"
 if [[ -z "${FLAGS}" ]]; then
   log "ERROR: the Parquet prerequisite build returned no Chapel flags"
   exit 1
