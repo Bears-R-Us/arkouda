@@ -19,7 +19,7 @@
 #   ARKOUDA_PARQUET_REPO      git URL to clone (default: chapel-lang/Parquet)
 #   ARKOUDA_PARQUET_REF       branch or tag to check out (default: repo HEAD)
 #   ARKOUDA_PARQUET_SRC_DIR   use an existing checkout instead of cloning
-#   ARKOUDA_CHPL_HOME                 used to select Chapel's C++ compiler for prereqs
+#   ARKOUDA_CHPL_HOME         used to select Chapel's C++ compiler for prereqs
 
 set -euo pipefail
 
