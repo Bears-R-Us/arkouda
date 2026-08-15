@@ -65,7 +65,7 @@ log "Building C++ prerequisites in ${PREREQ_DIR}"
 make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${ARKOUDA_CHPL_HOME:-}" >&2
 
 # Gather the chpl flags the package needs.
-FLAGS="$(make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${ARKOUDA_CHPL_HOME}" printchplflags)"
+FLAGS="$(make -s -C "${PREREQ_DIR}" CHPL_HOME="${ARKOUDA_CHPL_HOME}" printchplflags)"
 if [[ -z "${FLAGS}" ]]; then
   log "ERROR: the Parquet prerequisite build returned no Chapel flags"
   exit 1
