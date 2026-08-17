@@ -486,6 +486,12 @@ module ServerConfig
       cfgStr = tmp_json + "," + Q + key + QCQ + val + Q + "}";
     }
 
+    proc appendNullToConfigStr(key:string) {
+      var idx_close = cfgStr.rfind("}"):int;
+      var tmp_json = cfgStr(0..idx_close-1);
+      cfgStr = tmp_json + "," + Q + key + Q + ":null}";
+    }
+
     /* proposed replacement for `timeSinceEpoch().totalSeconds()` */
     proc currentTime() {
       use Time;

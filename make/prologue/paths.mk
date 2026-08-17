@@ -9,10 +9,20 @@ ifneq ("$(wildcard $(1)/lib64)","")
 CHPL_FLAGS += -L$(1)/lib64 --ldflags="-Wl,-rpath,$(1)/lib64"
 endif
 
+ifneq ("$(wildcard $(1)/lib64/pkgconfig)","")
+PKG_CONFIG_PATH := $(1)/lib64/pkgconfig$$(if $$(PKG_CONFIG_PATH),:$$(PKG_CONFIG_PATH))
+endif
+
 # Add lib if present
 ifneq ("$(wildcard $(1)/lib)","")
 CHPL_FLAGS += -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endif
+
+ifneq ("$(wildcard $(1)/lib/pkgconfig)","")
+PKG_CONFIG_PATH := $(1)/lib/pkgconfig$$(if $$(PKG_CONFIG_PATH),:$$(PKG_CONFIG_PATH))
+endif
+
+export PKG_CONFIG_PATH
 endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
