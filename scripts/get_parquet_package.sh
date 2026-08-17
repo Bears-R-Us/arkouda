@@ -62,7 +62,7 @@ if [[ ! -f "${PARQUET_MODULE}" ]]; then
 fi
 
 log "Building C++ prerequisites in ${PREREQ_DIR}"
-make -s -C "${PREREQ_DIR}" ARKOUDA_CHPL_HOME="${ARKOUDA_CHPL_HOME:-}" >&2
+make -s -C "${PREREQ_DIR}" CHPL_HOME="${ARKOUDA_CHPL_HOME:-}" >&2
 
 # Gather the chpl flags the package needs.
 FLAGS="$(make -s -C "${PREREQ_DIR}" CHPL_HOME="${ARKOUDA_CHPL_HOME}" printchplflags)"
