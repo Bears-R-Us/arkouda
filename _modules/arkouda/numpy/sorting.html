@@ -390,9 +390,9 @@
 
 <span class="n">numeric_dtypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">dtype</span><span class="p">(</span><span class="n">int64</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="n">uint64</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="n">float64</span><span class="p">)}</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">,</span> <span class="s2">&quot;SortingAlgorithm&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"argsort"</span><span class="p">,</span> <span class="s2">"coargsort"</span><span class="p">,</span> <span class="s2">"sort"</span><span class="p">,</span> <span class="s2">"SortingAlgorithm"</span><span class="p">,</span> <span class="s2">"searchsorted"</span><span class="p">]</span>
 
-<span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s2">&quot;SortingAlgorithm&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;RadixSortLSD&quot;</span><span class="p">,</span> <span class="s2">&quot;TwoArrayRadixSort&quot;</span><span class="p">])</span>
+<span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s2">"SortingAlgorithm"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"RadixSortLSD"</span><span class="p">,</span> <span class="s2">"TwoArrayRadixSort"</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="argsort">
@@ -403,7 +403,7 @@
     <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the permutation (indices) that sorts the array.</span>
 
 <span class="sd">    Parameters</span>
@@ -448,14 +448,14 @@
 <span class="sd">    &gt;&gt;&gt; perm = ak.argsort(a)</span>
 <span class="sd">    &gt;&gt;&gt; a[perm]</span>
 <span class="sd">    array([0 1 1 4 5 5 5 7 8 9])</span>
-<span class="sd">    &gt;&gt;&gt; ak.argsort(a, ak.sorting.SortingAlgorithm[&quot;RadixSortLSD&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])</span>
 <span class="sd">    array([9 3 5 4 2 7 8 0 6 1])</span>
-<span class="sd">    &gt;&gt;&gt; ak.argsort(a, ak.sorting.SortingAlgorithm[&quot;TwoArrayRadixSort&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])</span>
 <span class="sd">    array([9 3 5 4 2 7 8 0 6 1])</span>
 <span class="sd">    &gt;&gt;&gt; ak.argsort(a, ascending=False)</span>
 <span class="sd">    array([1 6 0 8 7 2 4 5 3 9])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
@@ -463,12 +463,12 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_integer_axis_validation</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
-    <span class="n">check_type</span><span class="p">(</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pda</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span>
+    <span class="n">check_type</span><span class="p">(</span><span class="s2">"argsort"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pda</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span>
 
     <span class="n">ndim</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span> <span class="o">=</span> <span class="n">_integer_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for array of rank </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for array of rank </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">size</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span>
     <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -477,12 +477,12 @@
     <span class="c1"># Categorical / Strings (always 1D; axis must be 0)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Categorical argsort only supports axis=0&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Categorical argsort only supports axis=0"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Strings argsort only supports axis=0&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Strings argsort only supports axis=0"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
 
     <span class="c1"># pdarray</span>
@@ -490,7 +490,7 @@
         <span class="n">perm</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">perm</span>
 
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ak.argsort only supports pdarray, Strings, and Categorical, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ak.argsort only supports pdarray, Strings, and Categorical, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 
@@ -501,7 +501,7 @@
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
     <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the permutation that groups the rows (left-to-right), if the</span>
 <span class="sd">    input arrays are treated as columns. The permutation sorts numeric</span>
 <span class="sd">    columns, but not Strings or Categoricals — those are grouped, not ordered.</span>
@@ -551,7 +551,7 @@
 <span class="sd">    &gt;&gt;&gt; b[perm]</span>
 <span class="sd">    array([0 1 0 1])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
@@ -559,14 +559,14 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
-    <span class="n">check_type</span><span class="p">(</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">arrays</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]])</span>
+    <span class="n">check_type</span><span class="p">(</span><span class="s2">"coargsort"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">arrays</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]])</span>
 
     <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">anames</span><span class="p">,</span> <span class="n">atypes</span><span class="p">,</span> <span class="n">expanded_arrays</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="n">max_dim</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">"ndim"</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">maximum</span>
 
             <span class="n">max_dim</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">max_dim</span><span class="p">)</span>
@@ -575,7 +575,7 @@
             <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
                 <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>
             <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-                <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">))</span>
+                <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -592,24 +592,24 @@
             <span class="n">anames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">atypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">objType</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each array must be a pdarray, Strings, or Categorical&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Each array must be a pdarray, Strings, or Categorical"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
         <span class="k">elif</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All arrays must have the same size&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All arrays must have the same size"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="nb">int</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span> <span class="k">else</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"coargsort"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;nstr&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">expanded_arrays</span><span class="p">),</span>
-            <span class="s2">&quot;arr_names&quot;</span><span class="p">:</span> <span class="n">anames</span><span class="p">,</span>
-            <span class="s2">&quot;arr_types&quot;</span><span class="p">:</span> <span class="n">atypes</span><span class="p">,</span>
+            <span class="s2">"algoName"</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">"nstr"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">expanded_arrays</span><span class="p">),</span>
+            <span class="s2">"arr_names"</span><span class="p">:</span> <span class="n">anames</span><span class="p">,</span>
+            <span class="s2">"arr_types"</span><span class="p">:</span> <span class="n">atypes</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
@@ -632,7 +632,7 @@
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a sorted copy of the array. Only sorts numeric arrays;</span>
 <span class="sd">    for Strings, use argsort.</span>
 
@@ -676,7 +676,7 @@
 <span class="sd">    &gt;&gt;&gt; sorted = ak.sort(a)</span>
 <span class="sd">    &gt;&gt;&gt; sorted</span>
 <span class="sd">    array([0 1 1 4 5 5 5 7 8 9])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
@@ -684,17 +684,17 @@
 
     <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span> <span class="o">=</span> <span class="n">_integer_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for array of rank </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for array of rank </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span><span class="p">[</span><span class="n">coargsort</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">algorithm</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_dtypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ak.sort supports int64, uint64, or float64, not </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ak.sort supports int64, uint64, or float64, not </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sort&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alg&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_</span><span class="p">},</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"sort&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"alg"</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"array"</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">"axis"</span><span class="p">:</span> <span class="n">axis_</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
@@ -706,10 +706,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">searchsorted</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-    <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"left"</span><span class="p">,</span>
     <span class="n">x2_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Find indices where elements should be inserted to maintain order.</span>
 
 <span class="sd">    Find the indices into a sorted array `a` such that, if the corresponding</span>
@@ -721,9 +721,9 @@
 <span class="sd">        1-D input array. Must be sorted in ascending order. `sorter` is not currently supported.</span>
 <span class="sd">    v : int_scalars, float64, bigint, or pdarray</span>
 <span class="sd">        Values to insert into `a`. Can be a scalar or array-like.</span>
-<span class="sd">    side : {&#39;left&#39;, &#39;right&#39;}, default=&#39;left&#39;</span>
-<span class="sd">        If &#39;left&#39;, the index of the first suitable location found is given.</span>
-<span class="sd">        If &#39;right&#39;, return the last such index.</span>
+<span class="sd">    side : {'left', 'right'}, default='left'</span>
+<span class="sd">        If 'left', the index of the first suitable location found is given.</span>
+<span class="sd">        If 'right', return the last such index.</span>
 <span class="sd">    x2_sorted : bool, default=False</span>
 <span class="sd">        If True, assumes that `v` (x2) is already sorted in ascending order. This can improve performance</span>
 <span class="sd">        for large, sorted search arrays. If False, no assumption is made about the order of `v`.</span>
@@ -749,7 +749,7 @@
 <span class="sd">    &gt;&gt;&gt; a = ak.array([11, 12, 13, 14, 15])</span>
 <span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, 13)</span>
 <span class="sd">    2</span>
-<span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, 13, side=&#39;right&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, 13, side='right')</span>
 <span class="sd">    3</span>
 <span class="sd">    &gt;&gt;&gt; v = ak.array([-10, 20, 12, 13])</span>
 <span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, v)</span>
@@ -757,15 +757,15 @@
 <span class="sd">    &gt;&gt;&gt; v_sorted = ak.array([-10, 12, 13, 20])</span>
 <span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, v_sorted, x2_sorted=True)</span>
 <span class="sd">    array([0 1 2 5])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a must be one dimensional, but has </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"a must be one dimensional, but has </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions."</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_dtypes</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">bigint</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ak.searchsorted supports int64, uint64, bigint, or float64, not </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ak.searchsorted supports int64, uint64, bigint, or float64, not </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Normalize v to array</span>
     <span class="n">scalar_input</span> <span class="o">=</span> <span class="kc">False</span>
@@ -777,15 +777,15 @@
         <span class="n">v_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">v</span><span class="p">]))</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">v_</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The dtype of a (</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) and v (</span><span class="si">{</span><span class="n">v_</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) must match.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The dtype of a (</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) and v (</span><span class="si">{</span><span class="n">v_</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) must match."</span><span class="p">)</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;searchSorted&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">v_</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"searchSorted&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">v_</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
-            <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">v_</span><span class="p">,</span>
-            <span class="s2">&quot;side&quot;</span><span class="p">:</span> <span class="n">side</span><span class="p">,</span>
-            <span class="s2">&quot;x2Sorted&quot;</span><span class="p">:</span> <span class="n">x2_sorted</span><span class="p">,</span>
+            <span class="s2">"x1"</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+            <span class="s2">"x2"</span><span class="p">:</span> <span class="n">v_</span><span class="p">,</span>
+            <span class="s2">"side"</span><span class="p">:</span> <span class="n">side</span><span class="p">,</span>
+            <span class="s2">"x2Sorted"</span><span class="p">:</span> <span class="n">x2_sorted</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 

@@ -387,18 +387,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarrays</span><span class="p">,</span> <span class="n">pdarray</span>
 
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sparrayclass&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"sparrayclass"</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;sparray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;create_sparray&quot;</span><span class="p">,</span>
+    <span class="s2">"sparray"</span><span class="p">,</span>
+    <span class="s2">"create_sparray"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="sparray">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html#arkouda.scipy.sparrayclass.sparray">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">sparray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The class for sparse arrays. This class contains only the</span>
 <span class="sd">    attributies of the array; the data resides on the arkouda</span>
 <span class="sd">    server. When a server operation results in a new array, arkouda</span>
@@ -421,10 +421,10 @@
 <span class="sd">    shape : Sequence[int]</span>
 <span class="sd">        A list or tuple containing the sizes of each dimension of the array</span>
 <span class="sd">    layout: str</span>
-<span class="sd">        The layout of the array (&quot;CSR&quot; or &quot;CSC&quot; are the only valid values)</span>
+<span class="sd">        The layout of the array ("CSR" or "CSC" are the only valid values)</span>
 <span class="sd">    itemsize : int_scalars</span>
 <span class="sd">        The size in bytes of each element</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span>
@@ -462,16 +462,16 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;deleting sparray with name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"deleting sparray with name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"delete"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
             <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The truth value of an array with more than one element is ambiguous.&quot;</span>
-                <span class="s2">&quot;Use a.any() or a.all()&quot;</span>
+                <span class="s2">"The truth value of an array with more than one element is ambiguous."</span>
+                <span class="s2">"Use a.any() or a.all()"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
@@ -479,19 +479,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnz</span>  <span class="c1"># This is the number of non-zero elements in the matrix</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;sparray does not support __getitem__&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"sparray does not support __getitem__"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">sparrayIterThresh</span>
 
-        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">sparrayIterThresh</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"str"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"array"</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">"printThresh"</span><span class="p">:</span> <span class="n">sparrayIterThresh</span><span class="p">})</span>
 
     <span class="c1"># def __repr__(self):</span>
     <span class="c1">#     from arkouda.core.client import sparrayIterThresh</span>
-    <span class="c1">#     print(&quot;Called repr&quot;)</span>
-    <span class="c1">#     return generic_msg(cmd=&quot;repr&quot;, args={&quot;array&quot;: self, &quot;printThresh&quot;: sparrayIterThresh})</span>
+    <span class="c1">#     print("Called repr")</span>
+    <span class="c1">#     return generic_msg(cmd="repr", args={"array": self, "printThresh": sparrayIterThresh})</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Converts the sparse matrix to a list of 3 pdarrays (rows, cols, vals)</span>
 
 <span class="sd">    Returns</span>
@@ -502,10 +502,10 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; a = ak.random_sparse_matrix(100,0.2,&quot;CSR&quot;);</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.random_sparse_matrix(100,0.2,"CSR");</span>
 <span class="sd">    &gt;&gt;&gt; a.to_pdarray()</span>
 <span class="sd">    [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="sparray.to_pdarray">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html#arkouda.scipy.sparrayclass.sparray.to_pdarray">[docs]</a>
@@ -517,15 +517,15 @@
         <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
         <span class="c1"># check dtype for error</span>
         <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">response_arrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_to_pdarrays&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"sparse_to_pdarrays&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"matrix"</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
         <span class="p">)</span>
         <span class="n">array_list</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">response_arrays</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">array_list</span></div>
 
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""""""</span>
 
 <div class="viewcode-block" id="sparray.fill_vals">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html#arkouda.scipy.sparrayclass.sparray.fill_vals">[docs]</a>
@@ -533,14 +533,14 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sparray and pdarray must have the same dtype for fill_vals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"sparray and pdarray must have the same dtype for fill_vals"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;pdarray must be 1D for fill_vals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"pdarray must be 1D for fill_vals"</span><span class="p">)</span>
 
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;fill_sparse_vals&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,2,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"fill_sparse_vals&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,2,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;"</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"matrix"</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">"vals"</span><span class="p">:</span> <span class="n">a</span><span class="p">},</span>
         <span class="p">)</span></div>
 </div>
 
@@ -554,7 +554,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html#arkouda.scipy.sparrayclass.create_sparray">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_sparray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a sparray instance pointing to an array created by the arkouda server.</span>
 <span class="sd">    The user should not call this function directly.</span>
 
@@ -572,12 +572,12 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If there&#39;s an error in parsing the rep_msg parameter into the six</span>
+<span class="sd">        If there's an error in parsing the rep_msg parameter into the six</span>
 <span class="sd">        values needed to create the pdarray instance</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if a server-side error is thrown in the process of creating</span>
 <span class="sd">        the pdarray instance</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -586,18 +586,18 @@
         <span class="n">nnz</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
         <span class="n">ndim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;[]&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"[]"</span><span class="p">:</span>
             <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">trailing_comma_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="n">trailing_comma_offset</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+            <span class="n">trailing_comma_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">","</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="n">trailing_comma_offset</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)]</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
         <span class="n">itemsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;created Chapel sparse array with name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> dtype: </span><span class="si">{</span><span class="n">mydtype</span><span class="si">}</span><span class="s2"> ndim: </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;nnz:</span><span class="si">{</span><span class="n">nnz</span><span class="si">}</span><span class="s2"> shape: </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2"> layout: </span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2"> itemsize: </span><span class="si">{</span><span class="n">itemsize</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"created Chapel sparse array with name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> dtype: </span><span class="si">{</span><span class="n">mydtype</span><span class="si">}</span><span class="s2"> ndim: </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"nnz:</span><span class="si">{</span><span class="n">nnz</span><span class="si">}</span><span class="s2"> shape: </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2"> layout: </span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2"> itemsize: </span><span class="si">{</span><span class="n">itemsize</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">sparray</span><span class="p">(</span>
         <span class="n">name</span><span class="p">,</span>

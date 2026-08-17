@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.core.infoclass</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Utilities for introspecting Arkouda server-side objects.</span>
 
 <span class="sd">The `arkouda.infoclass` module provides tools to inspect, query, and display metadata</span>
@@ -418,16 +418,16 @@
 <span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">&gt;&gt;&gt; x = ak.arange(5)</span>
 <span class="sd">&gt;&gt;&gt; ak.information(ak.AllSymbols)  # doctest: +SKIP</span>
-<span class="sd">&#39;[{&quot;name&quot;:&quot;id_i3gP47x_1&quot;, &quot;dtype&quot;:&quot;int64&quot;, &quot;size&quot;:5,</span>
-<span class="sd">&quot;ndim&quot;:1, &quot;shape&quot;:[5], &quot;itemsize&quot;:8, &quot;registered&quot;:false}]&#39;</span>
-<span class="sd">&gt;&gt;&gt; x.register(&quot;name1&quot;)</span>
+<span class="sd">'[{"name":"id_i3gP47x_1", "dtype":"int64", "size":5,</span>
+<span class="sd">"ndim":1, "shape":[5], "itemsize":8, "registered":false}]'</span>
+<span class="sd">&gt;&gt;&gt; x.register("name1")</span>
 <span class="sd">array([0 1 2 3 4])</span>
 <span class="sd">&gt;&gt;&gt; ak.list_registry(detailed=True)  # doctest: +SKIP</span>
-<span class="sd">&#39;Objects&#39;: [(&#39;name1&#39;, &#39;PDARRAY&#39;)], &#39;Components&#39;: [&#39;id_beYOiDM_1&#39;]}</span>
+<span class="sd">'Objects': [('name1', 'PDARRAY')], 'Components': ['id_beYOiDM_1']}</span>
 <span class="sd">&gt;&gt;&gt; ak.list_symbol_table()  # doctest: +SKIP</span>
-<span class="sd">[&#39;id_beYOiDM_1&#39;]</span>
+<span class="sd">['id_beYOiDM_1']</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -439,20 +439,20 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;AllSymbols&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;RegisteredSymbols&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;information&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;list_registry&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;list_symbol_table&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pretty_print_information&quot;</span><span class="p">,</span>
+    <span class="s2">"AllSymbols"</span><span class="p">,</span>
+    <span class="s2">"RegisteredSymbols"</span><span class="p">,</span>
+    <span class="s2">"information"</span><span class="p">,</span>
+    <span class="s2">"list_registry"</span><span class="p">,</span>
+    <span class="s2">"list_symbol_table"</span><span class="p">,</span>
+    <span class="s2">"pretty_print_information"</span><span class="p">,</span>
 <span class="p">]</span>
-<span class="n">AllSymbols</span> <span class="o">=</span> <span class="s2">&quot;__AllSymbols__&quot;</span>
-<span class="n">RegisteredSymbols</span> <span class="o">=</span> <span class="s2">&quot;__RegisteredSymbols__&quot;</span>
+<span class="n">AllSymbols</span> <span class="o">=</span> <span class="s2">"__AllSymbols__"</span>
+<span class="n">RegisteredSymbols</span> <span class="o">=</span> <span class="s2">"__RegisteredSymbols__"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">auto_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)"</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
     <span class="bp">cls</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="fm">__str__</span>
     <span class="k">return</span> <span class="bp">cls</span>
@@ -466,20 +466,20 @@
 <span class="nd">@auto_str</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">InfoEntry</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ndim&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;itemsize&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;registered&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"dtype"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"size"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"ndim"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"shape"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"itemsize"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"registered"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="information">
 <a class="viewcode-back" href="../../../autoapi/arkouda/index.html#arkouda.core.infoclass.information">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">information</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">RegisteredSymbols</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a JSON formatted string containing information about the objects in names.</span>
 
 <span class="sd">    Parameters</span>
@@ -500,22 +500,22 @@
 <span class="sd">        Raised if a server-side error is thrown in the process of</span>
 <span class="sd">        retrieving information about the objects in names</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">in</span> <span class="p">[</span><span class="n">AllSymbols</span><span class="p">,</span> <span class="n">RegisteredSymbols</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">}))</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"info"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"names"</span><span class="p">:</span> <span class="n">names</span><span class="p">}))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">]</span>  <span class="c1"># allows user to call ak.information(pda.name)</span>
-    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">names</span><span class="p">)}))</span></div>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"info"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"names"</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">names</span><span class="p">)}))</span></div>
 
 
 
 <div class="viewcode-block" id="list_registry">
 <a class="viewcode-back" href="../../../autoapi/arkouda/index.html#arkouda.core.infoclass.list_registry">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">list_registry</span><span class="p">(</span><span class="n">detailed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a list containing the names of all registered objects.</span>
 
 <span class="sd">    Parameters</span>
@@ -527,22 +527,22 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
-<span class="sd">        Dict containing keys &quot;Components&quot; and &quot;Objects&quot;.</span>
+<span class="sd">        Dict containing keys "Components" and "Objects".</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
+<span class="sd">        Raised if there's a server-side error thrown</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;list_registry&quot;</span><span class="p">)))</span>
-    <span class="n">objs</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Objects&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Objects&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="p">[]</span>
-    <span class="n">obj_types</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Object_Types&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Object_Types&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"list_registry"</span><span class="p">)))</span>
+    <span class="n">objs</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"Objects"</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">"Objects"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">""</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">obj_types</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"Object_Types"</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">"Object_Types"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">""</span> <span class="k">else</span> <span class="p">[]</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;Objects&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">obj_types</span><span class="p">))</span> <span class="k">if</span> <span class="n">detailed</span> <span class="k">else</span> <span class="n">objs</span><span class="p">,</span>
-        <span class="s2">&quot;Components&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Components&quot;</span><span class="p">]),</span>
+        <span class="s2">"Objects"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">obj_types</span><span class="p">))</span> <span class="k">if</span> <span class="n">detailed</span> <span class="k">else</span> <span class="n">objs</span><span class="p">,</span>
+        <span class="s2">"Components"</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"Components"</span><span class="p">]),</span>
     <span class="p">}</span></div>
 
 
@@ -550,7 +550,7 @@
 <div class="viewcode-block" id="list_symbol_table">
 <a class="viewcode-back" href="../../../autoapi/arkouda/index.html#arkouda.core.infoclass.list_symbol_table">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">list_symbol_table</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a list containing the names of all objects in the symbol table.</span>
 
 <span class="sd">    Returns</span>
@@ -561,15 +561,15 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
+<span class="sd">        Raised if there's a server-side error thrown</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_parse_json</span><span class="p">(</span><span class="n">AllSymbols</span><span class="p">)]</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_json</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">InfoEntry</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert the JSON output of information into a List of InfoEntry objects.</span>
 
 <span class="sd">    Parameters</span>
@@ -587,14 +587,14 @@
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if a server-side error is thrown</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">information</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">object_hook</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">InfoEntry</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="pretty_print_information">
 <a class="viewcode-back" href="../../../autoapi/arkouda/index.html#arkouda.core.infoclass.pretty_print_information">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_information</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">RegisteredSymbols</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Print verbose information for each object in names in a human readable format.</span>
 
 <span class="sd">    Parameters</span>
@@ -610,7 +610,7 @@
 <span class="sd">        Raised if a server-side error is thrown in the process of</span>
 <span class="sd">        retrieving information about the objects in names</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_parse_json</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span></div>
 

@@ -252,6 +252,8 @@ arkouda server config param and config const
 
 .. function:: proc appendToConfigStr(key: string, val: string)
 
+.. function:: proc appendNullToConfigStr(key: string)
+
 .. function:: proc currentTime()
 
    proposed replacement for `timeSinceEpoch().totalSeconds()` 

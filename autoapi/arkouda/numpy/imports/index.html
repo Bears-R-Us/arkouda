@@ -646,17 +646,17 @@ the default value is 2.</p></li>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">base_repr</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">&#39;101&#39;</span>
+<span class="go">'101'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">base_repr</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="go">&#39;11&#39;</span>
+<span class="go">'11'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">base_repr</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">&#39;00012&#39;</span>
+<span class="go">'00012'</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">base_repr</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-<span class="go">&#39;A&#39;</span>
+<span class="go">'A'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">base_repr</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-<span class="go">&#39;20&#39;</span>
+<span class="go">'20'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -714,19 +714,19 @@ faster.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">&#39;11&#39;</span>
+<span class="go">'11'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">&#39;-11&#39;</span>
+<span class="go">'-11'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="go">&#39;0011&#39;</span>
+<span class="go">'0011'</span>
 </pre></div>
 </div>
 <p>The two’s complement is returned when the input number is negative and
 width is specified:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">&#39;101&#39;</span>
+<span class="go">'101'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">&#39;11101&#39;</span>
+<span class="go">'11101'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1227,12 +1227,12 @@ a trailing timezone (A ‘Z’ or a timezone offset), the timezone will be
 dropped and a User Warning is given.</p>
 <p>Datetime64 objects should be considered to be UTC and therefore have an
 offset of +0000.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-<span class="go">np.datetime64(&#39;1980&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s1">&#39;1980&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-<span class="go">np.datetime64(&#39;1980&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">)</span>
-<span class="go">np.datetime64(&#39;1970-01-11&#39;)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'Y'</span><span class="p">)</span>
+<span class="go">np.datetime64('1980')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s1">'1980'</span><span class="p">,</span> <span class="s1">'Y'</span><span class="p">)</span>
+<span class="go">np.datetime64('1980')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">)</span>
+<span class="go">np.datetime64('1970-01-11')</span>
 </pre></div>
 </div>
 <p>See <span class="xref std std-ref">arrays.datetime</span> for more information.</p>
@@ -1280,9 +1280,9 @@ Raise <cite>OverflowError</cite> on infinities and a <cite>ValueError</cite> on 
 <dt class="sig sig-object py" id="arkouda.numpy.imports.double.fromhex">
 <span class="sig-name descname"><span class="pre">fromhex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.imports.double.fromhex" title="Link to this definition">¶</a></dt>
 <dd><p>Create a floating-point number from a hexadecimal string.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">&#39;0x1.ffffp10&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">'0x1.ffffp10'</span><span class="p">)</span>
 <span class="go">2047.984375</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">&#39;-0x1p-1074&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">'-0x1p-1074'</span><span class="p">)</span>
 <span class="go">-5e-324</span>
 </pre></div>
 </div>
@@ -1293,9 +1293,9 @@ Raise <cite>OverflowError</cite> on infinities and a <cite>ValueError</cite> on 
 <span class="sig-name descname"><span class="pre">hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.imports.double.hex" title="Link to this definition">¶</a></dt>
 <dd><p>Return a hexadecimal representation of a floating-point number.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
-<span class="go">&#39;-0x1.999999999999ap-4&#39;</span>
+<span class="go">'-0x1.999999999999ap-4'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="mf">3.14159</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
-<span class="go">&#39;0x1.921f9f01b866ep+1&#39;</span>
+<span class="go">'0x1.921f9f01b866ep+1'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1600,9 +1600,9 @@ pp.1-70, 2008, <a class="reference external" href="https://doi.org/10.1109/IEEES
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
-<span class="go">dtype(&#39;float64&#39;)</span>
+<span class="go">dtype('float64')</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
-<span class="go">dtype(&#39;float32&#39;)</span>
+<span class="go">dtype('float32')</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -1735,13 +1735,13 @@ identify the value may be printed, rounding the last additional digit.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_positional</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
-<span class="go">&#39;3.1415927&#39;</span>
+<span class="go">'3.1415927'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_positional</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
-<span class="go">&#39;3.14&#39;</span>
+<span class="go">'3.14'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_positional</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
-<span class="go">&#39;0.3&#39;</span>
+<span class="go">'0.3'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_positional</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">(</span><span class="mf">0.3</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="go">&#39;0.3000488281&#39;</span>
+<span class="go">'0.3000488281'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1804,12 +1804,12 @@ identify the value may be printed and rounded unbiased.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
-<span class="go">&#39;3.1415927e+00&#39;</span>
+<span class="go">'3.1415927e+00'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">1.23e24</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-<span class="go">&#39;1.230000071797338e+24&#39;</span>
+<span class="go">'1.230000071797338e+24'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">format_float_scientific</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">exp_digits</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="go">&#39;1.23e+0024&#39;</span>
+<span class="go">'1.23e+0024'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2180,7 +2180,7 @@ sequence objects</p></td>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="s1">'numpy'</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -2252,9 +2252,9 @@ sequence objects</p></td>
 </pre></div>
 </div>
 <p>For convenience, dtype-like objects are allowed too:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bytes_</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="s1">'S1'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bytes_</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="s1">&#39;i4&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="s1">'i4'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -2584,10 +2584,10 @@ value, and <code class="docutils literal notranslate"><span class="pre">False</s
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">typechars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span>
-<span class="gp">... </span>             <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">typechars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'S1'</span><span class="p">,</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">,</span> <span class="s1">'G'</span><span class="p">,</span> <span class="s1">'F'</span><span class="p">,</span> <span class="s1">'I'</span><span class="p">,</span> <span class="s1">'H'</span><span class="p">,</span> <span class="s1">'L'</span><span class="p">,</span> <span class="s1">'O'</span><span class="p">,</span> <span class="s1">'Q'</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="s1">'S'</span><span class="p">,</span> <span class="s1">'U'</span><span class="p">,</span> <span class="s1">'V'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'g'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">,</span> <span class="s1">'i'</span><span class="p">,</span> <span class="s1">'h'</span><span class="p">,</span> <span class="s1">'l'</span><span class="p">,</span> <span class="s1">'q'</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">typechar</span> <span class="ow">in</span> <span class="n">typechars</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">typechar</span><span class="p">,</span> <span class="s1">&#39; : &#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="n">typechar</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">typechar</span><span class="p">,</span> <span class="s1">' : '</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="n">typechar</span><span class="p">))</span>
 <span class="gp">...</span>
 <span class="go">S1  :  character</span>
 <span class="go">?  :  bool</span>
@@ -2857,13 +2857,13 @@ has three calling conventions:</p>
 <p>Please see the examples which show all three different conventions.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">np.void(b&#39;\x00\x00\x00\x00\x00&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;abcd&#39;</span><span class="p">)</span>
-<span class="go">np.void(b&#39;\x61\x62\x63\x64&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">((</span><span class="mf">3.2</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;eggs&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;d,S5&quot;</span><span class="p">)</span>
-<span class="go">np.void((3.2, b&#39;eggs&#39;), dtype=[(&#39;f0&#39;, &#39;&lt;f8&#39;), (&#39;f1&#39;, &#39;S5&#39;)])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)])</span>
-<span class="go">np.void((3, 3), dtype=[(&#39;x&#39;, &#39;i1&#39;), (&#39;y&#39;, &#39;i1&#39;)])</span>
+<span class="go">np.void(b'\x00\x00\x00\x00\x00')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="sa">b</span><span class="s1">'abcd'</span><span class="p">)</span>
+<span class="go">np.void(b'\x61\x62\x63\x64')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">((</span><span class="mf">3.2</span><span class="p">,</span> <span class="sa">b</span><span class="s1">'eggs'</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"d,S5"</span><span class="p">)</span>
+<span class="go">np.void((3.2, b'eggs'), dtype=[('f0', '&lt;f8'), ('f1', 'S5')])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span> <span class="p">(</span><span class="s1">'y'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)])</span>
+<span class="go">np.void((3, 3), dtype=[('x', 'i1'), ('y', 'i1')])</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

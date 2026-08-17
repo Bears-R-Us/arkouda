@@ -376,18 +376,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bool_&quot;</span><span class="p">,</span> <span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;int_&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;object_&quot;</span><span class="p">,</span> <span class="s2">&quot;str_&quot;</span><span class="p">,</span> <span class="s2">&quot;isnumeric&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bool_"</span><span class="p">,</span> <span class="s2">"character"</span><span class="p">,</span> <span class="s2">"int_"</span><span class="p">,</span> <span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"object_"</span><span class="p">,</span> <span class="s2">"str_"</span><span class="p">,</span> <span class="s2">"isnumeric"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="isnumeric">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isnumeric">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isnumeric</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a boolean pdarray where index i indicates whether string i of the</span>
 <span class="sd">    Strings has all numeric characters. There are 1922 unicode characters that</span>
 <span class="sd">    qualify as numeric, including the digits 0 through 9, superscripts and</span>
 <span class="sd">    subscripted digits, special characters with the digits encircled or</span>
-<span class="sd">    enclosed in parens, &quot;vulgar fractions,&quot; and more.</span>
+<span class="sd">    enclosed in parens, "vulgar fractions," and more.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -408,26 +408,26 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; not_numeric = ak.array([f&#39;Strings {i}&#39; for i in range(3)])</span>
-<span class="sd">    &gt;&gt;&gt; numeric = ak.array([f&#39;12{i}&#39; for i in range(3)])</span>
+<span class="sd">    &gt;&gt;&gt; not_numeric = ak.array([f'Strings {i}' for i in range(3)])</span>
+<span class="sd">    &gt;&gt;&gt; numeric = ak.array([f'12{i}' for i in range(3)])</span>
 <span class="sd">    &gt;&gt;&gt; strings = ak.concatenate([not_numeric, numeric])</span>
 <span class="sd">    &gt;&gt;&gt; strings</span>
-<span class="sd">    array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;])</span>
+<span class="sd">    array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])</span>
 <span class="sd">    &gt;&gt;&gt; ak.isnumeric(strings)</span>
 <span class="sd">    array([False False False True True True])</span>
 
 <span class="sd">    Special Character Examples</span>
 
-<span class="sd">    &gt;&gt;&gt; special_strings = ak.array([&quot;3.14&quot;, &quot;\u0030&quot;, &quot;\u00b2&quot;, &quot;2³₇&quot;, &quot;2³x₇&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; special_strings = ak.array(["3.14", "\u0030", "\u00b2", "2³₇", "2³x₇"])</span>
 <span class="sd">    &gt;&gt;&gt; special_strings</span>
-<span class="sd">    array([&#39;3.14&#39;, &#39;0&#39;, &#39;²&#39;, &#39;2³₇&#39;, &#39;2³x₇&#39;])</span>
+<span class="sd">    array(['3.14', '0', '²', '2³₇', '2³x₇'])</span>
 <span class="sd">    &gt;&gt;&gt; ak.isnumeric(special_strings)</span>
 <span class="sd">    array([False True True True False])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Strings</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input to isnumeric must be Strings.  Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"input to isnumeric must be Strings.  Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span></div>
 

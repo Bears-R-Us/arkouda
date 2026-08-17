@@ -386,13 +386,13 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;any&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pad&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trapz&quot;</span><span class="p">,</span>
+    <span class="s2">"all"</span><span class="p">,</span>
+    <span class="s2">"any"</span><span class="p">,</span>
+    <span class="s2">"clip"</span><span class="p">,</span>
+    <span class="s2">"diff"</span><span class="p">,</span>
+    <span class="s2">"pad"</span><span class="p">,</span>
+    <span class="s2">"trapezoid"</span><span class="p">,</span>
+    <span class="s2">"trapz"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -405,7 +405,7 @@
     <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check whether all elements of an array evaluate to True along a given axis.</span>
 
 <span class="sd">    Parameters</span>
@@ -416,7 +416,7 @@
 <span class="sd">        The axis or axes along which to check for all True values. If None, check all elements.</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        Whether to keep the singleton dimensions along `axis` in the result.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">)))</span></div>
 
 
@@ -430,7 +430,7 @@
     <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check whether any elements of an array evaluate to True along a given axis.</span>
 
 <span class="sd">    Parameters</span>
@@ -441,7 +441,7 @@
 <span class="sd">        The axis or axes along which to check for any True values. If None, check all elements.</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        Whether to keep the singleton dimensions along `axis` in the result.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">)))</span></div>
 
 
@@ -449,7 +449,7 @@
 <div class="viewcode-block" id="clip">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.utility_functions.clip">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">a_min</span><span class="p">,</span> <span class="n">a_max</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Clip (limit) the values in an array to a given range.</span>
 
 <span class="sd">    Parameters</span>
@@ -460,20 +460,20 @@
 <span class="sd">        The minimum value</span>
 <span class="sd">    a_max : scalar</span>
 <span class="sd">        The maximum value</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: clip does not support dtype </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error executing command: clip does not support dtype </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;clip&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"clip&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-                    <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="n">a_min</span><span class="p">,</span>
-                    <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="n">a_max</span><span class="p">,</span>
+                    <span class="s2">"x"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                    <span class="s2">"min"</span><span class="p">:</span> <span class="n">a_min</span><span class="p">,</span>
+                    <span class="s2">"max"</span><span class="p">:</span> <span class="n">a_max</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
@@ -484,7 +484,7 @@
 <div class="viewcode-block" id="diff">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.utility_functions.diff">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate the n-th discrete difference along the given axis.</span>
 
 <span class="sd">    Parameters</span>
@@ -539,11 +539,11 @@
 <span class="sd">    &gt;&gt;&gt; xp.diff(x, axis=0)</span>
 <span class="sd">    Arkouda Array ((1, 4), int64)[[-1 2 0 -2]]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">diff</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: diff does not support dtype </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error executing command: diff does not support dtype </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">diff</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">prepend</span><span class="p">,</span> <span class="n">append</span><span class="p">))</span></div>
 
@@ -552,7 +552,7 @@
 <div class="viewcode-block" id="trapz">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.utility_functions.trapz">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
 
 <span class="sd">    If `x` is provided, the integration happens in sequence along its</span>
@@ -653,20 +653,20 @@
 <span class="sd">    &gt;&gt;&gt; xp.trapz(a, axis=1)</span>
 <span class="sd">    Arkouda Array ((2,), float64)[2.0 8.0]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Implementation is the same as Numpy&#39;s implementation of trapezoid</span>
+<span class="sd">    """</span>
+    <span class="c1"># Implementation is the same as Numpy's implementation of trapezoid</span>
     <span class="c1"># Modified slightly to fit Arkouda</span>
     <span class="c1"># https://github.com/numpy/numpy/blob/d35cd07ea997f033b2d89d349734c61f5de54b0d/numpy/lib/function_base.py#L4857-L4984</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_integer_axis_validation</span>
 
     <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: trapz does not support dtype </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error executing command: trapz does not support dtype </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">nd</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span> <span class="o">=</span> <span class="n">_integer_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for array of rank </span><span class="si">{</span><span class="n">nd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for array of rank </span><span class="si">{</span><span class="n">nd</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
     <span class="n">slice2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
@@ -675,11 +675,11 @@
 
     <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">dx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dx cannot be None when x is None for trapz&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"dx cannot be None when x is None for trapz"</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">dx</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis_</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: trapz does not support dtype </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error executing command: trapz does not support dtype </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis_</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
@@ -704,10 +704,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span>
     <span class="n">array</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
     <span class="n">pad_width</span><span class="p">,</span>  <span class="c1"># Union[int, Tuple[int, int], Tuple[Tuple[int, int], ...]]</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"constant"</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Pad an array.</span>
 
 <span class="sd">    Parameters</span>
@@ -719,21 +719,21 @@
 <span class="sd">        all axes. If a tuple of two ints, those values are used for all axes. If a tuple of tuples, each</span>
 <span class="sd">        inner tuple specifies the number of values padded to the beginning and end of each axis.</span>
 <span class="sd">    mode : str, optional</span>
-<span class="sd">        Padding mode. Only &#39;constant&#39; is currently supported. Use the `constant_values` keyword argument</span>
+<span class="sd">        Padding mode. Only 'constant' is currently supported. Use the `constant_values` keyword argument</span>
 <span class="sd">        to specify the padding value or values (in the same format as `pad_width`).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pad mode &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; is not supported&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">"constant"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"pad mode '</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">' is not supported"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Error executing command: pad does not support dtype bigint&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Error executing command: pad does not support dtype bigint"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;constant_values&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"constant_values"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="n">cvals</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">cvals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;constant_values&quot;</span><span class="p">]</span>
+        <span class="n">cvals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"constant_values"</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pad_width</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">pad_widths_b</span> <span class="o">=</span> <span class="p">[</span><span class="n">pad_width</span><span class="p">]</span> <span class="o">*</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span>
@@ -760,13 +760,13 @@
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pad&lt;</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"pad&lt;</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">array</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-                    <span class="s2">&quot;padWidthBefore&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pad_widths_b</span><span class="p">),</span>
-                    <span class="s2">&quot;padWidthAfter&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pad_widths_a</span><span class="p">),</span>
-                    <span class="s2">&quot;padValsBefore&quot;</span><span class="p">:</span> <span class="n">pad_vals_b</span><span class="p">,</span>
-                    <span class="s2">&quot;padValsAfter&quot;</span><span class="p">:</span> <span class="n">pad_vals_a</span><span class="p">,</span>
+                    <span class="s2">"name"</span><span class="p">:</span> <span class="n">array</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+                    <span class="s2">"padWidthBefore"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pad_widths_b</span><span class="p">),</span>
+                    <span class="s2">"padWidthAfter"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pad_widths_a</span><span class="p">),</span>
+                    <span class="s2">"padValsBefore"</span><span class="p">:</span> <span class="n">pad_vals_b</span><span class="p">,</span>
+                    <span class="s2">"padValsAfter"</span><span class="p">:</span> <span class="n">pad_vals_a</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>

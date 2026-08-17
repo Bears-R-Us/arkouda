@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.match</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Regular expression match results for segmented string arrays in Arkouda.</span>
 
 <span class="sd">The `arkouda.match` module defines the `Match` class, which encapsulates results from</span>
@@ -390,14 +390,14 @@
 <span class="sd">Examples</span>
 <span class="sd">--------</span>
 <span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">&gt;&gt;&gt; strings = ak.array([&quot;Isaac Newton&quot;, &quot;Ada Lovelace&quot;, &quot;&quot;])</span>
-<span class="sd">&gt;&gt;&gt; m = strings.search(&quot;(\\w+) (\\w+)&quot;)</span>
+<span class="sd">&gt;&gt;&gt; strings = ak.array(["Isaac Newton", "Ada Lovelace", ""])</span>
+<span class="sd">&gt;&gt;&gt; m = strings.search("(\\w+) (\\w+)")</span>
 <span class="sd">&gt;&gt;&gt; m.matched()</span>
 <span class="sd">array([True True False])</span>
 <span class="sd">&gt;&gt;&gt; m.group(1)</span>
-<span class="sd">array([&#39;Isaac&#39;, &#39;Ada&#39;])</span>
+<span class="sd">array(['Isaac', 'Ada'])</span>
 <span class="sd">&gt;&gt;&gt; m.group(2, return_group_origins=True)</span>
-<span class="sd">(array([&#39;Newton&#39;, &#39;Lovelace&#39;]), array([0 1]))</span>
+<span class="sd">(array(['Newton', 'Lovelace']), array([0 1]))</span>
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
@@ -411,7 +411,7 @@
 <span class="sd">arkouda.numpy.strings.Strings</span>
 <span class="sd">arkouda.core.client.regexMaxCaptures</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
@@ -421,15 +421,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Match&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Match"</span><span class="p">]</span>
 
-<span class="n">MatchType</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s2">&quot;MatchType&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;SEARCH&quot;</span><span class="p">,</span> <span class="s2">&quot;MATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;FULLMATCH&quot;</span><span class="p">])</span>
+<span class="n">MatchType</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s2">"MatchType"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"SEARCH"</span><span class="p">,</span> <span class="s2">"MATCH"</span><span class="p">,</span> <span class="s2">"FULLMATCH"</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="Match">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/match/index.html#arkouda.pandas.match.Match">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Match</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Encapsulates regular expression match results on Arkouda segmented string arrays.</span>
 
 <span class="sd">    Created by calling `search()`, `match()`, or `fullmatch()` on a `Strings` object. Provides access</span>
@@ -443,13 +443,13 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; m = strings.search(&#39;_+&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])</span>
+<span class="sd">    &gt;&gt;&gt; m = strings.search('_+')</span>
 <span class="sd">    &gt;&gt;&gt; m</span>
 <span class="sd">    &lt;ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);</span>
 <span class="sd">    matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
 <span class="sd">    &gt;&gt;&gt; type(m)</span>
-<span class="sd">    &lt;class &#39;arkouda.pandas.match.Match&#39;&gt;</span>
+<span class="sd">    &lt;class 'arkouda.pandas.match.Match'&gt;</span>
 <span class="sd">    &gt;&gt;&gt; m.matched()</span>
 <span class="sd">    array([True True False True False])</span>
 <span class="sd">    &gt;&gt;&gt; m.start()</span>
@@ -457,13 +457,13 @@
 <span class="sd">    &gt;&gt;&gt; m.end()</span>
 <span class="sd">    array([2 4 2])</span>
 <span class="sd">    &gt;&gt;&gt; m.match_type()</span>
-<span class="sd">    &#39;SEARCH&#39;</span>
+<span class="sd">    'SEARCH'</span>
 <span class="sd">    &gt;&gt;&gt; m.re</span>
-<span class="sd">    &#39;_+&#39;</span>
+<span class="sd">    '_+'</span>
 <span class="sd">    &gt;&gt;&gt; m[1]</span>
-<span class="sd">    &#39;matched=True, span=(0, 4)&#39;</span>
+<span class="sd">    'matched=True, span=(0, 4)'</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">re</span><span class="p">:</span> <span class="nb">str</span>
 
@@ -489,7 +489,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">re</span> <span class="o">=</span> <span class="n">pattern</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a string representation of the match object, previewing match status and spans.</span>
 
 <span class="sd">        Returns</span>
@@ -497,19 +497,19 @@
 <span class="sd">        str</span>
 <span class="sd">            Human-readable summary of match objects and spans.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;... &quot;</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"... "</span><span class="p">)</span>
             <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ak.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="si">}</span><span class="s2"> object: </span><span class="si">{</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;ak.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="si">}</span><span class="s2"> object: </span><span class="si">{</span><span class="s1">'; '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a summary string for the match at a given index.</span>
 
 <span class="sd">        Parameters</span>
@@ -522,16 +522,16 @@
 <span class="sd">        str</span>
 <span class="sd">            Description of whether the item matched, and its span if it did.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;matched=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="si">}</span><span class="s2">, span=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_starts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">"matched=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="si">}</span><span class="s2">, span=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_starts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span><span class="si">}</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">", </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span><span class="si">}</span><span class="s2">)"</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;matched=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"matched=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the formal string representation of the Match object.</span>
 
 <span class="sd">        Returns</span>
@@ -539,13 +539,13 @@
 <span class="sd">        str</span>
 <span class="sd">            Same as __str__ for now.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Match.matched">
 <a class="viewcode-back" href="../../../usage/strings.html#arkouda.pandas.match.Match.matched">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">matched</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a boolean array indiciating whether each element matched.</span>
 
 <span class="sd">        Returns</span>
@@ -556,18 +556,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; strings.search(&#39;_+&#39;).matched()</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])</span>
+<span class="sd">        &gt;&gt;&gt; strings.search('_+').matched()</span>
 <span class="sd">        array([True True False True False])</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span></div>
 
 
 <div class="viewcode-block" id="Match.start">
 <a class="viewcode-back" href="../../../usage/strings.html#arkouda.pandas.match.Match.start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the starts of matches.</span>
 
 <span class="sd">        Returns</span>
@@ -578,18 +578,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; strings.search(&#39;_+&#39;).start()</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])</span>
+<span class="sd">        &gt;&gt;&gt; strings.search('_+').start()</span>
 <span class="sd">        array([1 0 0])</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_starts</span></div>
 
 
 <div class="viewcode-block" id="Match.end">
 <a class="viewcode-back" href="../../../usage/strings.html#arkouda.pandas.match.Match.end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ends of matches.</span>
 
 <span class="sd">        Returns</span>
@@ -600,18 +600,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; strings.search(&#39;_+&#39;).end()</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])</span>
+<span class="sd">        &gt;&gt;&gt; strings.search('_+').end()</span>
 <span class="sd">        array([2 4 2])</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ends</span></div>
 
 
 <div class="viewcode-block" id="Match.match_type">
 <a class="viewcode-back" href="../../../usage/strings.html#arkouda.pandas.match.Match.match_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">match_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the type of the Match object.</span>
 
 <span class="sd">        Returns</span>
@@ -622,18 +622,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; strings.search(&#39;_+&#39;).match_type()</span>
-<span class="sd">        &#39;SEARCH&#39;</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])</span>
+<span class="sd">        &gt;&gt;&gt; strings.search('_+').match_type()</span>
+<span class="sd">        'SEARCH'</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span><span class="o">.</span><span class="n">name</span></div>
 
 
 <div class="viewcode-block" id="Match.find_matches">
 <a class="viewcode-back" href="../../../usage/strings.html#arkouda.pandas.match.Match.find_matches">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_match_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return all matches as a new Strings object.</span>
 
 <span class="sd">        Parameters</span>
@@ -657,32 +657,32 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; strings.search(&#39;_+&#39;).find_matches(return_match_origins=True)</span>
-<span class="sd">        (array([&#39;_&#39;, &#39;____&#39;, &#39;__&#39;]), array([0 1 3]))</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])</span>
+<span class="sd">        &gt;&gt;&gt; strings.search('_+').find_matches(return_match_origins=True)</span>
+<span class="sd">        (array(['_', '____', '__']), array([0 1 3]))</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFindAll&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">"segmentedFindAll"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="p">,</span>
-                    <span class="s2">&quot;parent_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_entry_name</span><span class="p">,</span>
-                    <span class="s2">&quot;num_matches&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">,</span>
-                    <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_starts</span><span class="p">,</span>
-                    <span class="s2">&quot;lengths&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lengths</span><span class="p">,</span>
-                    <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">,</span>
-                    <span class="s2">&quot;rtn_origins&quot;</span><span class="p">:</span> <span class="n">return_match_origins</span><span class="p">,</span>
+                    <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="p">,</span>
+                    <span class="s2">"parent_name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_entry_name</span><span class="p">,</span>
+                    <span class="s2">"num_matches"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">,</span>
+                    <span class="s2">"starts"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_starts</span><span class="p">,</span>
+                    <span class="s2">"lengths"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lengths</span><span class="p">,</span>
+                    <span class="s2">"indices"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">,</span>
+                    <span class="s2">"rtn_origins"</span><span class="p">:</span> <span class="n">return_match_origins</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">return_match_origins</span><span class="p">:</span>
-            <span class="n">arrays</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">arrays</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"+"</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="s2">"+"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
@@ -690,7 +690,7 @@
 <div class="viewcode-block" id="Match.group">
 <a class="viewcode-back" href="../../../usage/strings.html#arkouda.pandas.match.Match.group">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">return_group_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Return a new Strings containing the capture group corresponding to group_num.</span>
 
 <span class="sd">        For the default, group_num=0, return the full match.</span>
@@ -713,77 +713,77 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([&quot;Isaac Newton, physics&quot;, &#39;&lt;-calculus-&gt;&#39;, &#39;Gottfried Leibniz, math&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; m = strings.search(&quot;(\\w+) (\\w+)&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array(["Isaac Newton, physics", '&lt;-calculus-&gt;', 'Gottfried Leibniz, math'])</span>
+<span class="sd">        &gt;&gt;&gt; m = strings.search("(\\w+) (\\w+)")</span>
 <span class="sd">        &gt;&gt;&gt; m.group()</span>
-<span class="sd">        array([&#39;Isaac Newton&#39;, &#39;Gottfried Leibniz&#39;])</span>
+<span class="sd">        array(['Isaac Newton', 'Gottfried Leibniz'])</span>
 <span class="sd">        &gt;&gt;&gt; m.group(1)</span>
-<span class="sd">        array([&#39;Isaac&#39;, &#39;Gottfried&#39;])</span>
+<span class="sd">        array(['Isaac', 'Gottfried'])</span>
 <span class="sd">        &gt;&gt;&gt; m.group(2, return_group_origins=True)</span>
-<span class="sd">        (array([&#39;Newton&#39;, &#39;Leibniz&#39;]), array([0 2]))</span>
+<span class="sd">        (array(['Newton', 'Leibniz']), array([0 2]))</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">regexMaxCaptures</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
         <span class="k">if</span> <span class="n">group_num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;group_num cannot be negative&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"group_num cannot be negative"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">group_num</span> <span class="o">&gt;</span> <span class="n">regexMaxCaptures</span><span class="p">:</span>
-            <span class="n">max_capture_flag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-e REGEX_MAX_CAPTURES=</span><span class="si">{</span><span class="n">group_num</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">max_capture_flag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"-e REGEX_MAX_CAPTURES=</span><span class="si">{</span><span class="n">group_num</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">e</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;group_num=</span><span class="si">{</span><span class="n">group_num</span><span class="si">}</span><span class="s2"> &gt; regexMaxCaptures=</span><span class="si">{</span><span class="n">regexMaxCaptures</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; To run group(</span><span class="si">{</span><span class="n">group_num</span><span class="si">}</span><span class="s2">), recompile the server with flag &#39;</span><span class="si">{</span><span class="n">max_capture_flag</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">"group_num=</span><span class="si">{</span><span class="n">group_num</span><span class="si">}</span><span class="s2"> &gt; regexMaxCaptures=</span><span class="si">{</span><span class="n">regexMaxCaptures</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">" To run group(</span><span class="si">{</span><span class="n">group_num</span><span class="si">}</span><span class="s2">), recompile the server with flag '</span><span class="si">{</span><span class="n">max_capture_flag</span><span class="si">}</span><span class="s2">'"</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-        <span class="c1"># We don&#39;t cache the locations of groups, find the location info and call findAll</span>
+        <span class="c1"># We don't cache the locations of groups, find the location info and call findAll</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFindLoc&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">"segmentedFindLoc"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="p">,</span>
-                    <span class="s2">&quot;parent_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_entry_name</span><span class="p">,</span>
-                    <span class="s2">&quot;groupNum&quot;</span><span class="p">:</span> <span class="n">group_num</span><span class="p">,</span>
-                    <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">re</span><span class="p">,</span>
+                    <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="p">,</span>
+                    <span class="s2">"parent_name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_entry_name</span><span class="p">,</span>
+                    <span class="s2">"groupNum"</span><span class="p">:</span> <span class="n">group_num</span><span class="p">,</span>
+                    <span class="s2">"pattern"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">re</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">created_map</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
-        <span class="n">global_starts</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;Starts&quot;</span><span class="p">])</span>
-        <span class="n">global_lengths</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;Lens&quot;</span><span class="p">])</span>
-        <span class="n">global_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;Indices&quot;</span><span class="p">])</span>
+        <span class="n">global_starts</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"Starts"</span><span class="p">])</span>
+        <span class="n">global_lengths</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"Lens"</span><span class="p">])</span>
+        <span class="n">global_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"Indices"</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span> <span class="o">==</span> <span class="n">MatchType</span><span class="o">.</span><span class="n">SEARCH</span><span class="p">:</span>
-            <span class="n">matched</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;SearchBool&quot;</span><span class="p">])</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;SearchInd&quot;</span><span class="p">])</span>
+            <span class="n">matched</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"SearchBool"</span><span class="p">])</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"SearchInd"</span><span class="p">])</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span> <span class="o">==</span> <span class="n">MatchType</span><span class="o">.</span><span class="n">MATCH</span><span class="p">:</span>
-            <span class="n">matched</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;MatchBool&quot;</span><span class="p">])</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;MatchInd&quot;</span><span class="p">])</span>
+            <span class="n">matched</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"MatchBool"</span><span class="p">])</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"MatchInd"</span><span class="p">])</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span> <span class="o">==</span> <span class="n">MatchType</span><span class="o">.</span><span class="n">FULLMATCH</span><span class="p">:</span>
-            <span class="n">matched</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;FullMatchBool&quot;</span><span class="p">])</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;FullMatchInd&quot;</span><span class="p">])</span>
+            <span class="n">matched</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"FullMatchBool"</span><span class="p">])</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">"FullMatchInd"</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span><span class="si">}</span><span class="s2"> is not a MatchType&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span><span class="si">}</span><span class="s2"> is not a MatchType"</span><span class="p">)</span>
         <span class="n">starts</span> <span class="o">=</span> <span class="n">global_starts</span><span class="p">[</span><span class="n">global_indices</span><span class="p">[</span><span class="n">matched</span><span class="p">]]</span>
         <span class="n">lengths</span> <span class="o">=</span> <span class="n">global_lengths</span><span class="p">[</span><span class="n">global_indices</span><span class="p">[</span><span class="n">matched</span><span class="p">]]</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFindAll&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">"segmentedFindAll"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="p">,</span>
-                    <span class="s2">&quot;parent_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_entry_name</span><span class="p">,</span>
-                    <span class="s2">&quot;num_matches&quot;</span><span class="p">:</span> <span class="n">matched</span><span class="p">,</span>
-                    <span class="s2">&quot;starts&quot;</span><span class="p">:</span> <span class="n">starts</span><span class="p">,</span>
-                    <span class="s2">&quot;lengths&quot;</span><span class="p">:</span> <span class="n">lengths</span><span class="p">,</span>
-                    <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
-                    <span class="s2">&quot;rtn_origins&quot;</span><span class="p">:</span> <span class="n">return_group_origins</span><span class="p">,</span>
+                    <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="p">,</span>
+                    <span class="s2">"parent_name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_entry_name</span><span class="p">,</span>
+                    <span class="s2">"num_matches"</span><span class="p">:</span> <span class="n">matched</span><span class="p">,</span>
+                    <span class="s2">"starts"</span><span class="p">:</span> <span class="n">starts</span><span class="p">,</span>
+                    <span class="s2">"lengths"</span><span class="p">:</span> <span class="n">lengths</span><span class="p">,</span>
+                    <span class="s2">"indices"</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
+                    <span class="s2">"rtn_origins"</span><span class="p">:</span> <span class="n">return_group_origins</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">return_group_origins</span><span class="p">:</span>
-            <span class="n">arrays</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">arrays</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"+"</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="s2">"+"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 </div>

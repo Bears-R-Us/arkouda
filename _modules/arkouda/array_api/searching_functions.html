@@ -386,18 +386,18 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;argmax&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;argmin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nonzero&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;where&quot;</span><span class="p">,</span>
+    <span class="s2">"argmax"</span><span class="p">,</span>
+    <span class="s2">"argmin"</span><span class="p">,</span>
+    <span class="s2">"nonzero"</span><span class="p">,</span>
+    <span class="s2">"searchsorted"</span><span class="p">,</span>
+    <span class="s2">"where"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="argmax">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/searching_functions/index.html#arkouda.array_api.searching_functions.argmax">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return an array with the indices of the maximum values along a given axis.</span>
 
 <span class="sd">    Parameters</span>
@@ -410,9 +410,9 @@
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        Whether to keep the singleton dimension along `axis` in the result.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in argmax&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Only real numeric dtypes are allowed in argmax"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">))</span></div>
 
@@ -421,7 +421,7 @@
 <div class="viewcode-block" id="argmin">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/searching_functions/index.html#arkouda.array_api.searching_functions.argmin">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return an array with the indices of the minimum values along a given axis.</span>
 
 <span class="sd">    Parameters</span>
@@ -433,9 +433,9 @@
 <span class="sd">        searching.</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        Whether to keep the singleton dimension along `axis` in the result.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in argmax&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Only real numeric dtypes are allowed in argmax"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">))</span></div>
 
 
@@ -443,14 +443,14 @@
 <div class="viewcode-block" id="nonzero">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/searching_functions/index.html#arkouda.array_api.searching_functions.nonzero">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a tuple of arrays containing the indices of the non-zero elements of the input array.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a tuple of arrays containing the indices of the non-zero elements of the input array."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">resp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;nonzero&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"nonzero&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
@@ -461,7 +461,7 @@
 <div class="viewcode-block" id="where">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/searching_functions/index.html#arkouda.array_api.searching_functions.where">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return elements, either from `x1` or `x2`, depending on `condition`.</span>
 
 <span class="sd">    Parameters</span>
@@ -472,7 +472,7 @@
 <span class="sd">        Values selected at indices where `condition` is True.</span>
 <span class="sd">    x2 : Array</span>
 <span class="sd">        Values selected at indices where `condition` is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
@@ -485,11 +485,11 @@
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;wherevv&lt;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"wherevv&lt;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span>
-                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
-                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span>
+                    <span class="s2">"condition"</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span>
+                    <span class="s2">"a"</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+                    <span class="s2">"b"</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -504,11 +504,11 @@
     <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"left"</span><span class="p">,</span>
     <span class="n">x2_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">sorter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Given a sorted array `x1`, find the indices to insert elements from another array `x2` such that</span>
 <span class="sd">    the sorted order is maintained.</span>
 
@@ -518,22 +518,22 @@
 <span class="sd">        The sorted array to search in.</span>
 <span class="sd">    x2 : Array</span>
 <span class="sd">        The values to search for in `x1`.</span>
-<span class="sd">    side : {&#39;left&#39;, &#39;right&#39;}, optional</span>
-<span class="sd">        If &#39;left&#39;, the index of the first suitable location found is given. If &#39;right&#39;, return the</span>
-<span class="sd">        last such index. Default is &#39;left&#39;.</span>
+<span class="sd">    side : {'left', 'right'}, optional</span>
+<span class="sd">        If 'left', the index of the first suitable location found is given. If 'right', return the</span>
+<span class="sd">        last such index. Default is 'left'.</span>
 <span class="sd">    x2_sorted : bool, default=False</span>
 <span class="sd">        If True, assumes that `x2` is already sorted in ascending order. This can improve performance</span>
 <span class="sd">        for large, sorted search arrays. If False, no assumption is made about the order of `x2`.</span>
 <span class="sd">    sorter : Array, optional</span>
 <span class="sd">        The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_floating_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_floating_dtypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real dtypes are allowed in searchsorted&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Only real dtypes are allowed in searchsorted"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;searchsorted only supports 1D arrays for x1&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"searchsorted only supports 1D arrays for x1"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_x1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">[</span><span class="n">sorter</span><span class="p">]</span>
@@ -541,12 +541,12 @@
         <span class="n">_x1</span> <span class="o">=</span> <span class="n">x1</span>
 
     <span class="n">resp</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;searchSorted&lt;</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1,</span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"searchSorted&lt;</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1,</span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">_x1</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-            <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-            <span class="s2">&quot;side&quot;</span><span class="p">:</span> <span class="n">side</span><span class="p">,</span>
-            <span class="s2">&quot;x2Sorted&quot;</span><span class="p">:</span> <span class="n">x2_sorted</span><span class="p">,</span>
+            <span class="s2">"x1"</span><span class="p">:</span> <span class="n">_x1</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+            <span class="s2">"x2"</span><span class="p">:</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
+            <span class="s2">"side"</span><span class="p">:</span> <span class="n">side</span><span class="p">,</span>
+            <span class="s2">"x2Sorted"</span><span class="p">:</span> <span class="n">x2_sorted</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 

@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.extension._dtypes</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Arkouda–pandas extension dtypes.</span>
 
 <span class="sd">This module defines pandas ``ExtensionDtype`` subclasses that wrap</span>
@@ -404,13 +404,13 @@
 <span class="sd">- ``numpy_dtype`` ensures that pandas and NumPy interop fall back</span>
 <span class="sd">  gracefully to the closest native type.</span>
 <span class="sd">- ``na_value`` defines the sentinel used for missing data; for numeric</span>
-<span class="sd">  types this is usually ``-1`` or ``np.nan``, for strings ``&quot;&quot;``, and</span>
+<span class="sd">  types this is usually ``-1`` or ``np.nan``, for strings ``""``, and</span>
 <span class="sd">  for categoricals the code ``-1``.</span>
 
 <span class="sd">This module is part of Arkouda’s effort to implement the full pandas</span>
 <span class="sd">ExtensionArray API, enabling zero-copy interoperability between pandas</span>
 <span class="sd">and Arkouda’s distributed arrays.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -430,17 +430,17 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_ArkoudaBaseDtype</span><span class="p">(</span><span class="n">ExtensionDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Shared behavior for Arkouda dtypes.</span>
 
 <span class="sd">    Subclasses must define:</span>
 <span class="sd">      - name (str)</span>
-<span class="sd">      - type (python scalar type, or &#39;object&#39; if no single scalar)</span>
-<span class="sd">      - kind (str one-letter numpy kind, often &#39;O&#39; for object-backed EAs)</span>
+<span class="sd">      - type (python scalar type, or 'object' if no single scalar)</span>
+<span class="sd">      - kind (str one-letter numpy kind, often 'O' for object-backed EAs)</span>
 <span class="sd">      - numpy_dtype (np.dtype)</span>
 <span class="sd">      - construct_array_type()</span>
 <span class="sd">      - na_value</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_numpy_dtype</span><span class="p">:</span> <span class="n">np_dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
     <span class="c1"># Pandas feature flags (class properties in pandas 2.x)</span>
@@ -449,36 +449,36 @@
     <span class="n">_is_string</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">construct_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_ArkoudaBaseDtype&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">construct_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"_ArkoudaBaseDtype"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Construct an Arkouda ``ExtensionDtype`` from a string specifier.</span>
 
 <span class="sd">        This method resolves **Arkouda-prefixed** dtype strings only.</span>
 <span class="sd">        Supported forms include:</span>
 
-<span class="sd">        - ``&quot;ak.int64&quot;``, ``&quot;ak_int64&quot;``, ``&quot;akint64&quot;``</span>
-<span class="sd">        - ``&quot;ak.uint64&quot;``, ``&quot;ak_uint64&quot;``, ``&quot;akuint64&quot;``</span>
-<span class="sd">        - ``&quot;ak.float64&quot;``, ``&quot;ak_float64&quot;``, ``&quot;akfloat64&quot;``</span>
-<span class="sd">        - ``&quot;ak.bool&quot;``, ``&quot;ak_bool&quot;``, ``&quot;akbool&quot;``</span>
-<span class="sd">        - ``&quot;ak.string&quot;``, ``&quot;ak_string&quot;``, ``&quot;akstring&quot;``</span>
-<span class="sd">        - ``&quot;ak.category&quot;``, ``&quot;ak_category&quot;``, ``&quot;akcategory&quot;``</span>
-<span class="sd">        - and the long form ``&quot;arkouda.int64&quot;`` and similar.</span>
+<span class="sd">        - ``"ak.int64"``, ``"ak_int64"``, ``"akint64"``</span>
+<span class="sd">        - ``"ak.uint64"``, ``"ak_uint64"``, ``"akuint64"``</span>
+<span class="sd">        - ``"ak.float64"``, ``"ak_float64"``, ``"akfloat64"``</span>
+<span class="sd">        - ``"ak.bool"``, ``"ak_bool"``, ``"akbool"``</span>
+<span class="sd">        - ``"ak.string"``, ``"ak_string"``, ``"akstring"``</span>
+<span class="sd">        - ``"ak.category"``, ``"ak_category"``, ``"akcategory"``</span>
+<span class="sd">        - and the long form ``"arkouda.int64"`` and similar.</span>
 
-<span class="sd">        Plain dtype names such as ``&quot;int64&quot;``, ``&quot;float64&quot;``, ``&quot;bool&quot;``, or</span>
-<span class="sd">        ``&quot;string&quot;`` are **not** Arkouda dtypes. In normal pandas/NumPy</span>
+<span class="sd">        Plain dtype names such as ``"int64"``, ``"float64"``, ``"bool"``, or</span>
+<span class="sd">        ``"string"`` are **not** Arkouda dtypes. In normal pandas/NumPy</span>
 <span class="sd">        dtype resolution, those plain names should be handled upstream and</span>
 <span class="sd">        never reach this method. However, if they are passed directly to</span>
 <span class="sd">        :meth:`construct_from_string`, they will raise :class:`TypeError`.</span>
 <span class="sd">        This is intentional: Arkouda dtype strings must include an ``ak``</span>
-<span class="sd">        prefix (for example, ``&quot;ak_int64&quot;``) so they can be distinguished</span>
+<span class="sd">        prefix (for example, ``"ak_int64"``) so they can be distinguished</span>
 <span class="sd">        from standard pandas/NumPy dtypes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        string : str</span>
 <span class="sd">            String dtype specifier to interpret as an Arkouda dtype. Must</span>
-<span class="sd">            include an Arkouda ``ak``-style prefix (e.g. ``&quot;ak_int64&quot;``,</span>
-<span class="sd">            ``&quot;ak.float64&quot;``, ``&quot;akstring&quot;``); plain dtype names without an</span>
+<span class="sd">            include an Arkouda ``ak``-style prefix (e.g. ``"ak_int64"``,</span>
+<span class="sd">            ``"ak.float64"``, ``"akstring"``); plain dtype names without an</span>
 <span class="sd">            Arkouda prefix are not accepted here.</span>
 
 <span class="sd">        Returns</span>
@@ -491,43 +491,43 @@
 <span class="sd">        TypeError</span>
 <span class="sd">            If ``string`` does not represent a valid Arkouda-prefixed dtype</span>
 <span class="sd">            (including the case where it is a plain pandas/NumPy dtype like</span>
-<span class="sd">            ``&quot;int64&quot;`` or ``&quot;float64&quot;``).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            ``"int64"`` or ``"float64"``).</span>
+<span class="sd">        """</span>
         <span class="n">normalized</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="c1"># Recognize Arkouda-style prefixes</span>
-        <span class="n">prefixes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ak.&quot;</span><span class="p">,</span> <span class="s2">&quot;ak_&quot;</span><span class="p">,</span> <span class="s2">&quot;arkouda.&quot;</span><span class="p">)</span>
+        <span class="n">prefixes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"ak."</span><span class="p">,</span> <span class="s2">"ak_"</span><span class="p">,</span> <span class="s2">"arkouda."</span><span class="p">)</span>
         <span class="n">matched_prefix</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">normalized</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
                 <span class="n">matched_prefix</span> <span class="o">=</span> <span class="n">p</span>
                 <span class="k">break</span>
 
-        <span class="c1"># Extra: support compact forms like &quot;akint64&quot;, &quot;akstring&quot;, &quot;akcategory&quot;</span>
-        <span class="k">if</span> <span class="n">matched_prefix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">normalized</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ak&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">normalized</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">matched_prefix</span> <span class="o">=</span> <span class="s2">&quot;ak&quot;</span>
+        <span class="c1"># Extra: support compact forms like "akint64", "akstring", "akcategory"</span>
+        <span class="k">if</span> <span class="n">matched_prefix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">normalized</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"ak"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">normalized</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">matched_prefix</span> <span class="o">=</span> <span class="s2">"ak"</span>
 
         <span class="k">if</span> <span class="n">matched_prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># IMPORTANT: let pandas/NumPy handle bare &quot;int64&quot;, &quot;float64&quot;, etc.</span>
+            <span class="c1"># IMPORTANT: let pandas/NumPy handle bare "int64", "float64", etc.</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid Arkouda dtype string </span><span class="si">{</span><span class="n">string</span><span class="si">!r}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Arkouda dtype names must begin with the &#39;ak&#39; prefix &quot;</span>
-                <span class="s2">&quot;(e.g., &#39;ak_int64&#39;, &#39;ak_float64&#39;, &#39;ak_bool&#39;). &quot;</span>
-                <span class="s2">&quot;If you intended a standard NumPy/pandas dtype, use it without the &#39;ak_&#39; prefix.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Invalid Arkouda dtype string </span><span class="si">{</span><span class="n">string</span><span class="si">!r}</span><span class="s2">. "</span>
+                <span class="s2">"Arkouda dtype names must begin with the 'ak' prefix "</span>
+                <span class="s2">"(e.g., 'ak_int64', 'ak_float64', 'ak_bool'). "</span>
+                <span class="s2">"If you intended a standard NumPy/pandas dtype, use it without the 'ak_' prefix."</span>
             <span class="p">)</span>
 
         <span class="n">base</span> <span class="o">=</span> <span class="n">normalized</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matched_prefix</span><span class="p">)</span> <span class="p">:]</span>
 
-        <span class="c1"># Strip any accidental leading punctuation after the prefix (e.g. &quot;ak..int64&quot;)</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;._&quot;</span><span class="p">)</span>
+        <span class="c1"># Strip any accidental leading punctuation after the prefix (e.g. "ak..int64")</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"._"</span><span class="p">)</span>
 
-        <span class="c1"># Small alias tweaks: &quot;string&quot; -&gt; &quot;str_&quot;</span>
-        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;category&quot;</span><span class="p">:</span>
+        <span class="c1"># Small alias tweaks: "string" -&gt; "str_"</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"category"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
-            <span class="n">base</span> <span class="o">=</span> <span class="s2">&quot;str_&quot;</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"string"</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="s2">"str_"</span>
 
-        <span class="c1"># Now interpret using Arkouda&#39;s dtype system</span>
+        <span class="c1"># Now interpret using Arkouda's dtype system</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
 
         <span class="n">registry</span> <span class="o">=</span> <span class="p">{</span>
@@ -543,11 +543,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">registry</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot construct an Arkouda dtype from string </span><span class="si">{</span><span class="n">string</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot construct an Arkouda dtype from string </span><span class="si">{</span><span class="n">string</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">numpy_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The closest matching NumPy dtype for this Arkouda-backed dtype.</span>
 
 <span class="sd">        This property provides pandas and downstream libraries with a</span>
@@ -566,24 +566,24 @@
 <span class="sd">        - Pandas 2.x calls this property in certain operations that</span>
 <span class="sd">          require fallback to NumPy semantics.</span>
 <span class="sd">        - For example, :class:`ArkoudaInt64Dtype` may return</span>
-<span class="sd">          ``np.dtype(&quot;int64&quot;)`` while :class:`ArkoudaStringDtype`</span>
-<span class="sd">          may return ``np.dtype(&quot;object&quot;)``.</span>
+<span class="sd">          ``np.dtype("int64")`` while :class:`ArkoudaStringDtype`</span>
+<span class="sd">          may return ``np.dtype("object")``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; ArkoudaInt64Dtype().numpy_dtype</span>
-<span class="sd">        dtype(&#39;int64&#39;)</span>
+<span class="sd">        dtype('int64')</span>
 
 <span class="sd">        &gt;&gt;&gt; ArkoudaStringDtype().numpy_dtype</span>
-<span class="sd">        dtype(&#39;&lt;U&#39;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        dtype('&lt;U')</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numpy_dtype</span>  <span class="c1"># each subclass sets this</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a concise, unambiguous string representation of the dtype.</span>
 
-<span class="sd">        The representation includes the class name and the dtype&#39;s</span>
+<span class="sd">        The representation includes the class name and the dtype's</span>
 <span class="sd">        registered ``name``. This is primarily for developer-facing</span>
 <span class="sd">        output in interactive sessions, debugging, and logs. It does</span>
 <span class="sd">        not attempt to be a full constructor expression, but should</span>
@@ -592,17 +592,17 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            A string of the form ``ClassName(&#39;dtype_name&#39;)``.</span>
+<span class="sd">            A string of the form ``ClassName('dtype_name')``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; ArkoudaInt64Dtype().__repr__()</span>
-<span class="sd">        &quot;ArkoudaInt64Dtype(&#39;int64&#39;)&quot;</span>
+<span class="sd">        "ArkoudaInt64Dtype('int64')"</span>
 
 <span class="sd">        &gt;&gt;&gt; ArkoudaStringDtype().__repr__()</span>
-<span class="sd">        &quot;ArkoudaStringDtype(&#39;string&#39;)&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+<span class="sd">        "ArkoudaStringDtype('string')"</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">)"</span>
 
 
 <span class="c1"># ---- Generic dtype -------------------------------------------------------------</span>
@@ -610,22 +610,22 @@
 
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaDtype</span><span class="p">(</span><span class="n">ExtensionDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generic Arkouda-backed dtype for pandas construction.</span>
 
-<span class="sd">    Using dtype=&quot;ak&quot; triggers ArkoudaExtensionArray._from_sequence, which</span>
+<span class="sd">    Using dtype="ak" triggers ArkoudaExtensionArray._from_sequence, which</span>
 <span class="sd">    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategorical.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ak&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"ak"</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>  <span class="c1"># pandas requires something</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"O"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;ak&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">string</span> <span class="o">==</span> <span class="s2">"ak"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot construct a &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot construct a '</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' from '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Important: return the base class that implements factory dispatch.</span>
@@ -641,12 +641,12 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaInt64Dtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaInt64Dtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extension dtype for Arkouda-backed 64-bit integers.</span>
 
-<span class="sd">    This dtype allows seamless use of Arkouda&#39;s distributed ``int64``</span>
+<span class="sd">    This dtype allows seamless use of Arkouda's distributed ``int64``</span>
 <span class="sd">    arrays inside pandas objects (``Series``, ``Index``, ``DataFrame``).</span>
-<span class="sd">    It is backed by :class:`arkouda.pdarray` with ``dtype=&#39;int64&#39;``</span>
+<span class="sd">    It is backed by :class:`arkouda.pdarray` with ``dtype='int64'``</span>
 <span class="sd">    and integrates with pandas via the</span>
 <span class="sd">    :class:`~arkouda.pandas.extension._arkouda_array.ArkoudaArray`</span>
 <span class="sd">    extension array.</span>
@@ -656,12 +656,12 @@
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Return the associated extension array class</span>
 <span class="sd">        (:class:`ArkoudaArray`).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;int64&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;i&quot;</span>  <span class="c1"># numpy integer kind</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"int64"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"i"</span>  <span class="c1"># numpy integer kind</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span>  <span class="c1"># pandas uses this for scalar conversions</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># choose your sentinel</span>
     <span class="n">_is_numeric</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -669,7 +669,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaInt64Dtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the associated pandas ExtensionArray type.</span>
 
 <span class="sd">        This is part of the pandas ExtensionDtype interface and is used</span>
@@ -694,8 +694,8 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaInt64Dtype</span>
 <span class="sd">        &gt;&gt;&gt; ArkoudaInt64Dtype.construct_array_type()</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'&gt;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaArray</span></div>
@@ -707,7 +707,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaUint64Dtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaUint64Dtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed unsigned 64-bit integer dtype.</span>
 
 <span class="sd">    This dtype integrates Arkouda’s ``uint64`` arrays with pandas,</span>
@@ -728,19 +728,19 @@
 <span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">    &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaUint64Dtype, ArkoudaArray</span>
 
-<span class="sd">    &gt;&gt;&gt; arr = ArkoudaArray(ak.array([1, 2, 3], dtype=&quot;uint64&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; arr = ArkoudaArray(ak.array([1, 2, 3], dtype="uint64"))</span>
 <span class="sd">    &gt;&gt;&gt; s = pd.Series(arr, dtype=ArkoudaUint64Dtype())</span>
 <span class="sd">    &gt;&gt;&gt; s</span>
 <span class="sd">    0    1</span>
 <span class="sd">    1    2</span>
 <span class="sd">    2    3</span>
 <span class="sd">    dtype: uint64</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;uint64&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;u&quot;</span>  <span class="c1"># numpy integer kind</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"uint64"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"u"</span>  <span class="c1"># numpy integer kind</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span>  <span class="c1"># pandas uses this for scalar conversions</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint64&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"uint64"</span><span class="p">)</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># choose your sentinel</span>
     <span class="n">_is_numeric</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -748,7 +748,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaUint64Dtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray class associated with this dtype.</span>
 
 <span class="sd">        This is required by the pandas ExtensionDtype API. It tells pandas</span>
@@ -761,7 +761,7 @@
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaArray` class, which implements the storage</span>
 <span class="sd">            and operations for Arkouda-backed arrays.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaArray</span></div>
@@ -773,10 +773,10 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaUint8Dtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaUint8Dtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed unsigned 8-bit integer dtype.</span>
 
-<span class="sd">    This dtype integrates Arkouda&#39;s ``uint8`` arrays with the pandas</span>
+<span class="sd">    This dtype integrates Arkouda's ``uint8`` arrays with the pandas</span>
 <span class="sd">    ExtensionArray API, allowing pandas ``Series`` and ``DataFrame``</span>
 <span class="sd">    objects to store and operate on Arkouda-backed unsigned 8-bit</span>
 <span class="sd">    integers. The underlying storage is an Arkouda ``pdarray&lt;uint8&gt;``,</span>
@@ -787,12 +787,12 @@
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Returns the :class:`ArkoudaArray` type that provides the storage</span>
 <span class="sd">        and behavior for this dtype.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;uint8&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;u&quot;</span>  <span class="c1"># numpy integer kind</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"uint8"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"u"</span>  <span class="c1"># numpy integer kind</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span>  <span class="c1"># pandas uses this for scalar conversions</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">)</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># choose your sentinel</span>
     <span class="n">_is_numeric</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -800,19 +800,19 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaUint8Dtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray subclass that handles storage for this dtype.</span>
 
 <span class="sd">        This method is required by the pandas ExtensionDtype interface.</span>
 <span class="sd">        It tells pandas which ExtensionArray class to use when creating</span>
 <span class="sd">        arrays of this dtype (for example, when calling</span>
-<span class="sd">        ``Series(..., dtype=&quot;arkouda.uint8&quot;)``).</span>
+<span class="sd">        ``Series(..., dtype="arkouda.uint8")``).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaArray` class associated with this dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaArray</span></div>
@@ -824,10 +824,10 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaFloat64Dtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaFloat64Dtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed 64-bit floating-point dtype.</span>
 
-<span class="sd">    This dtype integrates Arkouda&#39;s server-backed `pdarray&lt;float64&gt;` with</span>
+<span class="sd">    This dtype integrates Arkouda's server-backed `pdarray&lt;float64&gt;` with</span>
 <span class="sd">    the pandas ExtensionArray interface via :class:`ArkoudaArray`. It allows</span>
 <span class="sd">    pandas objects (Series, DataFrame) to store and manipulate large</span>
 <span class="sd">    distributed float64 arrays without materializing them on the client.</span>
@@ -836,12 +836,12 @@
 <span class="sd">    -------</span>
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Returns the :class:`ArkoudaArray` class used for storage.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;float64&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;f&quot;</span>  <span class="c1"># numpy integer kind</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"float64"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"f"</span>  <span class="c1"># numpy integer kind</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="n">float64</span>  <span class="c1"># pandas uses this for scalar conversions</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"float64"</span><span class="p">)</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>  <span class="c1"># choose your sentinel</span>
     <span class="n">_is_numeric</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -849,14 +849,14 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaFloat64Dtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray subclass that handles storage for this dtype.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaArray` class associated with this dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaArray</span></div>
@@ -868,10 +868,10 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaBoolDtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaBoolDtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed boolean dtype.</span>
 
-<span class="sd">    This dtype integrates Arkouda&#39;s server-backed `pdarray&lt;bool&gt;` with</span>
+<span class="sd">    This dtype integrates Arkouda's server-backed `pdarray&lt;bool&gt;` with</span>
 <span class="sd">    the pandas ExtensionArray interface via :class:`ArkoudaArray`. It allows</span>
 <span class="sd">    pandas objects (Series, DataFrame) to store and manipulate distributed</span>
 <span class="sd">    boolean arrays without materializing them on the client.</span>
@@ -880,12 +880,12 @@
 <span class="sd">    -------</span>
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Returns the :class:`ArkoudaArray` class used for storage.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bool_&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"bool_"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"b"</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_bool</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"bool"</span><span class="p">)</span>
     <span class="c1"># For boolean, pandas prefers NA rather than False as sentinel.</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">_is_boolean</span> <span class="o">=</span> <span class="kc">True</span>
@@ -894,14 +894,14 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaBoolDtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray subclass that handles storage for this dtype.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaArray` class associated with this dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaArray</span></div>
@@ -913,10 +913,10 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaBigintDtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaBigintDtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed arbitrary-precision integer dtype.</span>
 
-<span class="sd">    This dtype integrates Arkouda&#39;s server-backed ``pdarray&lt;bigint&gt;`` with</span>
+<span class="sd">    This dtype integrates Arkouda's server-backed ``pdarray&lt;bigint&gt;`` with</span>
 <span class="sd">    the pandas ExtensionArray interface via :class:`ArkoudaArray`. It enables</span>
 <span class="sd">    pandas objects (Series, DataFrame) to hold and operate on very large</span>
 <span class="sd">    integers that exceed 64-bit precision, while keeping the data distributed</span>
@@ -926,26 +926,26 @@
 <span class="sd">    -------</span>
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Returns the :class:`ArkoudaArray` class used for storage.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"bigint"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"O"</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"O"</span><span class="p">)</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># category code sentinel (align with your EA take/fill semantics)</span>
 
 <div class="viewcode-block" id="ArkoudaBigintDtype.construct_array_type">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaBigintDtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray subclass that handles storage for this dtype.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaArray` class associated with this dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaArray</span></div>
@@ -957,10 +957,10 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringDtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaStringDtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed string dtype.</span>
 
-<span class="sd">    This dtype integrates Arkouda&#39;s distributed ``Strings`` type with the</span>
+<span class="sd">    This dtype integrates Arkouda's distributed ``Strings`` type with the</span>
 <span class="sd">    pandas ExtensionArray interface via :class:`ArkoudaStringArray`. It</span>
 <span class="sd">    enables pandas objects (Series, DataFrame) to hold large, server-backed</span>
 <span class="sd">    string columns without converting to NumPy or Python objects.</span>
@@ -969,27 +969,27 @@
 <span class="sd">    -------</span>
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Returns the :class:`ArkoudaStringArray` used as the storage class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"string"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"O"</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;str_&quot;</span><span class="p">)</span>
-    <span class="n">na_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"str_"</span><span class="p">)</span>
+    <span class="n">na_value</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">_is_string</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="ArkoudaStringDtype.construct_array_type">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringDtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray subclass that handles storage for this dtype.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaStringArray` class associated with this dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_string_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringArray</span>
 
         <span class="k">return</span> <span class="n">ArkoudaStringArray</span></div>
@@ -1001,10 +1001,10 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalDtype">[docs]</a>
 <span class="nd">@register_extension_dtype</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaCategoricalDtype</span><span class="p">(</span><span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed categorical dtype.</span>
 
-<span class="sd">    This dtype integrates Arkouda&#39;s distributed ``Categorical`` type with</span>
+<span class="sd">    This dtype integrates Arkouda's distributed ``Categorical`` type with</span>
 <span class="sd">    the pandas ExtensionArray interface via :class:`ArkoudaCategorical`.</span>
 <span class="sd">    It enables pandas objects (Series, DataFrame) to hold categorical data</span>
 <span class="sd">    stored and processed on the Arkouda server, while exposing familiar</span>
@@ -1014,26 +1014,26 @@
 <span class="sd">    -------</span>
 <span class="sd">    construct_array_type()</span>
 <span class="sd">        Returns the :class:`ArkoudaCategorical` used as the storage class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;category&quot;</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"category"</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"O"</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>
-    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span>
+    <span class="n">_numpy_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"O"</span><span class="p">)</span>
     <span class="n">na_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># category code sentinel (align with your EA take/fill semantics)</span>
 
 <div class="viewcode-block" id="ArkoudaCategoricalDtype.construct_array_type">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalDtype.construct_array_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the ExtensionArray subclass that handles storage for this dtype.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
 <span class="sd">            The :class:`ArkoudaCategorical` class associated with this dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategorical</span>
 
         <span class="k">return</span> <span class="n">ArkoudaCategorical</span></div>

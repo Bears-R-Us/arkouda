@@ -1157,7 +1157,7 @@ and <span class="xref std std-ref">arrays.dtypes</span> for additional informati
 </div>
 </li>
 <li><p>name lookup:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">[</span><span class="s1">&#39;RED&#39;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">[</span><span class="s1">'RED'</span><span class="p">]</span>
 <span class="go">&lt;Color.RED: 1&gt;</span>
 </pre></div>
 </div>
@@ -1275,12 +1275,12 @@ literal (or one of several literals):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w">\ </span><span class="nf">validate_simple</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]:</span>  <span class="c1"># always returns True</span>
     <span class="o">...</span>
 
-<span class="n">MODE</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">]</span>
+<span class="n">MODE</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">'r'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">]</span>
 <span class="k">def</span><span class="w">\ </span><span class="nf">open_helper</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">MODE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="o">...</span>
 
-<span class="n">open_helper</span><span class="p">(</span><span class="s1">&#39;/some/path&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>  <span class="c1"># Passes type check</span>
-<span class="n">open_helper</span><span class="p">(</span><span class="s1">&#39;/other/path&#39;</span><span class="p">,</span> <span class="s1">&#39;typo&#39;</span><span class="p">)</span>  <span class="c1"># Error in type checker</span>
+<span class="n">open_helper</span><span class="p">(</span><span class="s1">'/some/path'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>  <span class="c1"># Passes type check</span>
+<span class="n">open_helper</span><span class="p">(</span><span class="s1">'/other/path'</span><span class="p">,</span> <span class="s1">'typo'</span><span class="p">)</span>  <span class="c1"># Error in type checker</span>
 </pre></div>
 </div>
 <p>Literal[…] cannot be subclassed. At runtime, an arbitrary value
@@ -1716,16 +1716,16 @@ is <code class="docutils literal notranslate"><span class="pre">NarrowedType</sp
 </ol>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w">\ </span><span class="nf">is_str_list</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Determines whether all objects in the list are strings&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">'''Determines whether all objects in the list are strings'''</span>
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">val</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w">\ </span><span class="nf">func1</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
     <span class="k">if</span> <span class="n">is_str_list</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
         <span class="c1"># Type of ``val`` is narrowed to ``list[str]``.</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Type of ``val`` remains as ``list[object]``.</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not a list of strings!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Not a list of strings!"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Strict type narrowing is not enforced – <code class="docutils literal notranslate"><span class="pre">TypeB</span></code> need not be a narrower
@@ -2053,7 +2053,7 @@ which inherits from <code class="xref py py-class docutils literal notranslate">
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span>
-<span class="go">&#39;bigint&#39;</span>
+<span class="go">'bigint'</span>
 </pre></div>
 </div>
 <dl class="py property">
@@ -2196,7 +2196,7 @@ such scalars but do not impose fixed-width limits.</p>
 <span class="go">133</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">bigint_</span><span class="p">(</span><span class="s2">&quot;0xff&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">bigint_</span><span class="p">(</span><span class="s2">"0xff"</span><span class="p">)</span>
 <span class="go">ak.bigint_(255)</span>
 </pre></div>
 </div>
@@ -2629,9 +2629,9 @@ Raise <cite>OverflowError</cite> on infinities and a <cite>ValueError</cite> on 
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.float64.fromhex">
 <span class="sig-name descname"><span class="pre">fromhex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.float64.fromhex" title="Link to this definition">¶</a></dt>
 <dd><p>Create a floating-point number from a hexadecimal string.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">&#39;0x1.ffffp10&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">'0x1.ffffp10'</span><span class="p">)</span>
 <span class="go">2047.984375</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">&#39;-0x1p-1074&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">'-0x1p-1074'</span><span class="p">)</span>
 <span class="go">-5e-324</span>
 </pre></div>
 </div>
@@ -2642,9 +2642,9 @@ Raise <cite>OverflowError</cite> on infinities and a <cite>ValueError</cite> on 
 <span class="sig-name descname"><span class="pre">hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.float64.hex" title="Link to this definition">¶</a></dt>
 <dd><p>Return a hexadecimal representation of a floating-point number.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
-<span class="go">&#39;-0x1.999999999999ap-4&#39;</span>
+<span class="go">'-0x1.999999999999ap-4'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="mf">3.14159</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
-<span class="go">&#39;0x1.921f9f01b866ep+1&#39;</span>
+<span class="go">'0x1.921f9f01b866ep+1'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2710,7 +2710,7 @@ is treated specially.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_byteorder</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
-<span class="go">&#39;&lt;&#39;</span>
+<span class="go">'&lt;'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2733,7 +2733,7 @@ is treated specially.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_server_byteorder</span><span class="p">()</span>
-<span class="go">&#39;little&#39;</span>
+<span class="go">'little'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2964,7 +2964,7 @@ is treated specially.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_bool</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_bool</span><span class="p">(</span><span class="s2">"True"</span><span class="p">)</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_bool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">True</span>
@@ -3066,7 +3066,7 @@ is treated specially.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_number</span><span class="p">(</span><span class="mf">45.9</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_number</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_number</span><span class="p">(</span><span class="s2">"string"</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
@@ -3179,8 +3179,8 @@ or any value accepted by <code class="docutils literal notranslate"><span class=
 <p># bigint wins unless floats appear
 &gt;&gt;&gt; result_type(dtype(“bigint”), dtype(“int64”))
 dtype(bigint)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;bigint&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">))</span>
-<span class="go">dtype(&#39;float64&#39;)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"bigint"</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">"float64"</span><span class="p">))</span>
+<span class="go">dtype('float64')</span>
 </pre></div>
 </div>
 <p># magnitude-aware routing: this becomes bigint, so result is bigint
@@ -3205,18 +3205,18 @@ dtype(‘bool’)</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">str_</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.str_" title="Link to this definition">¶</a></dt>
 <dd><p>A unicode string.</p>
 <p>This type strips trailing null codepoints.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">(</span><span class="s2">&quot;abc</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">(</span><span class="s2">"abc</span><span class="se">\x00</span><span class="s2">"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span>
-<span class="go">&#39;abc&#39;</span>
+<span class="go">'abc'</span>
 </pre></div>
 </div>
 <p>Unlike the builtin <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, this supports the
 <span class="xref std std-ref">python:bufferobjects</span>, exposing its contents as UCS4:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">(</span><span class="s2">"abc"</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">format</span>
-<span class="go">&#39;3w&#39;</span>
+<span class="go">'3w'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
-<span class="go">b&#39;a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00&#39;</span>
+<span class="go">b'a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00'</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

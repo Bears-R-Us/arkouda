@@ -826,16 +826,16 @@ also scales in distributed settings.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span>
 <span class="go">array([0 1 2 3 4 5 6 7 8 9])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;FisherYates&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"FisherYates"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span>
 <span class="go">array([0 8 2 7 9 4 6 3 5 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;MergeShuffle&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"MergeShuffle"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span>
 <span class="go">array([5 6 9 3 8 2 7 0 4 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Feistel&quot;</span><span class="p">,</span> <span class="n">feistel_rounds</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"Feistel"</span><span class="p">,</span> <span class="n">feistel_rounds</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span>
 <span class="go">array([8 7 3 2 4 9 0 1 5 6])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Feistel&quot;</span><span class="p">,</span> <span class="n">feistel_key</span><span class="o">=</span><span class="mh">0x1234_5678_9ABC_DEF0</span><span class="p">,</span> <span class="n">feistel_rounds</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"Feistel"</span><span class="p">,</span> <span class="n">feistel_key</span><span class="o">=</span><span class="mh">0x1234_5678_9ABC_DEF0</span><span class="p">,</span> <span class="n">feistel_rounds</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span>
 <span class="go">array([6 1 7 3 4 9 2 0 5 8])</span>
 </pre></div>

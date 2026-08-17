@@ -493,8 +493,8 @@ known Arkouda types.</p>
 <p>Attach an existing <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"my_array"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">"my_array"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
 <span class="go">[1 2 3]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
@@ -521,19 +521,19 @@ to the corresponding Arkouda object retrieved using <code class="docutils litera
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;arr1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;arr2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"arr1"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">"arr2"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Assuming <code class="docutils literal notranslate"><span class="pre">&quot;arr1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;arr2&quot;</span></code> were previously registered:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attached_objs</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_all</span><span class="p">([</span><span class="s2">&quot;arr1&quot;</span><span class="p">,</span> <span class="s2">&quot;arr2&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">attached_objs</span><span class="p">[</span><span class="s2">&quot;arr1&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attached_objs</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_all</span><span class="p">([</span><span class="s2">"arr1"</span><span class="p">,</span> <span class="s2">"arr2"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">attached_objs</span><span class="p">[</span><span class="s2">"arr1"</span><span class="p">])</span>
 <span class="go">[0 1 2]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">attached_objs</span><span class="p">[</span><span class="s2">&quot;arr2&quot;</span><span class="p">]))</span>
-<span class="go">&lt;class &#39;arkouda.numpy.pdarrayclass.pdarray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">attached_objs</span><span class="p">[</span><span class="s2">"arr2"</span><span class="p">]))</span>
+<span class="go">&lt;class 'arkouda.numpy.pdarrayclass.pdarray'&gt;</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">&quot;arr1&quot;</span><span class="p">,</span> <span class="s2">&quot;arr2&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">"arr1"</span><span class="p">,</span> <span class="s2">"arr2"</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -659,15 +659,15 @@ to compute the shape resulting from broadcasting two arrays together.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_bytes</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_bytes</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;KB&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_bytes</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"KB"</span><span class="p">)</span>
 <span class="go">2.0</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_bytes</span><span class="p">(</span><span class="mi">1048576</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;MB&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_bytes</span><span class="p">(</span><span class="mi">1048576</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"MB"</span><span class="p">)</span>
 <span class="go">1.0</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_bytes</span><span class="p">(</span><span class="mi">1073741824</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;GB&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_bytes</span><span class="p">(</span><span class="mi">1073741824</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"GB"</span><span class="p">)</span>
 <span class="go">1.0</span>
 </pre></div>
 </div>
@@ -694,11 +694,11 @@ original input.</p>
 <p class="rubric">Examples</p>
 <p>Convert a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> to its string labels:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">categories</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;cherry&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">categories</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"apple"</span><span class="p">,</span> <span class="s2">"banana"</span><span class="p">,</span> <span class="s2">"cherry"</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">convert_if_categorical</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="go">[&#39;apple&#39;, &#39;banana&#39;, &#39;cherry&#39;]</span>
+<span class="go">['apple', 'banana', 'cherry']</span>
 </pre></div>
 </div>
 <p>Non-<code class="docutils literal notranslate"><span class="pre">Categorical</span></code> inputs are returned unchanged:</p>
@@ -795,7 +795,7 @@ containing duplicates or missing values.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_float</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
@@ -805,7 +805,7 @@ containing duplicates or missing values.</p>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;2.0&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="s2">"2.0"</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_float</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
@@ -829,7 +829,7 @@ containing duplicates or missing values.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_int</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
@@ -839,7 +839,7 @@ containing duplicates or missing values.</p>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"2"</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_int</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
@@ -868,7 +868,7 @@ containing duplicates or missing values.</p>
 <span class="go">True</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">is_numeric</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
@@ -910,15 +910,15 @@ data or access problems).</p>
 <p>Check whether a name is registered as an object:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"my_array"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="s2">"my_array"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Check whether a name is registered as a component:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="s2">&quot;my_component&quot;</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="s2">"my_component"</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
@@ -963,9 +963,9 @@ mapping has a different number of levels than the GroupBy keys.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">})</span>
 <span class="go">array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>
 <span class="go">5.00000000000000000 25.00000000000000000])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-<span class="go">array([&#39;b&#39;, &#39;d&#39;, &#39;b&#39;, &#39;d&#39;, &#39;a&#39;])</span>
+<span class="go">array(['b', 'd', 'b', 'd', 'a'])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1005,18 +1005,18 @@ with earlier versions of Arkouda.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">register</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"my_array"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">registered_obj</span><span class="p">)</span>
 <span class="go">[1 2 3]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Register a different Arkouda object:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">categories</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;cherry&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">categories</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">"apple"</span><span class="p">,</span> <span class="s2">"banana"</span><span class="p">,</span> <span class="s2">"cherry"</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_cat</span> <span class="o">=</span> <span class="n">register</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="s2">&quot;my_cat&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_cat</span> <span class="o">=</span> <span class="n">register</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="s2">"my_cat"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">registered_cat</span><span class="p">)</span>
-<span class="go">[&#39;apple&#39;, &#39;banana&#39;, &#39;cherry&#39;]</span>
+<span class="go">['apple', 'banana', 'cherry']</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1036,13 +1036,13 @@ itself. For example, <code class="docutils literal notranslate"><span class="pre
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;array2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"array1"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">"array2"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>After calling this function, <code class="docutils literal notranslate"><span class="pre">&quot;array1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;array2&quot;</span></code> are registered
 in Arkouda and can be accessed by their names.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">&quot;array1&quot;</span><span class="p">,</span> <span class="s2">&quot;array2&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">"array1"</span><span class="p">,</span> <span class="s2">"array2"</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1166,13 +1166,13 @@ should be unregistered.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;array2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"array1"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">"array2"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>After calling this function, <code class="docutils literal notranslate"><span class="pre">&quot;array1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;array2&quot;</span></code> are registered
 in Arkouda and can be accessed by their names.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">&quot;array1&quot;</span><span class="p">,</span> <span class="s2">&quot;array2&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">"array1"</span><span class="p">,</span> <span class="s2">"array2"</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>The objects are now unregistered.</p>

@@ -419,31 +419,31 @@ also support compatibility with standard pandas file formats for interoperabilit
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_parquet</span><span class="p">,</span> <span class="n">read_parquet</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;output&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"output"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="n">my_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Create and save a DataFrame:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;/parquet_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">to_parquet</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;/parquet_data/data.parquet&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">"/parquet_data"</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_parquet</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">my_path</span> <span class="o">+</span> <span class="s2">"/parquet_data/data.parquet"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Load the DataFrame back:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">read_parquet</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;/parquet_data/data*&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">read_parquet</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">"/parquet_data/data*"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Save to HDF5:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;data.hdf5&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">my_path</span> <span class="o">+</span> <span class="s2">"data.hdf5"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read from HDF5 with explicit dataset name:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data3</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;data*&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data3</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">"data*"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Export to pandas-compatible Parquet:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;/parquet_data/data.parquet&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s2">"b"</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">"/parquet_data/data.parquet"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -789,14 +789,14 @@ file without the <code class="docutils literal notranslate"><span class="pre">_L
 </pre></div>
 </div>
 <p>Loading from file without extension:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;path/prefix&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"path/prefix"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This loads the array from <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> files with the name
 <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####</span></code>. The file type is inferred
 automatically.</p>
 <p>Loading with an extension (HDF5):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;path/prefix.test&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"path/prefix.test"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This loads the object from <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> files with the name
@@ -1031,16 +1031,16 @@ of datasets in HDF5 or Parquet files.</p>
 </pre></div>
 </div>
 <p>Read a file with an extension:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.h5&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">"path/name_prefix.h5"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The file type is determined from file contents, not the extension.</p>
 <p>Read a Parquet file:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.parquet&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">"path/name_prefix.parquet"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read files matching a glob expression:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">"path/name_prefix*"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1181,11 +1181,11 @@ names in HDF5 files.</p>
 </pre></div>
 </div>
 <p>Read a file with an extension:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.h5&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s2">"path/name_prefix.h5"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read files matching a glob expression:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s2">"path/name_prefix*"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1279,11 +1279,11 @@ updated when the Parquet workflow changes.</p>
 </pre></div>
 </div>
 <p>Read a Parquet file:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;path/name_prefix.parquet&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">"path/name_prefix.parquet"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read files matching a glob expression:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;path/name_prefix*&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">"path/name_prefix*"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1328,13 +1328,13 @@ contain null values.</p></li>
 </pre></div>
 </div>
 <p>Read files and return the data along with tagging information:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_tagged_data</span><span class="p">(</span><span class="s2">&quot;path/name&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_tagged_data</span><span class="p">(</span><span class="s2">"path/name"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The codes in <code class="docutils literal notranslate"><span class="pre">cat</span></code> map each record in <code class="docutils literal notranslate"><span class="pre">data</span></code> to the file it came
 from. The returned data includes a <code class="docutils literal notranslate"><span class="pre">&quot;Filename_Codes&quot;</span></code> array.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span>
-<span class="go">{&quot;Filename_Codes&quot;: array([0 3 6 9 12]), &quot;col_name&quot;: array([0 0 0 1])}</span>
+<span class="go">{"Filename_Codes": array([0 3 6 9 12]), "col_name": array([0 0 0 1])}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1626,11 +1626,11 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 </pre></div>
 </div>
 <p>Save with mapping defining dataset names</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">},</span> <span class="s1">&#39;path/name_prefix&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">({</span><span class="s1">'a'</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="n">b</span><span class="p">},</span> <span class="s1">'path/name_prefix'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Save using names instead of mapping</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="s1">&#39;path/name_prefix&#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="s1">'path/name_prefix'</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1688,11 +1688,11 @@ exist, a <code class="docutils literal notranslate"><span class="pre">RuntimeErr
 </pre></div>
 </div>
 <p>Save with a mapping defining dataset names:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">},</span> <span class="s2">&quot;path/name_prefix&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">:</span> <span class="n">b</span><span class="p">},</span> <span class="s2">"path/name_prefix"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Save using <code class="docutils literal notranslate"><span class="pre">names</span></code> instead of a mapping:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="s2">&quot;path/name_prefix&quot;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="s2">"path/name_prefix"</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>

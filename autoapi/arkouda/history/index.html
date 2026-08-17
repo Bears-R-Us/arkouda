@@ -408,20 +408,20 @@ on optional string filters and count limits.</p>
 </div>
 <p>REPL mode:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ShellHistoryRetriever</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">command_filter</span><span class="o">=</span><span class="s2">&quot;ak.&quot;</span><span class="p">,</span> <span class="n">num_commands</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">[&#39;ak.array([1,2,3])&#39;, &#39;ak.sum(...)&#39;, ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">command_filter</span><span class="o">=</span><span class="s2">"ak."</span><span class="p">,</span> <span class="n">num_commands</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">['ak.array([1,2,3])', 'ak.sum(...)', ...]</span>
 </pre></div>
 </div>
 <p>Notebook mode:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">NotebookHistoryRetriever</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">num_commands</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">[&#39;ak.connect()&#39;, &#39;df = ak.DataFrame(...)&#39;, &#39;ak.argsort(...)&#39;]</span>
+<span class="go">['ak.connect()', 'df = ak.DataFrame(...)', 'ak.argsort(...)']</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.generate_history</span></code></dt><dd><p>High-level function for retrieving command history.</p>
+<dt><a class="reference internal" href="../index.html#arkouda.generate_history" title="arkouda.generate_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.generate_history</span></code></a></dt><dd><p>High-level function for retrieving command history.</p>
 </dd>
 </dl>
 </div>
@@ -508,7 +508,7 @@ with an optional command filter and number of commands to return.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="mi">2</span><span class="o">**</span><span class="mi">3</span>
 <span class="go">8</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">num_commands</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">[&#39;1+2&#39;, &#39;4*6&#39;, &#39;2**3&#39;]</span>
+<span class="go">['1+2', '4*6', '2**3']</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -549,7 +549,7 @@ optional command filter and number of commands to return.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
 <span class="go">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">retrieve</span><span class="p">()</span>
-<span class="go">[&#39; 1 + 2&#39;, &#39;h.retrieve()&#39;]</span>
+<span class="go">[' 1 + 2', 'h.retrieve()']</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -390,39 +390,39 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Datetime&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;date_range&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;timedelta_range&quot;</span><span class="p">,</span>
+    <span class="s2">"Datetime"</span><span class="p">,</span>
+    <span class="s2">"Timedelta"</span><span class="p">,</span>
+    <span class="s2">"date_range"</span><span class="p">,</span>
+    <span class="s2">"timedelta_range"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<span class="n">_BASE_UNIT</span> <span class="o">=</span> <span class="s2">&quot;ns&quot;</span>
+<span class="n">_BASE_UNIT</span> <span class="o">=</span> <span class="s2">"ns"</span>
 
 <span class="n">_unit2normunit</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;weeks&quot;</span><span class="p">:</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hrs&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;milliseconds&quot;</span><span class="p">:</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;microseconds&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nanoseconds&quot;</span><span class="p">:</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span>
+    <span class="s2">"weeks"</span><span class="p">:</span> <span class="s2">"w"</span><span class="p">,</span>
+    <span class="s2">"days"</span><span class="p">:</span> <span class="s2">"d"</span><span class="p">,</span>
+    <span class="s2">"hours"</span><span class="p">:</span> <span class="s2">"h"</span><span class="p">,</span>
+    <span class="s2">"hrs"</span><span class="p">:</span> <span class="s2">"h"</span><span class="p">,</span>
+    <span class="s2">"minutes"</span><span class="p">:</span> <span class="s2">"m"</span><span class="p">,</span>
+    <span class="s2">"t"</span><span class="p">:</span> <span class="s2">"m"</span><span class="p">,</span>
+    <span class="s2">"milliseconds"</span><span class="p">:</span> <span class="s2">"ms"</span><span class="p">,</span>
+    <span class="s2">"l"</span><span class="p">:</span> <span class="s2">"ms"</span><span class="p">,</span>
+    <span class="s2">"microseconds"</span><span class="p">:</span> <span class="s2">"us"</span><span class="p">,</span>
+    <span class="s2">"u"</span><span class="p">:</span> <span class="s2">"us"</span><span class="p">,</span>
+    <span class="s2">"nanoseconds"</span><span class="p">:</span> <span class="s2">"ns"</span><span class="p">,</span>
+    <span class="s2">"n"</span><span class="p">:</span> <span class="s2">"ns"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">_unit2factor</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
-    <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
-    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
-    <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
-    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
-    <span class="s2">&quot;ms&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
-    <span class="s2">&quot;us&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
-    <span class="s2">&quot;ns&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"w"</span><span class="p">:</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">"d"</span><span class="p">:</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">"h"</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">"m"</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">"s"</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">"ms"</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
+    <span class="s2">"us"</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+    <span class="s2">"ns"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -435,7 +435,7 @@
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">_unit2factor</span><span class="p">[</span><span class="n">normunit</span><span class="p">]</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Argument must be one of </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">_unit2factor</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_unit2normunit</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Argument must be one of </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">_unit2factor</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_unit2normunit</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
 
@@ -452,19 +452,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime_data</span><span class="p">(</span><span class="n">scalar</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
         <span class="c1"># int64 in nanoseconds</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">*</span> <span class="n">scalar</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">*</span> <span class="n">scalar</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_AbstractBaseTime</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Datetime and Timedelta; not user-facing. Arkouda handles</span>
+<span class="w">    </span><span class="sd">"""Base class for Datetime and Timedelta; not user-facing. Arkouda handles</span>
 <span class="sd">    time similar to Pandas (albeit with less functionality), in that all absolute</span>
 <span class="sd">    and relative times are represented in nanoseconds as int64 behind the scenes.</span>
 <span class="sd">    Datetime and Timedelta can be constructed from Arkouda, NumPy, or Pandas arrays;</span>
 <span class="sd">    in each case, the input values are normalized to nanoseconds on initialization,</span>
 <span class="sd">    so that all resulting operations are transparent.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span>
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">"Time"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
@@ -478,32 +478,32 @@
         <span class="c1"># Convert the input to int64 pdarray of nanoseconds</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> array must have int64 dtype&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> array must have int64 dtype"</span><span class="p">)</span>
             <span class="c1"># Already int64 pdarray, just scale</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
             <span class="c1"># This makes a copy of the input array, to leave input unchanged</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">*</span> <span class="n">pda</span><span class="p">,</span> <span class="n">int64</span><span class="p">)</span>  <span class="c1"># Mimics a datetime64[ns] array</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">):</span>
             <span class="c1"># Handles all pandas and numpy datetime/timedelta arrays</span>
-            <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"M"</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">):</span>
                 <span class="c1"># M = datetime64, m = timedelta64</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid dtype: </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid dtype: </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdSeries</span><span class="p">):</span>
                 <span class="c1"># from_series() already returns int64 nanoseconds for datetime/timedelta</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span>  <span class="c1"># &quot;ns&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span>  <span class="c1"># "ns"</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">from_series</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="c1"># Numpy datetime64 and timedelta64</span>
                 <span class="c1"># Force through pandas.Series</span>
                 <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">to_series</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;to_series&quot;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">"to_series"</span><span class="p">):</span>
                 <span class="c1"># Pandas DatetimeIndex</span>
                 <span class="c1"># Force through pandas.Series</span>
                 <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">to_series</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="c1"># Now that self.values is correct, init self with same metadata</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -522,51 +522,51 @@
         <span class="k">return</span> <span class="n">_identity</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times down to the nearest integer of a given frequency.</span>
+<span class="w">        </span><span class="sd">"""Round times down to the nearest integer of a given frequency.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        freq : str {&#39;d&#39;, &#39;m&#39;, &#39;h&#39;, &#39;s&#39;, &#39;ms&#39;, &#39;us&#39;, &#39;ns&#39;}</span>
+<span class="sd">        freq : str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}</span>
 <span class="sd">            Frequency to round to</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        self.__class__</span>
 <span class="sd">            Values rounded down to nearest frequency</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">//</span> <span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times up to the nearest integer of a given frequency.</span>
+<span class="w">        </span><span class="sd">"""Round times up to the nearest integer of a given frequency.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        freq : str {&#39;d&#39;, &#39;m&#39;, &#39;h&#39;, &#39;s&#39;, &#39;ms&#39;, &#39;us&#39;, &#39;ns&#39;}</span>
+<span class="sd">        freq : str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}</span>
 <span class="sd">            Frequency to round to</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        self.__class__</span>
 <span class="sd">            Values rounded up to nearest frequency</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times to the nearest integer of a given frequency. Midpoint</span>
+<span class="w">        </span><span class="sd">"""Round times to the nearest integer of a given frequency. Midpoint</span>
 <span class="sd">        values will be rounded to nearest even integer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        freq : str {&#39;d&#39;, &#39;m&#39;, &#39;h&#39;, &#39;s&#39;, &#39;ms&#39;, &#39;us&#39;, &#39;ns&#39;}</span>
+<span class="sd">        freq : str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}</span>
 <span class="sd">            Frequency to round to</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        self.__class__</span>
 <span class="sd">            Values rounded to nearest frequency</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
         <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">((</span><span class="n">f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">rounded</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">//</span> <span class="n">f</span>
@@ -580,7 +580,7 @@
         <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_ndarray</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">64[ns]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="s2">"</span><span class="si">{}</span><span class="s2">64[ns]"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -590,29 +590,29 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
-        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"array"</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"truncate"</span><span class="p">,</span> <span class="s2">"append"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"truncate"</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"single"</span><span class="p">,</span> <span class="s2">"distribute"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"distribute"</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override of the pdarray to_hdf to store the special dtype.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Override of the pdarray to_hdf to store the special dtype."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
 
         <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"tohdf"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
-                <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
-                <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
-                <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
-                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
-                <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+                <span class="s2">"values"</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">"dset"</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                <span class="s2">"write_mode"</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
+                <span class="s2">"filename"</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                <span class="s2">"dtype"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">"file_format"</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override the pdarray implementation so that the special object type will be used.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"array"</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Override the pdarray implementation so that the special object type will be used."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_file_type_to_int</span><span class="p">,</span>
@@ -622,19 +622,19 @@
         <span class="p">)</span>
 
         <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
-        <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">"*"</span><span class="p">)</span>
 
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"tohdf"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
-                <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
-                <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="s2">&quot;append&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
-                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
-                <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
-                <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">"values"</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">"dset"</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                <span class="s2">"write_mode"</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="s2">"append"</span><span class="p">),</span>
+                <span class="s2">"filename"</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                <span class="s2">"dtype"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">"file_format"</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+                <span class="s2">"overwrite"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
@@ -645,15 +645,15 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;... &quot;</span><span class="p">)</span>
-            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
-        <span class="n">spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">([</span><span class="si">{}</span><span class="s2">],</span><span class="se">\n</span><span class="si">{}</span><span class="s2">dtype=&#39;</span><span class="si">{}</span><span class="s2">64[ns]&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"... "</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">([</span><span class="si">{}</span><span class="s2">],</span><span class="se">\n</span><span class="si">{}</span><span class="s2">dtype='</span><span class="si">{}</span><span class="s2">64[ns]')"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spaces</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span>
+            <span class="s2">",</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spaces</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span>
             <span class="n">spaces</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
         <span class="p">)</span>
@@ -663,28 +663,28 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="c1"># Need to do 2 things:</span>
-        <span class="c1">#  1) Determine return type, based on other&#39;s class</span>
-        <span class="c1">#  2) Get other&#39;s int64 data to combine with self&#39;s data</span>
+        <span class="c1">#  1) Determine return type, based on other's class</span>
+        <span class="c1">#  2) Get other's int64 data to combine with self's data</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_datetime</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and Datetime&quot;</span><span class="p">)</span>
-            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and Datetime"</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">"Datetime"</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
                 <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_timedelta</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and Timedelta&quot;</span><span class="p">)</span>
-            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and Timedelta"</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">"Timedelta"</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
                 <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
         <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_pdarray</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and integer&quot;</span><span class="p">)</span>
-            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;pdarray&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and integer"</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">"pdarray"</span>
             <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
@@ -695,35 +695,35 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="c1"># Need to do 2 things:</span>
-        <span class="c1">#  1) Determine return type, based on other&#39;s class</span>
-        <span class="c1">#  2) Get other&#39;s int64 data to combine with self&#39;s data</span>
+        <span class="c1">#  1) Determine return type, based on other's class</span>
+        <span class="c1">#  2) Get other's int64 data to combine with self's data</span>
 
         <span class="c1"># First case is pdarray &lt;op&gt; self</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_pdarray</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between int64 and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between int64 and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="s2">"pdarray"</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
             <span class="c1"># Need to use other._binop because self.values._r_binop can only handle scalars</span>
             <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
         <span class="c1"># All other cases are scalars, so can use self.values._r_binop</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_datetime</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between scalar datetime and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between scalar datetime and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
-            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">"Datetime"</span>
             <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_timedelta</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between scalar timedelta and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between scalar timedelta and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
-            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">"Timedelta"</span>
             <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
         <span class="k">elif</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_pdarray</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between int64 and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;pdarray&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between int64 and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">"pdarray"</span>
             <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If here, type is not handled</span>
@@ -734,14 +734,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_opeq</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> Timedelta not supported&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> Timedelta not supported"</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
                 <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">opeq</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> datetime not supported&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> datetime not supported"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
@@ -810,7 +810,7 @@
 <div class="viewcode-block" id="Datetime">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Datetime">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Datetime</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a date and/or time.</span>
+<span class="w">    </span><span class="sd">"""Represents a date and/or time.</span>
 
 <span class="sd">    Datetime is the Arkouda analog to pandas DatetimeIndex and</span>
 <span class="sd">    other timeseries data types.</span>
@@ -818,38 +818,38 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array</span>
-<span class="sd">    unit : str, default &#39;ns&#39;</span>
+<span class="sd">    unit : str, default 'ns'</span>
 <span class="sd">        For int64 pdarray, denotes the unit of the input. Ignored for pandas</span>
 <span class="sd">        and numpy arrays, which carry their own unit. Not case-sensitive;</span>
-<span class="sd">        prefixes of full names (like &#39;sec&#39;) are accepted.</span>
+<span class="sd">        prefixes of full names (like 'sec') are accepted.</span>
 
 <span class="sd">        Possible values:</span>
 
-<span class="sd">        * &#39;weeks&#39; or &#39;w&#39;</span>
-<span class="sd">        * &#39;days&#39; or &#39;d&#39;</span>
-<span class="sd">        * &#39;hours&#39; or &#39;h&#39;</span>
-<span class="sd">        * &#39;minutes&#39;, &#39;m&#39;, or &#39;t&#39;</span>
-<span class="sd">        * &#39;seconds&#39; or &#39;s&#39;</span>
-<span class="sd">        * &#39;milliseconds&#39;, &#39;ms&#39;, or &#39;l&#39;</span>
-<span class="sd">        * &#39;microseconds&#39;, &#39;us&#39;, or &#39;u&#39;</span>
-<span class="sd">        * &#39;nanoseconds&#39;, &#39;ns&#39;, or &#39;n&#39;</span>
+<span class="sd">        * 'weeks' or 'w'</span>
+<span class="sd">        * 'days' or 'd'</span>
+<span class="sd">        * 'hours' or 'h'</span>
+<span class="sd">        * 'minutes', 'm', or 't'</span>
+<span class="sd">        * 'seconds' or 's'</span>
+<span class="sd">        * 'milliseconds', 'ms', or 'l'</span>
+<span class="sd">        * 'microseconds', 'us', or 'u'</span>
+<span class="sd">        * 'nanoseconds', 'ns', or 'n'</span>
 
 <span class="sd">        Unlike in pandas, units cannot be combined or mixed with integers</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The ``.values`` attribute is always in nanoseconds with int64 dtype.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">supported_with_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_r_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_r_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">))</span>
-    <span class="n">supported_opeq</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+=&quot;</span><span class="p">,</span> <span class="s2">&quot;-=&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"=="</span><span class="p">,</span> <span class="s2">"!="</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"&gt;="</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">))</span>
+    <span class="n">supported_with_r_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"=="</span><span class="p">,</span> <span class="s2">"!="</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"&gt;="</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">))</span>
+    <span class="n">supported_with_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">,</span> <span class="s2">"//"</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">))</span>
+    <span class="n">supported_with_r_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"+"</span><span class="p">))</span>
+    <span class="n">supported_opeq</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"+="</span><span class="p">,</span> <span class="s2">"-="</span><span class="p">))</span>
     <span class="n">supported_with_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(())</span>  <span class="c1"># type: ignore</span>
     <span class="n">supported_with_r_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(())</span>  <span class="c1"># type: ignore</span>
 
-    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">"Datetime"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -857,22 +857,22 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># lazy initialize all attributes in one server call</span>
-        <span class="n">attribute_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;dateTimeAttributes&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">}))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;nanosecond&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_us</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;microsecond&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;millisecond&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;second&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_min</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;minute&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hour</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;hour&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;day&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_iso_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;isoYear&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;dayOfWeek&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;weekOfYear&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;dayOfYear&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_leap_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;isLeapYear&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+        <span class="n">attribute_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"dateTimeAttributes"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"values"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"nanosecond"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_us</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"microsecond"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"millisecond"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"second"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"minute"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hour</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"hour"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"day"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"month"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"year"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iso_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"isoYear"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"dayOfWeek"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"weekOfYear"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"dayOfYear"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_leap_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"isLeapYear"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">"d"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
@@ -955,8 +955,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># no need to call _ensure_components for the date</span>
         <span class="c1"># if _date has been set, return it. Otherwise set it first</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_date&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_date"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">"d"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_date</span>
 
     <span class="nd">@property</span>
@@ -972,9 +972,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iso_year</span><span class="p">,</span>
-                <span class="s2">&quot;week&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span><span class="p">,</span>
-                <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"year"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iso_year</span><span class="p">,</span>
+                <span class="s2">"week"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span><span class="p">,</span>
+                <span class="s2">"day"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span></div>
 
@@ -982,10 +982,10 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>  <span class="c1"># Datetime - Datetime -&gt; Timedelta</span>
-            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime + Timedelta -&gt; Datetime</span>
-            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime - Timedelta -&gt; Datetime</span>
-            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>
+            <span class="p">(</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>  <span class="c1"># Datetime - Datetime -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">"Timedelta"</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime + Timedelta -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">"Timedelta"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime - Timedelta -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">"Timedelta"</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>
         <span class="p">}</span>  <span class="c1"># Datetime % Timedelta -&gt; Timedelta</span>
         <span class="c1"># Every other supported op returns an int64 pdarray, so callback is identity</span>
         <span class="k">return</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">),</span> <span class="n">_identity</span><span class="p">)</span>
@@ -996,32 +996,32 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
-        <span class="c1"># Tests whether scalar has compatible type with self&#39;s elements</span>
+        <span class="c1"># Tests whether scalar has compatible type with self's elements</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Datetime.to_pandas">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Datetime.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas DatetimeIndex. Note: if the array size</span>
+<span class="w">        </span><span class="sd">"""Convert array to a pandas DatetimeIndex. Note: if the array size</span>
 <span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        to_ndarray</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="Datetime.sum">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Datetime.sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot sum datetime64 values&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Cannot sum datetime64 values"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Datetime.register">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Datetime.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Register this Datetime object and underlying components with the Arkouda server.</span>
 
 <span class="sd">        Parameters</span>
@@ -1054,17 +1054,17 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"register"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
-                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">"array"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
@@ -1074,7 +1074,7 @@
 <div class="viewcode-block" id="Datetime.unregister">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Datetime.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Unregister this Datetime object in the arkouda server which was previously</span>
 <span class="sd">        registered using register() and/or attached to using attach().</span>
 
@@ -1093,11 +1093,11 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">"This object is not registered"</span><span class="p">)</span>
         <span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -1105,7 +1105,7 @@
 <div class="viewcode-block" id="Datetime.is_registered">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Datetime.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
 <span class="sd">         registered object.</span>
 
@@ -1117,7 +1117,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        RegistrationError</span>
-<span class="sd">            Raised if there&#39;s a server-side error or a mis-match of registered components</span>
+<span class="sd">            Raised if there's a server-side error or a mis-match of registered components</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -1127,7 +1127,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1141,45 +1141,45 @@
 <div class="viewcode-block" id="Timedelta">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Timedelta">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Timedelta</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a duration, the difference between two dates or times.</span>
+<span class="w">    </span><span class="sd">"""Represents a duration, the difference between two dates or times.</span>
 
 <span class="sd">    Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array</span>
-<span class="sd">    unit : str, default &#39;ns&#39;</span>
+<span class="sd">    unit : str, default 'ns'</span>
 <span class="sd">        For int64 pdarray, denotes the unit of the input. Ignored for pandas</span>
 <span class="sd">        and numpy arrays, which carry their own unit. Not case-sensitive;</span>
-<span class="sd">        prefixes of full names (like &#39;sec&#39;) are accepted.</span>
+<span class="sd">        prefixes of full names (like 'sec') are accepted.</span>
 
 <span class="sd">        Possible values:</span>
 
-<span class="sd">        * &#39;weeks&#39; or &#39;w&#39;</span>
-<span class="sd">        * &#39;days&#39; or &#39;d&#39;</span>
-<span class="sd">        * &#39;hours&#39; or &#39;h&#39;</span>
-<span class="sd">        * &#39;minutes&#39;, &#39;m&#39;, or &#39;t&#39;</span>
-<span class="sd">        * &#39;seconds&#39; or &#39;s&#39;</span>
-<span class="sd">        * &#39;milliseconds&#39;, &#39;ms&#39;, or &#39;l&#39;</span>
-<span class="sd">        * &#39;microseconds&#39;, &#39;us&#39;, or &#39;u&#39;</span>
-<span class="sd">        * &#39;nanoseconds&#39;, &#39;ns&#39;, or &#39;n&#39;</span>
+<span class="sd">        * 'weeks' or 'w'</span>
+<span class="sd">        * 'days' or 'd'</span>
+<span class="sd">        * 'hours' or 'h'</span>
+<span class="sd">        * 'minutes', 'm', or 't'</span>
+<span class="sd">        * 'seconds' or 's'</span>
+<span class="sd">        * 'milliseconds', 'ms', or 'l'</span>
+<span class="sd">        * 'microseconds', 'us', or 'u'</span>
+<span class="sd">        * 'nanoseconds', 'ns', or 'n'</span>
 
 <span class="sd">        Unlike in pandas, units cannot be combined or mixed with integers</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The ``.values`` attribute is always in nanoseconds with int64 dtype.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">supported_with_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_r_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_r_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
-    <span class="n">supported_opeq</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+=&quot;</span><span class="p">,</span> <span class="s2">&quot;-=&quot;</span><span class="p">,</span> <span class="s2">&quot;%=&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">))</span>
-    <span class="n">supported_with_r_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"+"</span><span class="p">))</span>
+    <span class="n">supported_with_r_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">,</span> <span class="s2">"//"</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">))</span>
+    <span class="n">supported_with_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"=="</span><span class="p">,</span> <span class="s2">"!="</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"&gt;="</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">,</span> <span class="s2">"//"</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">))</span>
+    <span class="n">supported_with_r_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"=="</span><span class="p">,</span> <span class="s2">"!="</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"&gt;="</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">,</span> <span class="s2">"//"</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">))</span>
+    <span class="n">supported_opeq</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"+="</span><span class="p">,</span> <span class="s2">"-="</span><span class="p">,</span> <span class="s2">"%="</span><span class="p">))</span>
+    <span class="n">supported_with_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"*"</span><span class="p">,</span> <span class="s2">"//"</span><span class="p">))</span>
+    <span class="n">supported_with_r_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">"*"</span><span class="p">))</span>
 
-    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">"Timedelta"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -1187,14 +1187,14 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># lazy initialize all attributes in one server call</span>
-        <span class="n">attribute_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;timeDeltaAttributes&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">}))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;nanosecond&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_us</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;microsecond&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;millisecond&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;second&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;minute&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;hour&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;day&quot;</span><span class="p">])</span>
+        <span class="n">attribute_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">"timeDeltaAttributes"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"values"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"nanosecond"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_us</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"microsecond"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"millisecond"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"second"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"minute"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"hour"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">"day"</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nanoseconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_microseconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
@@ -1236,26 +1236,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span>
-                <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
-                <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="p">,</span>
-                <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
-                <span class="s2">&quot;milliseconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span><span class="p">,</span>
-                <span class="s2">&quot;microseconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span><span class="p">,</span>
-                <span class="s2">&quot;nanoseconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span><span class="p">,</span>
+                <span class="s2">"days"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span>
+                <span class="s2">"hours"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                <span class="s2">"minutes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="p">,</span>
+                <span class="s2">"seconds"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                <span class="s2">"milliseconds"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span><span class="p">,</span>
+                <span class="s2">"microseconds"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span><span class="p">,</span>
+                <span class="s2">"nanoseconds"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta - Timedelta -&gt; Timedelta</span>
-            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta + Timedelta -&gt; Timedelta</span>
-            <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="n">Datetime</span><span class="p">,</span>  <span class="c1"># Timedelta + Datetime -&gt; Datetime</span>
-            <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="n">Datetime</span><span class="p">,</span>  <span class="c1"># Datetime - Timedelta -&gt; Datetime</span>
-            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta % Timedelta -&gt; Timedelta</span>
-            <span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta // pdarray -&gt; Timedelta</span>
-            <span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>
+            <span class="p">(</span><span class="s2">"Timedelta"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta - Timedelta -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">"Timedelta"</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta + Timedelta -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">):</span> <span class="n">Datetime</span><span class="p">,</span>  <span class="c1"># Timedelta + Datetime -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">):</span> <span class="n">Datetime</span><span class="p">,</span>  <span class="c1"># Datetime - Timedelta -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">"Timedelta"</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta % Timedelta -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">"pdarray"</span><span class="p">,</span> <span class="s2">"//"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta // pdarray -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">"pdarray"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>
         <span class="p">}</span>  <span class="c1"># Timedelta * pdarray -&gt; Timedelta</span>
         <span class="c1"># Every other supported op returns an int64 pdarray, so callback is identity</span>
         <span class="k">return</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">),</span> <span class="n">_identity</span><span class="p">)</span>
@@ -1271,13 +1271,13 @@
 <div class="viewcode-block" id="Timedelta.to_pandas">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Timedelta.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas TimedeltaIndex. Note: if the array size</span>
+<span class="w">        </span><span class="sd">"""Convert array to a pandas TimedeltaIndex. Note: if the array size</span>
 <span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        to_ndarray</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">to_timedelta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span></div>
 
 
@@ -1289,7 +1289,7 @@
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">))</span></div>
 
 
@@ -1303,17 +1303,17 @@
 <div class="viewcode-block" id="Timedelta.abs">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Timedelta.abs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Absolute value of time interval.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Absolute value of time interval."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="nb">abs</span> <span class="k">as</span> <span class="n">akabs</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">akabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;int64&quot;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">akabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s2">"int64"</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Timedelta.register">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Timedelta.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Register this Timedelta object and underlying components with the Arkouda server.</span>
 
 <span class="sd">        Parameters</span>
@@ -1346,17 +1346,17 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"register"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
-                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">"array"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
@@ -1366,7 +1366,7 @@
 <div class="viewcode-block" id="Timedelta.unregister">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Timedelta.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Unregister this timedelta object in the arkouda server which was previously</span>
 <span class="sd">        registered using register() and/or attached to using attach().</span>
 
@@ -1385,11 +1385,11 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">"This object is not registered"</span><span class="p">)</span>
         <span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -1397,7 +1397,7 @@
 <div class="viewcode-block" id="Timedelta.is_registered">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.Timedelta.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
 <span class="sd">         registered object.</span>
 
@@ -1409,7 +1409,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        RegistrationError</span>
-<span class="sd">            Raised if there&#39;s a server-side error or a mis-match of registered components</span>
+<span class="sd">            Raised if there's a server-side error or a mis-match of registered components</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -1419,7 +1419,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1440,10 +1440,10 @@
     <span class="n">tz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+    <span class="n">inclusive</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a fixed frequency Datetime range. Alias for</span>
 <span class="sd">    ``ak.Datetime(pd.date_range(args))``. Subject to size limit</span>
 <span class="sd">    imposed by client.maxTransferBytes.</span>
@@ -1456,19 +1456,19 @@
 <span class="sd">        Right bound for generating dates.</span>
 <span class="sd">    periods : int, optional</span>
 <span class="sd">        Number of periods to generate.</span>
-<span class="sd">    freq : str or DateOffset, default &#39;D&#39;</span>
-<span class="sd">        Frequency strings can have multiples, e.g. &#39;5H&#39;. See</span>
+<span class="sd">    freq : str or DateOffset, default 'D'</span>
+<span class="sd">        Frequency strings can have multiples, e.g. '5H'. See</span>
 <span class="sd">        timeseries.offset_aliases for a list of</span>
 <span class="sd">        frequency aliases.</span>
 <span class="sd">    tz : str or tzinfo, optional</span>
 <span class="sd">        Time zone name for returning localized DatetimeIndex, for example</span>
-<span class="sd">        &#39;Asia/Hong_Kong&#39;. By default, the resulting DatetimeIndex is</span>
+<span class="sd">        'Asia/Hong_Kong'. By default, the resulting DatetimeIndex is</span>
 <span class="sd">        timezone-naive.</span>
 <span class="sd">    normalize : bool, default False</span>
 <span class="sd">        Normalize start/end dates to midnight before generating date range.</span>
 <span class="sd">    name : str, default None</span>
 <span class="sd">        Name of the resulting DatetimeIndex.</span>
-<span class="sd">    inclusive : {&quot;both&quot;, &quot;neither&quot;, &quot;left&quot;, &quot;right&quot;}, default &quot;both&quot;</span>
+<span class="sd">    inclusive : {"both", "neither", "left", "right"}, default "both"</span>
 <span class="sd">        Include boundaries. Whether to set each bound as closed or open.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        For compatibility. Has no effect on the result.</span>
@@ -1487,7 +1487,7 @@
 <span class="sd">    To learn more about the frequency strings, please see `this link</span>
 <span class="sd">    &lt;https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases&gt;`__.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">Datetime</span><span class="p">(</span>
         <span class="n">pd_date_range</span><span class="p">(</span>
             <span class="n">start</span><span class="p">,</span>
@@ -1507,7 +1507,7 @@
 <div class="viewcode-block" id="timedelta_range">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/timeclass/index.html#arkouda.timedelta_range">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a fixed frequency TimedeltaIndex, with day as the default</span>
 <span class="sd">    frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.</span>
 <span class="sd">    Subject to size limit imposed by client.maxTransferBytes.</span>
@@ -1520,13 +1520,13 @@
 <span class="sd">        Right bound for generating timedeltas.</span>
 <span class="sd">    periods : int, default None</span>
 <span class="sd">        Number of periods to generate.</span>
-<span class="sd">    freq : str or DateOffset, default &#39;D&#39;</span>
-<span class="sd">        Frequency strings can have multiples, e.g. &#39;5H&#39;.</span>
+<span class="sd">    freq : str or DateOffset, default 'D'</span>
+<span class="sd">        Frequency strings can have multiples, e.g. '5H'.</span>
 <span class="sd">    name : str, default None</span>
 <span class="sd">        Name of the resulting TimedeltaIndex.</span>
 <span class="sd">    closed : str, default None</span>
 <span class="sd">        Make the interval closed with respect to the given frequency to</span>
-<span class="sd">        the &#39;left&#39;, &#39;right&#39;, or both sides (None).</span>
+<span class="sd">        the 'left', 'right', or both sides (None).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1541,7 +1541,7 @@
 
 <span class="sd">    To learn more about the frequency strings, please see `this link</span>
 <span class="sd">    &lt;https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases&gt;`__.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">Timedelta</span><span class="p">(</span><span class="n">pd_timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">periods</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">closed</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 
 </pre></div>

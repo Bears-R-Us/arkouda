@@ -497,15 +497,15 @@
 <section id="importing-pandas-dataframe">
 <h4>Importing Pandas DataFrame<a class="headerlink" href="#importing-pandas-dataframe" title="Link to this heading">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct the Pandas DataFrame</span>
-<span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jake&#39;</span><span class="p">]</span>
-<span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Brown&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'John'</span><span class="p">,</span> <span class="s1">'Jane'</span><span class="p">,</span> <span class="s1">'John'</span><span class="p">,</span> <span class="s1">'Jake'</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Doe'</span><span class="p">,</span> <span class="s1">'Doe'</span><span class="p">,</span> <span class="s1">'Smith'</span><span class="p">,</span> <span class="s1">'Brown'</span><span class="p">]</span>
 <span class="o">&gt;&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="p">[</span><span class="mi">37</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
 <span class="o">&gt;&gt;</span> <span class="n">salary</span> <span class="o">=</span> <span class="p">[</span><span class="mi">75000</span><span class="p">,</span> <span class="mi">77000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">35000</span><span class="p">]</span>
 <span class="o">&gt;&gt;</span> <span class="n">pd_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;F_Name&#39;</span><span class="p">:</span> <span class="n">fname</span><span class="p">,</span>
-    <span class="s1">&#39;L_Name&#39;</span><span class="p">:</span> <span class="n">lname</span><span class="p">,</span>
-    <span class="s1">&#39;Age&#39;</span><span class="p">:</span> <span class="n">age</span><span class="p">,</span>
-    <span class="s1">&#39;Salary&#39;</span><span class="p">:</span> <span class="n">salary</span>
+    <span class="s1">'F_Name'</span><span class="p">:</span> <span class="n">fname</span><span class="p">,</span>
+    <span class="s1">'L_Name'</span><span class="p">:</span> <span class="n">lname</span><span class="p">,</span>
+    <span class="s1">'Age'</span><span class="p">:</span> <span class="n">age</span><span class="p">,</span>
+    <span class="s1">'Salary'</span><span class="p">:</span> <span class="n">salary</span>
 <span class="p">})</span>
 <span class="o">&gt;&gt;</span> <span class="n">pd_df</span>
     <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
@@ -527,15 +527,15 @@
 </section>
 <section id="python-mapping">
 <h4>Python Mapping<a class="headerlink" href="#python-mapping" title="Link to this heading">¶</a></h4>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jake&#39;</span><span class="p">])</span>
-<span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Brown&#39;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">'John'</span><span class="p">,</span> <span class="s1">'Jane'</span><span class="p">,</span> <span class="s1">'John'</span><span class="p">,</span> <span class="s1">'Jake'</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">'Doe'</span><span class="p">,</span> <span class="s1">'Doe'</span><span class="p">,</span> <span class="s1">'Smith'</span><span class="p">,</span> <span class="s1">'Brown'</span><span class="p">])</span>
 <span class="o">&gt;&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">37</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
 <span class="o">&gt;&gt;</span> <span class="n">salary</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">75000</span><span class="p">,</span> <span class="mi">77000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">35000</span><span class="p">])</span>
 <span class="o">&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;F_Name&#39;</span><span class="p">:</span> <span class="n">fname</span><span class="p">,</span>
-    <span class="s1">&#39;L_Name&#39;</span><span class="p">:</span> <span class="n">lname</span><span class="p">,</span>
-    <span class="s1">&#39;Age&#39;</span><span class="p">:</span> <span class="n">age</span><span class="p">,</span>
-    <span class="s1">&#39;Salary&#39;</span><span class="p">:</span> <span class="n">salary</span>
+    <span class="s1">'F_Name'</span><span class="p">:</span> <span class="n">fname</span><span class="p">,</span>
+    <span class="s1">'L_Name'</span><span class="p">:</span> <span class="n">lname</span><span class="p">,</span>
+    <span class="s1">'Age'</span><span class="p">:</span> <span class="n">age</span><span class="p">,</span>
+    <span class="s1">'Salary'</span><span class="p">:</span> <span class="n">salary</span>
 <span class="p">})</span>
 
 <span class="o">&gt;&gt;</span> <span class="n">df</span>
@@ -561,11 +561,11 @@
 <span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
 
 <span class="c1"># accessing a column</span>
-<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span>
 <span class="n">array</span><span class="p">([</span><span class="mi">37</span> <span class="mi">35</span> <span class="mi">50</span> <span class="mi">32</span><span class="p">])</span>
 
 <span class="c1"># accessing multiple columns at once</span>
-<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;L_Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="c1"># equivalent to df[[&#39;L_Name&#39;, &#39;Age&#39;]]</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">'L_Name'</span><span class="p">,</span> <span class="s1">'Age'</span><span class="p">]</span> <span class="c1"># equivalent to df[['L_Name', 'Age']]</span>
     <span class="n">L_Name</span>  <span class="n">Age</span>
 <span class="mi">0</span>    <span class="n">Doe</span>   <span class="mi">37</span>
 <span class="mi">1</span>    <span class="n">Doe</span>   <span class="mi">35</span>
@@ -574,7 +574,7 @@
 
 <span class="c1"># accessing row</span>
 <span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="p">{</span><span class="s1">&#39;F_Name&#39;</span><span class="p">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;L_Name&#39;</span><span class="p">:</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">&#39;Salary&#39;</span><span class="p">:</span> <span class="mi">75000</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">'F_Name'</span><span class="p">:</span> <span class="s1">'John'</span><span class="p">,</span> <span class="s1">'L_Name'</span><span class="p">:</span> <span class="s1">'Doe'</span><span class="p">,</span> <span class="s1">'Age'</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">'Salary'</span><span class="p">:</span> <span class="mi">75000</span><span class="p">}</span>
 
 <span class="c1"># accessing row slice</span>
 <span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
@@ -638,7 +638,7 @@
 <span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
 <span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;L_Name&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"L_Name"</span><span class="p">)</span>
 <span class="o">&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 <span class="n">Doe</span>      <span class="mi">2</span>
 <span class="n">Brown</span>    <span class="mi">1</span>

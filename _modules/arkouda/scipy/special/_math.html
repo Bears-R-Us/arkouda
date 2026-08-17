@@ -381,14 +381,14 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;xlogy&quot;</span><span class="p">,</span>
+    <span class="s2">"xlogy"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="xlogy">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/scipy/special/index.html#arkouda.xlogy">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">xlogy</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes x * log(y).</span>
 
 <span class="sd">    Parameters</span>
@@ -410,7 +410,7 @@
 <span class="sd">    &gt;&gt;&gt; xlogy( 5.0, ak.array([1, 2, 3, 4]))</span>
 <span class="sd">    array([0.00000000000000000 3.4657359027997265 5.4930614433405491 6.9314718055994531])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">can_cast</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">))</span> <span class="ow">and</span> <span class="n">can_cast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
@@ -420,13 +420,13 @@
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;x and y must have the same size.&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"x and y must have the same size."</span>
             <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;x and y must both be pdarrays or x must be castable to float64 and y must be a pdarray.&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">"x and y must both be pdarrays or x must be castable to float64 and y must be a pdarray."</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 

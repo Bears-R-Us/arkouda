@@ -385,20 +385,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">xlogy</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;power_divergence&quot;</span><span class="p">,</span> <span class="s2">&quot;chisquare&quot;</span><span class="p">,</span> <span class="s2">&quot;Power_divergenceResult&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"power_divergence"</span><span class="p">,</span> <span class="s2">"chisquare"</span><span class="p">,</span> <span class="s2">"Power_divergenceResult"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Power_divergenceResult">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/index.html#arkouda.Power_divergenceResult">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Power_divergenceResult</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Power_divergenceResult&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;statistic&quot;</span><span class="p">,</span> <span class="s2">&quot;pvalue&quot;</span><span class="p">))):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Power_divergenceResult</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">"Power_divergenceResult"</span><span class="p">,</span> <span class="p">(</span><span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"pvalue"</span><span class="p">))):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The results of a power divergence statistical test.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    statistic :    float64</span>
 <span class="sd">    pvalue :    float64</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">statistic</span><span class="p">:</span> <span class="n">float64</span>
     <span class="n">pvalue</span><span class="p">:</span> <span class="n">float64</span></div>
@@ -407,19 +407,19 @@
 
 <span class="c1"># Map from names to lambda_ values used in power_divergence().</span>
 <span class="n">_power_div_lambda_names</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;pearson&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;log-likelihood&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;freeman-tukey&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="s2">&quot;mod-log-likelihood&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;neyman&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
-    <span class="s2">&quot;cressie-read&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">"pearson"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"log-likelihood"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"freeman-tukey"</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">"mod-log-likelihood"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"neyman"</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"cressie-read"</span><span class="p">:</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <div class="viewcode-block" id="power_divergence">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/index.html#arkouda.power_divergence">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">power_divergence</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes the power divergence statistic and p-value.</span>
 
 <span class="sd">    Parameters</span>
@@ -430,24 +430,24 @@
 <span class="sd">        The expected frequency.</span>
 <span class="sd">    ddof : int</span>
 <span class="sd">        The delta degrees of freedom.</span>
-<span class="sd">    lambda_ : string, default = &quot;pearson&quot;</span>
+<span class="sd">    lambda_ : string, default = "pearson"</span>
 <span class="sd">        The power in the Cressie-Read power divergence statistic.</span>
-<span class="sd">        Allowed values: &quot;pearson&quot;, &quot;log-likelihood&quot;, &quot;freeman-tukey&quot;, &quot;mod-log-likelihood&quot;,</span>
-<span class="sd">        &quot;neyman&quot;, &quot;cressie-read&quot;</span>
+<span class="sd">        Allowed values: "pearson", "log-likelihood", "freeman-tukey", "mod-log-likelihood",</span>
+<span class="sd">        "neyman", "cressie-read"</span>
 
 <span class="sd">        Powers correspond as follows:</span>
 
-<span class="sd">        &quot;pearson&quot;: 1</span>
+<span class="sd">        "pearson": 1</span>
 
-<span class="sd">        &quot;log-likelihood&quot;: 0</span>
+<span class="sd">        "log-likelihood": 0</span>
 
-<span class="sd">        &quot;freeman-tukey&quot;: -0.5</span>
+<span class="sd">        "freeman-tukey": -0.5</span>
 
-<span class="sd">        &quot;mod-log-likelihood&quot;: -1</span>
+<span class="sd">        "mod-log-likelihood": -1</span>
 
-<span class="sd">        &quot;neyman&quot;: -2</span>
+<span class="sd">        "neyman": -2</span>
 
-<span class="sd">        &quot;cressie-read&quot;: 2 / 3</span>
+<span class="sd">        "cressie-read": 2 / 3</span>
 
 
 <span class="sd">    Returns</span>
@@ -460,9 +460,9 @@
 <span class="sd">    &gt;&gt;&gt; from arkouda.scipy import power_divergence</span>
 <span class="sd">    &gt;&gt;&gt; x = ak.array([10, 20, 30, 10])</span>
 <span class="sd">    &gt;&gt;&gt; y = ak.array([10, 30, 20, 10])</span>
-<span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_=&quot;pearson&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_="pearson")</span>
 <span class="sd">    Power_divergenceResult(statistic=np.float64(8.333333333333334), pvalue=np.float64(0.03960235520...))</span>
-<span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_=&quot;log-likelihood&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_="log-likelihood")</span>
 <span class="sd">    Power_divergenceResult(statistic=np.float64(8.109302162163285), pvalue=np.float64(0.04380595350...))</span>
 
 <span class="sd">    See Also</span>
@@ -477,17 +477,17 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">        [1] &quot;scipy.stats.power_divergence&quot;,</span>
+<span class="sd">        [1] "scipy.stats.power_divergence",</span>
 <span class="sd">        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html</span>
 
 <span class="sd">        [2] Scipy contributors (2024) scipy (Version v1.12.0) [Source code].</span>
 <span class="sd">        https://github.com/scipy/scipy</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lambda_</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">lambda_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_power_div_lambda_names</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_power_div_lambda_names</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid string for lambda_: </span><span class="si">{</span><span class="n">lambda_</span><span class="si">!r}</span><span class="s2">. Valid strings are </span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"invalid string for lambda_: </span><span class="si">{</span><span class="n">lambda_</span><span class="si">!r}</span><span class="s2">. Valid strings are </span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">lambda_</span> <span class="o">=</span> <span class="n">_power_div_lambda_names</span><span class="p">[</span><span class="n">lambda_</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">lambda_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">lambda_</span> <span class="o">=</span> <span class="mi">1</span>
@@ -496,32 +496,32 @@
 
     <span class="k">if</span> <span class="n">f_exp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rtol</span> <span class="o">=</span> <span class="mf">1e-8</span>
-        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
             <span class="n">f_obs_sum</span> <span class="o">=</span> <span class="n">f_obs_float</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">f_exp_sum</span> <span class="o">=</span> <span class="n">f_exp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">relative_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_obs_sum</span> <span class="o">-</span> <span class="n">f_exp_sum</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">f_obs_sum</span><span class="p">,</span> <span class="n">f_exp_sum</span><span class="p">)</span>
             <span class="n">diff_gt_tol</span> <span class="o">=</span> <span class="p">(</span><span class="n">relative_diff</span> <span class="o">&gt;</span> <span class="n">rtol</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">diff_gt_tol</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;For each axis slice, the sum of the observed &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;frequencies must agree with the sum of the &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;expected frequencies to a relative tolerance &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;of </span><span class="si">{</span><span class="n">rtol</span><span class="si">}</span><span class="s2">, but the percent differences are:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_diff</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"For each axis slice, the sum of the observed "</span>
+                <span class="sa">f</span><span class="s2">"frequencies must agree with the sum of the "</span>
+                <span class="sa">f</span><span class="s2">"expected frequencies to a relative tolerance "</span>
+                <span class="sa">f</span><span class="s2">"of </span><span class="si">{</span><span class="n">rtol</span><span class="si">}</span><span class="s2">, but the percent differences are:</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">relative_diff</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Ignore &#39;invalid&#39; errors so the edge case of a data set with length 0</span>
+        <span class="c1"># Ignore 'invalid' errors so the edge case of a data set with length 0</span>
         <span class="c1"># is handled without spurious warnings.</span>
-        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
             <span class="n">f_exp</span> <span class="o">=</span> <span class="n">f_obs</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
     <span class="c1"># `terms` is the array of terms that are summed along `axis` to create</span>
     <span class="c1"># the test statistic.  We use some specialized code for a few special</span>
     <span class="c1"># cases of lambda_.</span>
     <span class="k">if</span> <span class="n">lambda_</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># Pearson&#39;s chi-squared statistic</span>
+        <span class="c1"># Pearson's chi-squared statistic</span>
         <span class="n">terms</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_obs_float</span> <span class="o">-</span> <span class="n">f_exp</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">f_exp</span>
     <span class="k">elif</span> <span class="n">lambda_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Log-likelihood ratio (i.e. G-test)</span>
@@ -554,7 +554,7 @@
 <div class="viewcode-block" id="chisquare">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/index.html#arkouda.chisquare">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">chisquare</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes the chi square statistic and p-value.</span>
 
 <span class="sd">    Parameters</span>
@@ -586,11 +586,11 @@
 <span class="sd">    ----------</span>
 <span class="sd">        [1] “Chi-squared test”, https://en.wikipedia.org/wiki/Chi-squared_test</span>
 
-<span class="sd">        [2] &quot;scipy.stats.chisquare&quot;,</span>
+<span class="sd">        [2] "scipy.stats.chisquare",</span>
 <span class="sd">        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">power_divergence</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="n">f_exp</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">)</span></div>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">power_divergence</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="n">f_exp</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

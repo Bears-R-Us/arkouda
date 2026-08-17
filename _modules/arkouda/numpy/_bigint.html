@@ -371,10 +371,10 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy._bigint</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Arkouda BigInt Dtype and Scalar Implementation.</span>
 
-<span class="sd">This module defines Arkouda&#39;s variable-width integer dtype, exposed as</span>
+<span class="sd">This module defines Arkouda's variable-width integer dtype, exposed as</span>
 <span class="sd">:class:`bigint`, along with its scalar representation :class:`bigint_`.</span>
 
 <span class="sd">Overview</span>
@@ -388,7 +388,7 @@
 
 <span class="sd">* ``bigint`` – a dtype sentinel used to mark Arkouda arrays as variable-width</span>
 <span class="sd">  integer arrays. Instances of this class behave like dtype objects:</span>
-<span class="sd">  they compare equal to strings like ``&quot;bigint&quot;``, provide dtype metadata,</span>
+<span class="sd">  they compare equal to strings like ``"bigint"``, provide dtype metadata,</span>
 <span class="sd">  and are singletons via an internal cache.</span>
 
 <span class="sd">* ``bigint_`` – the scalar type corresponding to ``bigint`` arrays. It</span>
@@ -414,7 +414,7 @@
 <span class="sd">&gt;&gt;&gt; ak.bigint(123)</span>
 <span class="sd">ak.bigint_(123)</span>
 
-<span class="sd">&gt;&gt;&gt; x = ak.bigint_(&quot;0xff&quot;)</span>
+<span class="sd">&gt;&gt;&gt; x = ak.bigint_("0xff")</span>
 <span class="sd">&gt;&gt;&gt; x</span>
 <span class="sd">ak.bigint_(255)</span>
 <span class="sd">&gt;&gt;&gt; x.dtype</span>
@@ -424,7 +424,7 @@
 <span class="sd">-----</span>
 <span class="sd">This module contains no server-side logic; it provides only the Python-side</span>
 <span class="sd">dtype and scalar scaffolding used by Arkouda’s bigint array implementation.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -434,13 +434,13 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;bigint&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bigint_&quot;</span><span class="p">,</span>
+    <span class="s2">"bigint"</span><span class="p">,</span>
+    <span class="s2">"bigint_"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_datatype_check</span><span class="p">(</span><span class="n">the_dtype</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">allowed_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validate that a provided dtype is among an allowed set.</span>
 
 <span class="sd">    This helper function raises a ``TypeError`` if ``the_dtype`` is not one of</span>
@@ -465,19 +465,19 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; _datatype_check(&quot;int64&quot;, [&quot;int64&quot;, &quot;uint64&quot;], &quot;MyType&quot;)  # OK</span>
+<span class="sd">    &gt;&gt;&gt; _datatype_check("int64", ["int64", "uint64"], "MyType")  # OK</span>
 
-<span class="sd">    &gt;&gt;&gt; _datatype_check(&quot;float64&quot;, [&quot;int64&quot;, &quot;uint64&quot;], &quot;MyType&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _datatype_check("float64", ["int64", "uint64"], "MyType")</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">    TypeError: MyType only implements types [&#39;int64&#39;, &#39;uint64&#39;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    TypeError: MyType only implements types ['int64', 'uint64']</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">the_dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_list</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> only implements types </span><span class="si">{</span><span class="n">allowed_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> only implements types </span><span class="si">{</span><span class="n">allowed_list</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_BigIntMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Metaclass implementing NumPy-like construction semantics for ``ak.bigint``.</span>
 
 <span class="sd">    This metaclass customizes ``__call__`` so that ``bigint`` behaves like a</span>
@@ -504,7 +504,7 @@
 <span class="sd">    from :class:`type`. The dtype sentinel instance is created via</span>
 <span class="sd">    :meth:`bigint.__new__`, which ensures singleton behavior.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
@@ -516,8 +516,8 @@
 <div class="viewcode-block" id="bigint">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.bigint">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">bigint</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_BigIntMeta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Dtype sentinel for Arkouda&#39;s variable-width (arbitrary-precision) integers.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Dtype sentinel for Arkouda's variable-width (arbitrary-precision) integers.</span>
 
 <span class="sd">    This class represents the dtype object used by Arkouda arrays storing</span>
 <span class="sd">    arbitrary-precision integers. It behaves similarly to NumPy’s dtype</span>
@@ -531,8 +531,8 @@
 <span class="sd">    :class:`bigint_` scalar constructed from ``value``.</span>
 
 <span class="sd">    bigint instances compare equal to the ``bigint`` class, to themselves,</span>
-<span class="sd">    to strings such as ``&quot;bigint&quot;``, and to other dtype-like objects whose</span>
-<span class="sd">    ``name`` attribute equals ``&quot;bigint&quot;``. This allows interoperability</span>
+<span class="sd">    to strings such as ``"bigint"``, and to other dtype-like objects whose</span>
+<span class="sd">    ``name`` attribute equals ``"bigint"``. This allows interoperability</span>
 <span class="sd">    across Arkouda’s dtype-resolution system.</span>
 
 <span class="sd">    Notes</span>
@@ -543,15 +543,15 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
-<span class="sd">        Canonical dtype name (``&quot;bigint&quot;``).</span>
+<span class="sd">        Canonical dtype name (``"bigint"``).</span>
 <span class="sd">    kind : str</span>
-<span class="sd">        Dtype category code (``&quot;ui&quot;``).</span>
+<span class="sd">        Dtype category code (``"ui"``).</span>
 <span class="sd">    itemsize : int</span>
 <span class="sd">        Nominal bit-width (128). Actual precision is unbounded.</span>
 <span class="sd">    ndim : int</span>
 <span class="sd">        Number of dimensions for the dtype object (always 0).</span>
 <span class="sd">    shape : tuple</span>
-<span class="sd">        Empty tuple, following NumPy&#39;s dtype API.</span>
+<span class="sd">        Empty tuple, following NumPy's dtype API.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -564,19 +564,19 @@
 
 <span class="sd">    &gt;&gt;&gt; dtype = ak.bigint()</span>
 <span class="sd">    &gt;&gt;&gt; dtype.name</span>
-<span class="sd">    &#39;bigint&#39;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    'bigint'</span>
+<span class="sd">    """</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
-    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ui&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"bigint"</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"ui"</span>
     <span class="n">itemsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span>
     <span class="n">ndim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">_INSTANCE</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="s2">&quot;bigint | None&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_INSTANCE</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="s2">"bigint | None"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="n">inst</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_INSTANCE&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">"_INSTANCE"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">inst</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_INSTANCE</span> <span class="o">=</span> <span class="n">inst</span>
@@ -589,7 +589,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dtype(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"dtype(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -598,9 +598,9 @@
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span> <span class="ow">or</span> <span class="n">other</span> <span class="ow">is</span> <span class="n">bigint</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span>
+            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"bigint"</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"bigint"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
@@ -625,12 +625,12 @@
 <div class="viewcode-block" id="bigint_">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.bigint_">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">bigint_</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Scalar type for Arkouda&#39;s variable-width integer dtype.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Scalar type for Arkouda's variable-width integer dtype.</span>
 
 <span class="sd">    ``bigint_`` represents an individual arbitrary-precision integer value within</span>
 <span class="sd">    Arkouda arrays that use the :class:`bigint` dtype. It inherits directly from</span>
-<span class="sd">    Python&#39;s built-in :class:`int`, ensuring full arbitrary-precision semantics</span>
+<span class="sd">    Python's built-in :class:`int`, ensuring full arbitrary-precision semantics</span>
 <span class="sd">    while providing dtype metadata compatible with Arkouda.</span>
 
 <span class="sd">    This class is typically constructed indirectly via ``ak.bigint(value)``,</span>
@@ -639,10 +639,10 @@
 
 <span class="sd">    Construction</span>
 <span class="sd">    ------------</span>
-<span class="sd">    ``bigint_(x)`` converts ``x`` to an integer using Python&#39;s ``int``:</span>
+<span class="sd">    ``bigint_(x)`` converts ``x`` to an integer using Python's ``int``:</span>
 
 <span class="sd">    * If ``x`` is ``str`` or ``bytes``, it is interpreted using ``int(x, 0)``,</span>
-<span class="sd">      allowing hexadecimal (``&quot;0xff&quot;``), binary (``&quot;0b1010&quot;``), and other</span>
+<span class="sd">      allowing hexadecimal (``"0xff"``), binary (``"0b1010"``), and other</span>
 <span class="sd">      literal forms.</span>
 <span class="sd">    * Otherwise, ``x`` is passed directly to ``int(x)``.</span>
 
@@ -674,7 +674,7 @@
 <span class="sd">    &gt;&gt;&gt; x + 10</span>
 <span class="sd">    133</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.bigint_(&quot;0xff&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; ak.bigint_("0xff")</span>
 <span class="sd">    ak.bigint_(255)</span>
 
 <span class="sd">    &gt;&gt;&gt; x.dtype</span>
@@ -682,7 +682,7 @@
 
 <span class="sd">    &gt;&gt;&gt; x.item()</span>
 <span class="sd">    123</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
 
@@ -704,7 +704,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ak.bigint_(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"ak.bigint_(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span></div>
 
 </pre></div>
         </article>

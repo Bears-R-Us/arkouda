@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.comm_diagnostics</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Communication diagnostics and instrumentation utilities for Arkouda.</span>
 
 <span class="sd">This module provides tools to collect, reset, and report Chapel communication</span>
@@ -451,27 +451,27 @@
 <span class="sd">... )</span>
 
 <span class="sd">&gt;&gt;&gt; start_comm_diagnostics()</span>
-<span class="sd">&#39;commDiagnostics started.&#39;</span>
+<span class="sd">'commDiagnostics started.'</span>
 
 <span class="sd">&gt;&gt;&gt; a = ak.randint(0, 100, 1_000_000)</span>
 <span class="sd">&gt;&gt;&gt; b = ak.sort(a)</span>
 
 <span class="sd">&gt;&gt;&gt; stop_comm_diagnostics()</span>
-<span class="sd">&#39;commDiagnostics stopped.&#39;</span>
+<span class="sd">'commDiagnostics stopped.'</span>
 
 <span class="sd">&gt;&gt;&gt; df = get_comm_diagnostics()</span>
 
 <span class="sd">&gt;&gt;&gt; list(df.columns)</span>
-<span class="sd">[&#39;put&#39;, &#39;get&#39;, &#39;put_nb&#39;, &#39;get_nb&#39;, &#39;try_nb&#39;, &#39;amo&#39;,</span>
-<span class="sd"> &#39;execute_on&#39;, &#39;execute_on_fast&#39;, &#39;execute_on_nb&#39;,</span>
-<span class="sd"> &#39;cache_get_hits&#39;, &#39;cache_get_misses&#39;,</span>
-<span class="sd"> &#39;cache_put_hits&#39;, &#39;cache_put_misses&#39;,</span>
-<span class="sd"> &#39;cache_num_prefetches&#39;, &#39;cache_num_page_readaheads&#39;,</span>
-<span class="sd"> &#39;cache_prefetch_unused&#39;, &#39;cache_prefetch_waited&#39;,</span>
-<span class="sd"> &#39;cache_readahead_unused&#39;, &#39;cache_readahead_waited&#39;,</span>
-<span class="sd"> &#39;wait_nb&#39;]</span>
+<span class="sd">['put', 'get', 'put_nb', 'get_nb', 'try_nb', 'amo',</span>
+<span class="sd"> 'execute_on', 'execute_on_fast', 'execute_on_nb',</span>
+<span class="sd"> 'cache_get_hits', 'cache_get_misses',</span>
+<span class="sd"> 'cache_put_hits', 'cache_put_misses',</span>
+<span class="sd"> 'cache_num_prefetches', 'cache_num_page_readaheads',</span>
+<span class="sd"> 'cache_prefetch_unused', 'cache_prefetch_waited',</span>
+<span class="sd"> 'cache_readahead_unused', 'cache_readahead_waited',</span>
+<span class="sd"> 'wait_nb']</span>
 
-<span class="sd">&gt;&gt;&gt; df[[&quot;put&quot;, &quot;get&quot;]]  # doctest: +SKIP</span>
+<span class="sd">&gt;&gt;&gt; df[["put", "get"]]  # doctest: +SKIP</span>
 <span class="sd">   put  get</span>
 <span class="sd">0  162  118</span>
 <span class="sd">1  170  198</span>
@@ -490,7 +490,7 @@
 <span class="sd">+----+-------+-------+--------------+-----------------+</span>
 <span class="sd">|  3 |   170 |   198 |          184 |               0 |</span>
 <span class="sd">+----+-------+-------+--------------+-----------------+</span>
-<span class="sd">&#39;commDiagnostics printed.&#39;</span>
+<span class="sd">'commDiagnostics printed.'</span>
 
 <span class="sd">...</span>
 
@@ -502,7 +502,7 @@
 <span class="sd">--------</span>
 <span class="sd">arkouda.pandas.dataframe.DataFrame</span>
 <span class="sd">arkouda.core.client.generic_msg</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
@@ -511,40 +511,40 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;start_comm_diagnostics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;stop_comm_diagnostics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;reset_comm_diagnostics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;print_comm_diagnostics_table&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;start_verbose_comm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;stop_verbose_comm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_put&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_get&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_put_nb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_get_nb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_try_nb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_amo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_execute_on&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_execute_on_fast&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_execute_on_nb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_get_hits&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_get_misses&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_put_hits&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_put_misses&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_num_prefetches&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_num_page_readaheads&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_prefetch_unused&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_prefetch_waited&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_readahead_unused&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_cache_readahead_waited&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics_wait_nb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_comm_diagnostics&quot;</span><span class="p">,</span>
+    <span class="s2">"start_comm_diagnostics"</span><span class="p">,</span>
+    <span class="s2">"stop_comm_diagnostics"</span><span class="p">,</span>
+    <span class="s2">"reset_comm_diagnostics"</span><span class="p">,</span>
+    <span class="s2">"print_comm_diagnostics_table"</span><span class="p">,</span>
+    <span class="s2">"start_verbose_comm"</span><span class="p">,</span>
+    <span class="s2">"stop_verbose_comm"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_put"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_get"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_put_nb"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_get_nb"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_try_nb"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_amo"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_execute_on"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_execute_on_fast"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_execute_on_nb"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_get_hits"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_get_misses"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_put_hits"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_put_misses"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_num_prefetches"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_num_page_readaheads"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_prefetch_unused"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_prefetch_waited"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_readahead_unused"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_cache_readahead_waited"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics_wait_nb"</span><span class="p">,</span>
+    <span class="s2">"get_comm_diagnostics"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="start_comm_diagnostics">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.start_comm_diagnostics">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">start_comm_diagnostics</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Start counting communication operations across the whole program.</span>
 
 <span class="sd">    Returns</span>
@@ -552,11 +552,11 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;startCommDiagnostics&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"startCommDiagnostics"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">rep_msg</span></div>
@@ -566,7 +566,7 @@
 <div class="viewcode-block" id="stop_comm_diagnostics">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.stop_comm_diagnostics">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stop_comm_diagnostics</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Stop counting communication operations across the whole program.</span>
 
 <span class="sd">    Returns</span>
@@ -574,11 +574,11 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;stopCommDiagnostics&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"stopCommDiagnostics"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">rep_msg</span></div>
@@ -588,7 +588,7 @@
 <div class="viewcode-block" id="reset_comm_diagnostics">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.reset_comm_diagnostics">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reset_comm_diagnostics</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Reset aggregate communication counts across the whole program.</span>
 
 <span class="sd">    Returns</span>
@@ -596,11 +596,11 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;resetCommDiagnostics&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"resetCommDiagnostics"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">rep_msg</span></div>
@@ -610,7 +610,7 @@
 <div class="viewcode-block" id="print_comm_diagnostics_table">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.print_comm_diagnostics_table">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_comm_diagnostics_table</span><span class="p">(</span><span class="n">print_empty_columns</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Print the current communication counts in a markdown table.</span>
 
 <span class="sd">    Uses a row per locale and a column per operation.</span>
@@ -630,13 +630,13 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">sum</span> <span class="k">as</span> <span class="n">ak_sum</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;printCommDiagnosticsTable&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;printEmptyCols&quot;</span><span class="p">:</span> <span class="n">print_empty_columns</span><span class="p">},</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"printCommDiagnosticsTable"</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"printEmptyCols"</span><span class="p">:</span> <span class="n">print_empty_columns</span><span class="p">},</span>
     <span class="p">)</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="n">get_comm_diagnostics</span><span class="p">()</span>
@@ -652,7 +652,7 @@
 <div class="viewcode-block" id="start_verbose_comm">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.start_verbose_comm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">start_verbose_comm</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Start on-the-fly reporting of communication initiated on any locale.</span>
 
 <span class="sd">    Note</span>
@@ -664,11 +664,11 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;startVerboseComm&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"startVerboseComm"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">rep_msg</span></div>
@@ -678,7 +678,7 @@
 <div class="viewcode-block" id="stop_verbose_comm">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.stop_verbose_comm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stop_verbose_comm</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Stop on-the-fly reporting of communication initiated on any locale.</span>
 
 <span class="sd">    Returns</span>
@@ -686,11 +686,11 @@
 <span class="sd">    str</span>
 <span class="sd">        Completion message.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;stopVerboseComm&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"stopVerboseComm"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">rep_msg</span></div>
@@ -700,7 +700,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_put">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_put">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_put</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return blocking puts, in which initiator waits for completion.</span>
 
 <span class="sd">    Returns</span>
@@ -709,11 +709,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsPut&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsPut"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -723,7 +723,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_get">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_get">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_get</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return blocking gets, in which initiator waits for completion.</span>
 
 <span class="sd">    Returns</span>
@@ -732,11 +732,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsGet&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsGet"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -746,7 +746,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_put_nb">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_put_nb">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_put_nb</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return non-blocking puts.</span>
 
 <span class="sd">    Returns</span>
@@ -755,11 +755,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsPutNb&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsPutNb"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -769,7 +769,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_get_nb">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_get_nb">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_get_nb</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return non-blocking gets.</span>
 
 <span class="sd">    Returns</span>
@@ -778,11 +778,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsGetNb&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsGetNb"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -790,7 +790,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_test_nb</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return test statistic for non-blocking get/put completions.</span>
 
 <span class="sd">    Returns</span>
@@ -799,11 +799,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsTestNb&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsTestNb"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
@@ -812,7 +812,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_wait_nb">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_wait_nb</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return blocking waits for non-blocking get/put completions.</span>
 
 <span class="sd">    Returns</span>
@@ -821,11 +821,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsWaitNb&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsWaitNb"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -835,7 +835,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_try_nb">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_try_nb">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_try_nb</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return test statistics for non-blocking get/put completions.</span>
 
 <span class="sd">    Returns</span>
@@ -844,11 +844,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsTryNb&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsTryNb"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -858,7 +858,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_amo">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_amo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_amo</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return atomic memory operations statistic.</span>
 
 <span class="sd">    Returns</span>
@@ -867,11 +867,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsAmo&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsAmo"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -881,7 +881,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_execute_on">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_execute_on</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return blocking remote executions, in which initiator waits for completion.</span>
 
 <span class="sd">    Returns</span>
@@ -890,11 +890,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOn&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsExecuteOn"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -904,7 +904,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_execute_on_fast">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_fast">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_execute_on_fast</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return blocking remote executions performed by the target locale’s Active Message handler.</span>
 
 <span class="sd">    Returns</span>
@@ -913,11 +913,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOnFast&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsExecuteOnFast"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -927,7 +927,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_execute_on_nb">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_execute_on_nb">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_execute_on_nb</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return non-blocking remote executions.</span>
 
 <span class="sd">    Returns</span>
@@ -936,11 +936,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOnNb&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsExecuteOnNb"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -950,7 +950,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_get_hits">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_hits">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_get_hits</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of gets that were handled by the cache.</span>
 
 <span class="sd">    Gets counted here did not require the cache to communicate in order to return the result.</span>
@@ -961,11 +961,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheGetHits&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCacheGetHits"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -975,7 +975,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_get_misses">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_get_misses">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_get_misses</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of gets that were not handled by the cache.</span>
 
 <span class="sd">    Returns</span>
@@ -984,11 +984,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheGetMisses&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCacheGetMisses"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -998,7 +998,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_put_hits">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_hits">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_put_hits</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of puts that were stored in cache pages that already existed.</span>
 
 <span class="sd">    Returns</span>
@@ -1007,11 +1007,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePutHits&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCachePutHits"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1021,7 +1021,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_put_misses">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_put_misses">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_put_misses</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of puts that required the cache to create a new page to store them.</span>
 
 <span class="sd">    Returns</span>
@@ -1030,11 +1030,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePutMisses&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCachePutMisses"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1044,7 +1044,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_num_prefetches">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_num_prefetches</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of prefetches issued to the remote cache at the granularity of cache pages.</span>
 
 <span class="sd">    This counter is specifically triggered via calls to chpl_comm_remote_prefetch.</span>
@@ -1055,11 +1055,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheNumPrefetches&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCacheNumPrefetches"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1069,7 +1069,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_num_page_readaheads">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_page_readaheads">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_num_page_readaheads</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of readaheads issued to the remote cache at the granularity of cache pages.</span>
 
 <span class="sd">    Returns</span>
@@ -1078,11 +1078,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheNumPageReadaheads&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCacheNumPageReadaheads"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1092,7 +1092,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_prefetch_unused">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_unused">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_prefetch_unused</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of cache pages that were prefetched but unused.</span>
 
 <span class="sd">    Return number of cache pages that were prefetched but evicted from the cache before being accessed</span>
@@ -1104,11 +1104,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePrefetchUnused&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCachePrefetchUnused"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1118,7 +1118,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_prefetch_waited">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_prefetch_waited">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_prefetch_waited</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of cache pages that were prefetched but waited.</span>
 
 <span class="sd">    Number of cache pages that were prefetched but did not arrive in the cache before being accessed</span>
@@ -1130,11 +1130,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePrefetchWaited&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCachePrefetchWaited"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1144,7 +1144,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_readahead_unused">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_unused">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_readahead_unused</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of cache pages that were read ahead but unused.</span>
 
 <span class="sd">    The number of cache pages that were read ahead but evicted from the cache before being accessed</span>
@@ -1156,11 +1156,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheReadaheadUnused&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCacheReadaheadUnused"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1170,7 +1170,7 @@
 <div class="viewcode-block" id="get_comm_diagnostics_cache_readahead_waited">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics_cache_readahead_waited">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics_cache_readahead_waited</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return number of cache pages that were read ahead but waited.</span>
 
 <span class="sd">    Return number of cache pages that were read ahead</span>
@@ -1183,11 +1183,11 @@
 <span class="sd">        A pdarray, where the size is the number of locales,</span>
 <span class="sd">        populated with the statistic value from each locale.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheReadaheadWaited&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"getCommDiagnosticsCacheReadaheadWaited"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
@@ -1197,36 +1197,36 @@
 <div class="viewcode-block" id="get_comm_diagnostics">
 <a class="viewcode-back" href="../../autoapi/arkouda/comm_diagnostics/index.html#arkouda.comm_diagnostics.get_comm_diagnostics">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_comm_diagnostics</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a DataFrame with the communication diagnostics statistics.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    DataFrame</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;put&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_put</span><span class="p">(),</span>
-            <span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_get</span><span class="p">(),</span>
-            <span class="s2">&quot;put_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_put_nb</span><span class="p">(),</span>
-            <span class="s2">&quot;get_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_get_nb</span><span class="p">(),</span>
-            <span class="s2">&quot;try_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_try_nb</span><span class="p">(),</span>
-            <span class="s2">&quot;amo&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_amo</span><span class="p">(),</span>
-            <span class="s2">&quot;execute_on&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on</span><span class="p">(),</span>
-            <span class="s2">&quot;execute_on_fast&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on_fast</span><span class="p">(),</span>
-            <span class="s2">&quot;execute_on_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on_nb</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_get_hits&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_get_hits</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_get_misses&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_get_misses</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_put_hits&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_put_hits</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_put_misses&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_put_misses</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_num_prefetches&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_num_prefetches</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_num_page_readaheads&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_num_page_readaheads</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_prefetch_unused&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_prefetch_unused</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_prefetch_waited&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_prefetch_waited</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_readahead_unused&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_readahead_unused</span><span class="p">(),</span>
-            <span class="s2">&quot;cache_readahead_waited&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_readahead_waited</span><span class="p">(),</span>
-            <span class="s2">&quot;wait_nb&quot;</span><span class="p">:</span> <span class="n">get_comm_diagnostics_wait_nb</span><span class="p">(),</span>
+            <span class="s2">"put"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_put</span><span class="p">(),</span>
+            <span class="s2">"get"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_get</span><span class="p">(),</span>
+            <span class="s2">"put_nb"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_put_nb</span><span class="p">(),</span>
+            <span class="s2">"get_nb"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_get_nb</span><span class="p">(),</span>
+            <span class="s2">"try_nb"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_try_nb</span><span class="p">(),</span>
+            <span class="s2">"amo"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_amo</span><span class="p">(),</span>
+            <span class="s2">"execute_on"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on</span><span class="p">(),</span>
+            <span class="s2">"execute_on_fast"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on_fast</span><span class="p">(),</span>
+            <span class="s2">"execute_on_nb"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_execute_on_nb</span><span class="p">(),</span>
+            <span class="s2">"cache_get_hits"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_get_hits</span><span class="p">(),</span>
+            <span class="s2">"cache_get_misses"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_get_misses</span><span class="p">(),</span>
+            <span class="s2">"cache_put_hits"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_put_hits</span><span class="p">(),</span>
+            <span class="s2">"cache_put_misses"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_put_misses</span><span class="p">(),</span>
+            <span class="s2">"cache_num_prefetches"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_num_prefetches</span><span class="p">(),</span>
+            <span class="s2">"cache_num_page_readaheads"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_num_page_readaheads</span><span class="p">(),</span>
+            <span class="s2">"cache_prefetch_unused"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_prefetch_unused</span><span class="p">(),</span>
+            <span class="s2">"cache_prefetch_waited"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_prefetch_waited</span><span class="p">(),</span>
+            <span class="s2">"cache_readahead_unused"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_readahead_unused</span><span class="p">(),</span>
+            <span class="s2">"cache_readahead_waited"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_cache_readahead_waited</span><span class="p">(),</span>
+            <span class="s2">"wait_nb"</span><span class="p">:</span> <span class="n">get_comm_diagnostics_wait_nb</span><span class="p">(),</span>
         <span class="p">}</span>
     <span class="p">)</span></div>
 

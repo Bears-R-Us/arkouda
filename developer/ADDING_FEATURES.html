@@ -399,7 +399,7 @@ To demonstrate this process, this guide walks through the process of implementin
 <p>First, add the client-side implementation to construct the message to the server:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">times2</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a pdarray with each entry double that of the input.</span>
 
 <span class="sd">    Parameters</span>
@@ -411,19 +411,19 @@ To demonstrate this process, this guide walks through the process of implementin
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        The doubled array</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;times2&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span> <span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"times2&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"arg1"</span> <span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;times2 only supports pdarrays.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"times2 only supports pdarrays."</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note that the function signature makes use of Python’s optional type checking features.
 You can learn more about Python type checking in (this documentation)[<a class="reference external" href="https://docs.python.org/3/library/typing.html">https://docs.python.org/3/library/typing.html</a>].</p>
 <p>Second, add your function to the <code class="docutils literal notranslate"><span class="pre">__all__</span></code> list near the top of the file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;in1d&quot;</span><span class="p">,</span> <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span> <span class="s2">&quot;union1d&quot;</span><span class="p">,</span> <span class="s2">&quot;intersect1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setdiff1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setxor1d&quot;</span><span class="p">,</span> <span class="s2">&quot;times2&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"in1d"</span><span class="p">,</span> <span class="s2">"concatenate"</span><span class="p">,</span> <span class="s2">"union1d"</span><span class="p">,</span> <span class="s2">"intersect1d"</span><span class="p">,</span> <span class="s2">"setdiff1d"</span><span class="p">,</span> <span class="s2">"setxor1d"</span><span class="p">,</span> <span class="s2">"times2"</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
@@ -464,9 +464,9 @@ will tell Arkouda’s build system to generate and register several commands in
 the server’s CommandMap. One command will be created for each combination of
 array rank and dtype specified in the <code class="docutils literal notranslate"><span class="pre">registration-config.json</span></code> file. For
 example, if the file has the following settings for <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;array&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;dtype&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="s2">&quot;real&quot;</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"array"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nd"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"dtype"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"int"</span><span class="p">,</span><span class="s2">"real"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -491,7 +491,7 @@ array being cast, and another for the type it’s cast to).</p>
 
 <span class="w">    </span><span class="k">@</span><span class="nd">arkouda.instantiateAndRegister</span>
 <span class="w">    </span><span class="k">proc</span><span class="w"> </span><span class="nf">times2</span><span class="p">(</span><span class="nx">cmd</span><span class="p">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">msgArgs</span><span class="p">:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">MessageArgs</span><span class="p">,</span><span class="w"> </span><span class="nx">st</span><span class="p">:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">SymTab</span><span class="p">,</span><span class="w"> </span><span class="kd">type</span><span class="w"> </span><span class="nx">array_dtype</span><span class="p">,</span><span class="w"> </span><span class="kd">param</span><span class="w"> </span><span class="nx">array_nd</span><span class="p">:</span><span class="w"> </span><span class="kt">int</span><span class="p">):</span><span class="w"> </span><span class="nx">MsgTuple</span><span class="w"> </span><span class="k">throws</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">st</span><span class="p">[</span><span class="nx">msgArgs</span><span class="p">[</span><span class="s">&#39;arg1&#39;</span><span class="p">]]:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">SymEntry</span><span class="p">(</span><span class="nx">array_dtype</span><span class="p">,</span><span class="w"> </span><span class="nx">array_nd</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">st</span><span class="p">[</span><span class="nx">msgArgs</span><span class="p">[</span><span class="s">'arg1'</span><span class="p">]]:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">SymEntry</span><span class="p">(</span><span class="nx">array_dtype</span><span class="p">,</span><span class="w"> </span><span class="nx">array_nd</span><span class="p">);</span>
 <span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nx">SymEntry</span><span class="p">(</span><span class="nx">x</span><span class="p">.</span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">st</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">y</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>

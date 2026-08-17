@@ -110,6 +110,32 @@ conda install boost-cpp snappy thrift-cpp re2 utf8proc
 pip install boost snappy thrift re2 utf8proc
 ```
 
+#### Chapel Parquet Package
+
+The server build downloads and compiles the Chapel `Parquet` package into
+`dep/build/Parquet`. Arrow and Parquet C++ libraries must still be available
+through `pkg-config` as described above.
+
+You can optionally build against an existing package checkout or select a different
+repository reference. You can also download the `Parquet` source ahead of time
+using `wget https://github.com/chapel-lang/Parquet/archive/refs/heads/main.tar.gz`,
+untar it, and then point `ARKOUDA_PARQUET_SRC_DIR` to the untarred location before running `make`.
+
+```bash
+# Use an existing checkout without cloning it into dep/build.
+ARKOUDA_PARQUET_SRC_DIR=/path/to/Parquet make
+
+# Select a branch or tag when creating a new checkout.
+ARKOUDA_PARQUET_REF=my-branch make
+
+# Relocate Arkouda's downloaded checkout.
+make PARQUET_INSTALL_DIR=/path/to/build/Parquet
+```
+
+Delete the downloaded checkout before changing `ARKOUDA_PARQUET_REF`; an
+existing checkout is reused as-is. `ARKOUDA_PARQUET_REPO` can override the
+default package repository.
+
 #### Distributable Package
 
 Alternatively you can build a distributable package:

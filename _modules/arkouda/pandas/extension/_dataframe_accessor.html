@@ -392,13 +392,13 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"Strings"</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ArkoudaDataFrameAccessor&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ArkoudaDataFrameAccessor"</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_looks_like_ak_col</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return whether an object appears to be a valid Arkouda column type.</span>
 
 <span class="sd">    This function checks for the core column types used by the legacy</span>
@@ -419,14 +419,14 @@
 <span class="sd">        True if ``obj`` is an instance of one of the recognized Arkouda</span>
 <span class="sd">        column classes (``pdarray``, ``Strings``, ``Categorical``);</span>
 <span class="sd">        False otherwise.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_extract_ak_from_ea</span><span class="p">(</span><span class="n">ea</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract the underlying Arkouda column from an Arkouda-backed ExtensionArray.</span>
 
 <span class="sd">    Parameters</span>
@@ -446,16 +446,16 @@
 <span class="sd">        If the ExtensionArray does not expose its Arkouda-backed data</span>
 <span class="sd">        through a known attribute or the extracted object is not a valid</span>
 <span class="sd">        Arkouda column.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">):</span>
-        <span class="n">col</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">):</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_looks_like_ak_col</span><span class="p">(</span><span class="n">col</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">col</span>
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arkouda EA does not expose an Arkouda column via a known attribute/method.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Arkouda EA does not expose an Arkouda column via a known attribute/method."</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_arkouda_series</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return whether a pandas Series is backed by an Arkouda ExtensionArray.</span>
 
 <span class="sd">    This function checks two conditions:</span>
@@ -476,15 +476,15 @@
 <span class="sd">    -------</span>
 <span class="sd">    bool</span>
 <span class="sd">        True if the Series is Arkouda-backed; False otherwise.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># dtype check first; fallback to EA instance name if helpful</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaArray</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">"array"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaArray</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_series_to_akcol_no_copy</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract the underlying Arkouda column from an Arkouda-backed Series.</span>
 
 <span class="sd">    Parameters</span>
@@ -501,11 +501,11 @@
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
 <span class="sd">        If the Series is not Arkouda-backed or does not expose an Arkouda column.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_arkouda_series</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is not Arkouda-backed (dtype=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2">). &quot;</span>
-            <span class="s2">&quot;Wrap columns with ArkoudaArray before calling df.ak.merge.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Column '</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' is not Arkouda-backed (dtype=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2">). "</span>
+            <span class="s2">"Wrap columns with ArkoudaArray before calling df.ak.merge."</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">_extract_ak_from_ea</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
 
@@ -515,10 +515,10 @@
     <span class="n">akcol</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Wrap an Arkouda column into a pandas Series using ArkoudaExtensionArray,</span>
 <span class="sd">    ensuring the index is Arkouda-backed (including the default index).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span> <span class="k">as</span> <span class="n">ak_arange</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaIndexAccessor</span>  <span class="c1"># avoids `index.ak` for mypy</span>
 
@@ -529,7 +529,7 @@
         <span class="n">index_ea</span> <span class="o">=</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">ak_arange</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">index_ea</span><span class="p">)</span>
 
-    <span class="c1"># mypy-safe: call accessor class directly (pandas stubs don&#39;t know `.ak`)</span>
+    <span class="c1"># mypy-safe: call accessor class directly (pandas stubs don't know `.ak`)</span>
     <span class="n">acc</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">acc</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
@@ -538,7 +538,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_df_to_akdf_no_copy</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ak_DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert a pandas DataFrame to an ak_DataFrame without copying data.</span>
 
 <span class="sd">    All columns in ``df`` must be Arkouda-backed (recognized by</span>
@@ -554,7 +554,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    ak_DataFrame</span>
 <span class="sd">        Legacy Arkouda DataFrame built from the underlying Arkouda columns.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cols</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
@@ -563,7 +563,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_akdf_to_pandas_no_copy</span><span class="p">(</span><span class="n">akdf</span><span class="p">:</span> <span class="n">ak_DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert an ak_DataFrame back to pandas with Arkouda ExtensionArrays.</span>
 
 <span class="sd">    No NumPy/Python conversion is performed. Each Arkouda column is wrapped</span>
@@ -579,7 +579,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    pd.DataFrame</span>
 <span class="sd">        pandas DataFrame with :class:`ArkoudaArray`-backed columns.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cols</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">akdf</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_akcol_to_series</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">akdf</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
@@ -588,13 +588,13 @@
 
 <div class="viewcode-block" id="ArkoudaDataFrameAccessor">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaDataFrameAccessor">[docs]</a>
-<span class="nd">@register_dataframe_accessor</span><span class="p">(</span><span class="s2">&quot;ak&quot;</span><span class="p">)</span>
+<span class="nd">@register_dataframe_accessor</span><span class="p">(</span><span class="s2">"ak"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaDataFrameAccessor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda DataFrame accessor.</span>
 
 <span class="sd">    Allows ``df.ak`` access to Arkouda-backed operations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pandas_obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">pandas_obj</span>
@@ -603,7 +603,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaDataFrameAccessor.from_ak_legacy">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_ak_legacy</span><span class="p">(</span><span class="n">akdf</span><span class="p">:</span> <span class="n">ak_DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd_DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert a legacy Arkouda ``DataFrame`` into a pandas ``DataFrame``</span>
 <span class="sd">        backed by Arkouda ExtensionArrays.</span>
 
@@ -651,7 +651,7 @@
 <span class="sd">        Basic conversion</span>
 <span class="sd">        ~~~~~~~~~~~~~~~~</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; akdf = ak.DataFrame({&quot;a&quot;: ak.arange(5), &quot;b&quot;: ak.array([10,11,12,13,14])})</span>
+<span class="sd">        &gt;&gt;&gt; akdf = ak.DataFrame({"a": ak.arange(5), "b": ak.array([10,11,12,13,14])})</span>
 
 <span class="sd">        &gt;&gt;&gt; pdf = pd.DataFrame.ak.from_ak_legacy(akdf)</span>
 <span class="sd">        &gt;&gt;&gt; pdf</span>
@@ -664,43 +664,43 @@
 
 <span class="sd">        Columns stay Arkouda-backed</span>
 <span class="sd">        ~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
-<span class="sd">        &gt;&gt;&gt; type(pdf[&quot;a&quot;].array)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; type(pdf["a"].array)</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'&gt;</span>
 
-<span class="sd">        &gt;&gt;&gt; pdf[&quot;a&quot;].array._data</span>
+<span class="sd">        &gt;&gt;&gt; pdf["a"].array._data</span>
 <span class="sd">        array([0 1 2 3 4])</span>
 
 <span class="sd">        No NumPy materialization occurs</span>
 <span class="sd">        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
-<span class="sd">        &gt;&gt;&gt; pdf[&quot;a&quot;].values    # pandas always materializes .values</span>
+<span class="sd">        &gt;&gt;&gt; pdf["a"].values    # pandas always materializes .values</span>
 <span class="sd">        ArkoudaArray([0 1 2 3 4])</span>
 
 <span class="sd">        But the underlying column is still Arkouda:</span>
-<span class="sd">        &gt;&gt;&gt; pdf[&quot;a&quot;].array._data</span>
+<span class="sd">        &gt;&gt;&gt; pdf["a"].array._data</span>
 <span class="sd">        array([0 1 2 3 4])</span>
 
 <span class="sd">        Categorical and Strings columns work as well</span>
 <span class="sd">        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
 <span class="sd">        &gt;&gt;&gt; akdf2 = ak.DataFrame({</span>
-<span class="sd">        ...     &quot;s&quot;: ak.array([&quot;a&quot;,&quot;b&quot;,&quot;a&quot;]),</span>
-<span class="sd">        ...     &quot;c&quot;: ak.Categorical(ak.array([&quot;e&quot;,&quot;f&quot;,&quot;g&quot;]))</span>
+<span class="sd">        ...     "s": ak.array(["a","b","a"]),</span>
+<span class="sd">        ...     "c": ak.Categorical(ak.array(["e","f","g"]))</span>
 <span class="sd">        ... })</span>
 <span class="sd">        &gt;&gt;&gt; pdf2 = pd.DataFrame.ak.from_ak_legacy(akdf2)</span>
 
-<span class="sd">        &gt;&gt;&gt; type(pdf2[&quot;s&quot;].array)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray&#39;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; type(pdf2["s"].array)</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray'&gt;</span>
 
-<span class="sd">        &gt;&gt;&gt; type(pdf2[&quot;c&quot;].array)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategorical&#39;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; type(pdf2["c"].array)</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategorical'&gt;</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_akdf_to_pandas_no_copy</span><span class="p">(</span><span class="n">akdf</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaDataFrameAccessor.to_ak">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaDataFrameAccessor.to_ak">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ak</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd_DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert this pandas DataFrame to an Arkouda-backed pandas DataFrame.</span>
 
 <span class="sd">        Each column of the original pandas DataFrame is materialized to the</span>
@@ -724,21 +724,21 @@
 
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({&quot;x&quot;: [1, 2, 3], &quot;y&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]})</span>
+<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})</span>
 <span class="sd">        &gt;&gt;&gt; akdf = df.ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; type(akdf)</span>
-<span class="sd">         &lt;class &#39;pandas...DataFrame&#39;&gt;</span>
+<span class="sd">         &lt;class 'pandas...DataFrame'&gt;</span>
 
 <span class="sd">        The columns are now Arkouda ExtensionArrays:</span>
 
-<span class="sd">        &gt;&gt;&gt; isinstance(akdf[&quot;x&quot;].array, ArkoudaArray)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(akdf["x"].array, ArkoudaArray)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; akdf[&quot;x&quot;].tolist()</span>
+<span class="sd">        &gt;&gt;&gt; akdf["x"].tolist()</span>
 <span class="sd">        [np.int64(1), np.int64(2), np.int64(3)]</span>
 
 <span class="sd">        Arkouda operations work directly on the columns:</span>
 
-<span class="sd">        &gt;&gt;&gt; akdf[&quot;x&quot;].array._data + 10</span>
+<span class="sd">        &gt;&gt;&gt; akdf["x"].array._data + 10</span>
 <span class="sd">        array([11 12 13])</span>
 
 <span class="sd">        Converting back to a NumPy-backed DataFrame:</span>
@@ -749,7 +749,7 @@
 <span class="sd">        0  1  a</span>
 <span class="sd">        1  2  b</span>
 <span class="sd">        2  3  c</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaIndexAccessor</span>
 
@@ -767,7 +767,7 @@
 <div class="viewcode-block" id="ArkoudaDataFrameAccessor.collect">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaDataFrameAccessor.collect">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd_DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Materialize an Arkouda-backed pandas DataFrame into a NumPy-backed one.</span>
 
 <span class="sd">        This operation retrieves each Arkouda-backed column from the server</span>
@@ -790,13 +790,13 @@
 
 <span class="sd">        Create a pandas DataFrame and convert it to Arkouda-backed form:</span>
 
-<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({&quot;x&quot;: [1, 2, 3], &quot;y&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]})</span>
+<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})</span>
 <span class="sd">        &gt;&gt;&gt; akdf = df.ak.to_ak()</span>
 
 <span class="sd">        ``akdf`` is still a pandas DataFrame, but its columns live on Arkouda:</span>
 
-<span class="sd">        &gt;&gt;&gt; type(akdf[&quot;x&quot;].array)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; type(akdf["x"].array)</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'&gt;</span>
 
 <span class="sd">        Now fully materialize it to local NumPy arrays:</span>
 
@@ -809,9 +809,9 @@
 
 <span class="sd">        The columns are now NumPy arrays:</span>
 
-<span class="sd">        &gt;&gt;&gt; type(collected[&quot;x&quot;].values)</span>
-<span class="sd">        &lt;class &#39;numpy.ndarray&#39;&gt;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &gt;&gt;&gt; type(collected["x"].values)</span>
+<span class="sd">        &lt;class 'numpy.ndarray'&gt;</span>
+<span class="sd">        """</span>
         <span class="n">cols</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">pd_DataFrame</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span></div>
 
@@ -819,7 +819,7 @@
 <div class="viewcode-block" id="ArkoudaDataFrameAccessor.to_ak_legacy">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaDataFrameAccessor.to_ak_legacy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ak_legacy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ak_DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert this pandas DataFrame into the legacy :class:`arkouda.DataFrame`.</span>
 
 <span class="sd">        This method performs a *materializing* conversion of a pandas DataFrame</span>
@@ -848,31 +848,31 @@
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({</span>
-<span class="sd">        ...     &quot;i&quot;: [1, 2, 3],</span>
-<span class="sd">        ...     &quot;s&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;],</span>
-<span class="sd">        ...     &quot;c&quot;: pd.Series([&quot;low&quot;, &quot;low&quot;, &quot;high&quot;], dtype=&quot;category&quot;),</span>
+<span class="sd">        ...     "i": [1, 2, 3],</span>
+<span class="sd">        ...     "s": ["a", "b", "c"],</span>
+<span class="sd">        ...     "c": pd.Series(["low", "low", "high"], dtype="category"),</span>
 <span class="sd">        ... })</span>
 <span class="sd">        &gt;&gt;&gt; akdf = df.ak.to_ak_legacy()</span>
 <span class="sd">        &gt;&gt;&gt; type(akdf)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.dataframe.DataFrame&#39;&gt;</span>
+<span class="sd">        &lt;class 'arkouda.pandas.dataframe.DataFrame'&gt;</span>
 
 <span class="sd">        Columns have the appropriate Arkouda types:</span>
 
 <span class="sd">        &gt;&gt;&gt; from arkouda.numpy.pdarrayclass import pdarray</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.numpy.strings import Strings</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.pandas.categorical import Categorical</span>
-<span class="sd">        &gt;&gt;&gt; isinstance(akdf[&quot;i&quot;], pdarray)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(akdf["i"], pdarray)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; isinstance(akdf[&quot;s&quot;], Strings)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(akdf["s"], Strings)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; isinstance(akdf[&quot;c&quot;], Categorical)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(akdf["c"], Categorical)</span>
 <span class="sd">        True</span>
 
 <span class="sd">        Values round-trip through the conversion:</span>
 
-<span class="sd">        &gt;&gt;&gt; akdf[&quot;i&quot;].tolist()</span>
+<span class="sd">        &gt;&gt;&gt; akdf["i"].tolist()</span>
 <span class="sd">        [1, 2, 3]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
         <span class="n">cols</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -881,12 +881,12 @@
             <span class="n">values</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">values</span>
 
             <span class="c1"># Strings</span>
-            <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_string_dtype</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_string_dtype</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"string"</span><span class="p">:</span>
                 <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
             <span class="c1"># Pandas Categorical</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">CategoricalDtype</span><span class="p">):</span>
-                <span class="n">cat</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+                <span class="n">cat</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"category"</span><span class="p">)</span>
                 <span class="n">cat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
                 <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
 
@@ -898,7 +898,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_assert_all_arkouda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validate that all columns in the given DataFrame are Arkouda-backed.</span>
 
 <span class="sd">        Parameters</span>
@@ -907,24 +907,24 @@
 <span class="sd">            The DataFrame to validate.</span>
 <span class="sd">        side : str</span>
 <span class="sd">            Label indicating which operand is being checked</span>
-<span class="sd">            (for example, ``&quot;left&quot;`` or ``&quot;right&quot;``).</span>
+<span class="sd">            (for example, ``"left"`` or ``"right"``).</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
 <span class="sd">            If ``df`` is not a pandas DataFrame or if any column</span>
 <span class="sd">            in ``df`` is not Arkouda-backed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> must be a pandas.DataFrame; got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;If you already have ak.DataFrame, call left_ak.merge(right_ak, ...).&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> must be a pandas.DataFrame; got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. "</span>
+                <span class="s2">"If you already have ak.DataFrame, call left_ak.merge(right_ak, ...)."</span>
             <span class="p">)</span>
         <span class="n">bad</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_arkouda_series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">])]</span>
         <span class="k">if</span> <span class="n">bad</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;All columns in the </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> DataFrame must be Arkouda ExtensionArrays. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Non-Arkouda columns: </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"All columns in the </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> DataFrame must be Arkouda ExtensionArrays. "</span>
+                <span class="sa">f</span><span class="s2">"Non-Arkouda columns: </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="ArkoudaDataFrameAccessor.merge">
@@ -936,14 +936,14 @@
         <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">left_on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">right_on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">how</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;inner&quot;</span><span class="p">,</span>
-        <span class="n">left_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_x&quot;</span><span class="p">,</span>
-        <span class="n">right_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_y&quot;</span><span class="p">,</span>
+        <span class="n">how</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"inner"</span><span class="p">,</span>
+        <span class="n">left_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"_x"</span><span class="p">,</span>
+        <span class="n">right_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"_y"</span><span class="p">,</span>
         <span class="n">convert_ints</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Merge two Arkouda-backed pandas DataFrames using Arkouda&#39;s join.</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Merge two Arkouda-backed pandas DataFrames using Arkouda's join.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -964,14 +964,14 @@
 <span class="sd">            used together with ``left_on``. If provided, ``on`` is ignored for</span>
 <span class="sd">            the right side. Default is None</span>
 <span class="sd">        how : str</span>
-<span class="sd">            Type of merge to be performed. One of ``&#39;left&#39;``, ``&#39;right&#39;``,</span>
-<span class="sd">            ``&#39;inner&#39;``, or ``&#39;outer&#39;``. Default is &#39;inner&#39;.</span>
+<span class="sd">            Type of merge to be performed. One of ``'left'``, ``'right'``,</span>
+<span class="sd">            ``'inner'``, or ``'outer'``. Default is 'inner'.</span>
 <span class="sd">        left_suffix : str</span>
 <span class="sd">            Suffix to apply to overlapping column names from the left frame that</span>
-<span class="sd">            are not part of the join keys. Default is &#39;_x&#39;.</span>
+<span class="sd">            are not part of the join keys. Default is '_x'.</span>
 <span class="sd">        right_suffix : str</span>
 <span class="sd">            Suffix to apply to overlapping column names from the right frame that</span>
-<span class="sd">            are not part of the join keys.Default is &#39;_y&#39;.</span>
+<span class="sd">            are not part of the join keys.Default is '_y'.</span>
 <span class="sd">        convert_ints : bool</span>
 <span class="sd">            Whether to allow Arkouda to upcast integer columns as needed</span>
 <span class="sd">            (for example, to accommodate missing values) during the merge.</span>
@@ -990,13 +990,13 @@
 <span class="sd">        TypeError</span>
 <span class="sd">            If ``right`` is not a :class:`pandas.DataFrame` or if any column in</span>
 <span class="sd">            the left or right DataFrame is not Arkouda-backed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`right` must be a pandas.DataFrame&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"`right` must be a pandas.DataFrame"</span><span class="p">)</span>
 
         <span class="c1"># Ensure both sides are Arkouda-backed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_all_arkouda</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_all_arkouda</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_all_arkouda</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_all_arkouda</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">)</span>
 
         <span class="c1"># Lift to ak.DataFrame (zero-copy-ish)</span>
         <span class="n">left_ak</span> <span class="o">=</span> <span class="n">_df_to_akdf_no_copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>

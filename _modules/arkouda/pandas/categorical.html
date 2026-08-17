@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.categorical</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Categorical data type for Arkouda.</span>
 
 <span class="sd">This module provides the `Categorical` class, which represents arrays of values drawn</span>
@@ -379,10 +379,10 @@
 <span class="sd">string-like or repeated-value data by internally mapping each category label to a</span>
 <span class="sd">numerical code.</span>
 
-<span class="sd">__all__ = [&quot;Categorical&quot;]</span>
+<span class="sd">__all__ = ["Categorical"]</span>
 
 <span class="sd">The `Categorical` type is especially useful for grouping operations, filtering by label,</span>
-<span class="sd">and performing category-level reductions, much like pandas&#39; `Categorical` type. It</span>
+<span class="sd">and performing category-level reductions, much like pandas' `Categorical` type. It</span>
 <span class="sd">supports conversions from `Strings`, other `Categorical` objects, or even pandas</span>
 <span class="sd">Categoricals, making it suitable for interoperability and high-performance analytics</span>
 <span class="sd">in Arkouda.</span>
@@ -399,7 +399,7 @@
 <span class="sd">-----------</span>
 <span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">&gt;&gt;&gt; from arkouda.pandas.categorical import Categorical</span>
-<span class="sd">&gt;&gt;&gt; strings = ak.array([&quot;apple&quot;, &quot;banana&quot;, &quot;apple&quot;, &quot;banana&quot;, &quot;pear&quot;])</span>
+<span class="sd">&gt;&gt;&gt; strings = ak.array(["apple", "banana", "apple", "banana", "pear"])</span>
 <span class="sd">&gt;&gt;&gt; cat = Categorical(strings)</span>
 <span class="sd">&gt;&gt;&gt; cat.codes</span>
 <span class="sd">array([1 2 1 2 0])</span>
@@ -416,7 +416,7 @@
 <span class="sd">- arkouda.pandas.groupbyclass.GroupBy</span>
 <span class="sd">- pandas.Categorical</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -463,22 +463,22 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
-    <span class="n">GroupBy</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;GroupBy&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"Strings"</span><span class="p">)</span>
+    <span class="n">GroupBy</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"GroupBy"</span><span class="p">)</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">SortingAlgorithm</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-        <span class="n">RadixSortLSD</span> <span class="o">=</span> <span class="s2">&quot;RadixSortLSD&quot;</span>
+        <span class="n">RadixSortLSD</span> <span class="o">=</span> <span class="s2">"RadixSortLSD"</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Categorical&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Categorical"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Categorical">
 <a class="viewcode-back" href="../../../usage/categorical.html#arkouda.Categorical">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Categorical</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Represents an array of values belonging to named categories.</span>
 
 <span class="sd">    Converting a Strings object to Categorical often saves memory and speeds up operations,</span>
@@ -511,7 +511,7 @@
 <span class="sd">    shape : tuple</span>
 <span class="sd">        The sizes of each dimension of the array</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">categories</span><span class="p">:</span> <span class="n">Strings</span>
     <span class="n">codes</span><span class="p">:</span> <span class="n">pdarray</span>
@@ -522,11 +522,11 @@
     <span class="n">ndim</span><span class="p">:</span> <span class="n">int_scalars</span>
     <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span>
 
-    <span class="n">BinOps</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">])</span>
-    <span class="n">RegisterablePieces</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;categories&quot;</span><span class="p">,</span> <span class="s2">&quot;codes&quot;</span><span class="p">,</span> <span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="s2">&quot;segments&quot;</span><span class="p">,</span> <span class="s2">&quot;_akNAcode&quot;</span><span class="p">])</span>
-    <span class="n">RequiredPieces</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;categories&quot;</span><span class="p">,</span> <span class="s2">&quot;codes&quot;</span><span class="p">,</span> <span class="s2">&quot;_akNAcode&quot;</span><span class="p">])</span>
+    <span class="n">BinOps</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">"=="</span><span class="p">,</span> <span class="s2">"!="</span><span class="p">])</span>
+    <span class="n">RegisterablePieces</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">"categories"</span><span class="p">,</span> <span class="s2">"codes"</span><span class="p">,</span> <span class="s2">"permutation"</span><span class="p">,</span> <span class="s2">"segments"</span><span class="p">,</span> <span class="s2">"_akNAcode"</span><span class="p">])</span>
+    <span class="n">RequiredPieces</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">"categories"</span><span class="p">,</span> <span class="s2">"codes"</span><span class="p">,</span> <span class="s2">"_akNAcode"</span><span class="p">])</span>
     <span class="n">segments</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;Categorical&quot;</span>
+    <span class="n">objType</span> <span class="o">=</span> <span class="s2">"Categorical"</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>  <span class="c1"># this is being set for now because Categoricals only supported on Strings</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -537,18 +537,18 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
-        <span class="k">if</span> <span class="s2">&quot;codes&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"codes"</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s2">"categories"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="c1"># This initialization is called by Categorical.from_codes()</span>
             <span class="c1"># The values arg is ignored</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;codes&quot;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"codes"</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"categories"</span><span class="p">]</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Codes out of bounds for categories: min = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">,&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; max = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">, categories = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Codes out of bounds for categories: min = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">,"</span>
+                    <span class="sa">f</span><span class="s2">" max = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">, categories = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;segments&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"permutation"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"segments"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Permutation and segments should only ever be supplied together from</span>
                 <span class="c1"># the .from_codes() method, not user input</span>
@@ -562,7 +562,7 @@
             <span class="c1"># Typical initialization, called with values</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pd_Categorical</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">)]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="kc">None</span>
@@ -575,7 +575,7 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;expected Strings, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"expected Strings, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">)</span>
@@ -583,23 +583,23 @@
                 <span class="c1"># Make a copy because N/A value must be added below</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[:]</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"str_"</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int64"</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"str_"</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="p">(</span><span class="s2">&quot;Categorical: inputs other than &quot;</span> <span class="o">+</span> <span class="s2">&quot;Strings or pd.Categorical not yet supported&quot;</span><span class="p">)</span>
+                    <span class="p">(</span><span class="s2">"Categorical: inputs other than "</span> <span class="o">+</span> <span class="s2">"Strings or pd.Categorical not yet supported"</span><span class="p">)</span>
                 <span class="p">)</span>
         <span class="c1"># When read from file or attached, NA code will be passed as a pdarray</span>
         <span class="c1"># Otherwise, the NA value is set to a string</span>
-        <span class="k">if</span> <span class="s2">&quot;_akNAcode&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"_akNAcode"</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"_akNAcode"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"_akNAcode"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;na_value&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"na_value"</span><span class="p">,</span> <span class="s2">"N/A"</span><span class="p">)</span>
             <span class="n">find_na</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span>
             <span class="k">if</span> <span class="n">find_na</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
@@ -620,7 +620,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The size of the Categorical in bytes.</span>
 
 <span class="sd">        Returns</span>
@@ -628,32 +628,32 @@
 <span class="sd">        int</span>
 <span class="sd">            The size of the Categorical in bytes.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">nbytes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">nbytes</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">nbytes</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)):</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">nbytes</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)):</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">nbytes</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)):</span>
             <span class="n">nbytes</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="n">nbytes</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string of the type inferred from the values.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;categorical&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a string of the type inferred from the values."""</span>
+        <span class="k">return</span> <span class="s2">"categorical"</span>
 
 <div class="viewcode-block" id="Categorical.from_codes">
 <a class="viewcode-back" href="../../../usage/categorical.html#arkouda.Categorical.from_codes">[docs]</a>
@@ -662,7 +662,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_codes</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">codes</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">categories</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Make a Categorical from codes and categories arrays.</span>
 
 <span class="sd">        If codes and</span>
@@ -692,9 +692,9 @@
 <span class="sd">            Raised if codes is not a pdarray of int64 objects or if</span>
 <span class="sd">            categories is not a Strings object</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">codes</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akint64</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Codes must be pdarray of int64&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Codes must be pdarray of int64"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span>
             <span class="n">codes</span><span class="o">=</span><span class="n">codes</span><span class="p">,</span>
@@ -709,27 +709,27 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create categorical from return message from server.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        This is currently only used when reading a Categorical from HDF5 files.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
         <span class="c1"># parse return json</span>
         <span class="n">eles</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
-        <span class="n">codes</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">&quot;codes&quot;</span><span class="p">])</span>
-        <span class="n">cats</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">])</span>
-        <span class="n">na_code</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">])</span>
+        <span class="n">codes</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">"codes"</span><span class="p">])</span>
+        <span class="n">cats</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">"categories"</span><span class="p">])</span>
+        <span class="n">na_code</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">"_akNAcode"</span><span class="p">])</span>
 
         <span class="n">segments</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">perm</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="s2">&quot;segments&quot;</span> <span class="ow">in</span> <span class="n">eles</span> <span class="ow">and</span> <span class="s2">&quot;permutation&quot;</span> <span class="ow">in</span> <span class="n">eles</span><span class="p">:</span>
-            <span class="n">segments</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">&quot;segments&quot;</span><span class="p">])</span>
-            <span class="n">perm</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">&quot;permutation&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">"segments"</span> <span class="ow">in</span> <span class="n">eles</span> <span class="ow">and</span> <span class="s2">"permutation"</span> <span class="ow">in</span> <span class="n">eles</span><span class="p">:</span>
+            <span class="n">segments</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">"segments"</span><span class="p">])</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">eles</span><span class="p">[</span><span class="s2">"permutation"</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">cats</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="n">perm</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="n">segments</span><span class="p">,</span> <span class="n">_akNAcode</span><span class="o">=</span><span class="n">na_code</span><span class="p">)</span></div>
 
@@ -737,8 +737,8 @@
 <div class="viewcode-block" id="Categorical.standardize_categories">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.standardize_categories">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">standardize_categories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="s2">&quot;N/A&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardize_categories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="s2">"N/A"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Standardize an array of Categoricals so that they share the same categories.</span>
 
 <span class="sd">        Parameters</span>
@@ -753,12 +753,12 @@
 <span class="sd">        List of Categoricals</span>
 <span class="sd">            A list of the original Categoricals remapped to the shared categories.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">unique</span>
 
         <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All arguments must be </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"All arguments must be </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">new_categories</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">concatenate</span><span class="p">([</span><span class="n">arr</span><span class="o">.</span><span class="n">categories</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="n">find_na</span> <span class="o">=</span> <span class="n">new_categories</span> <span class="o">==</span> <span class="n">na_value</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">find_na</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
@@ -770,7 +770,7 @@
 <div class="viewcode-block" id="Categorical.equals">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.equals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Whether Categoricals are the same size and all entries are equal.</span>
 
 <span class="sd">        Parameters</span>
@@ -787,15 +787,15 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">        &gt;&gt;&gt; c = Categorical(ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]))</span>
-<span class="sd">        &gt;&gt;&gt; c_cpy = Categorical(ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; c = Categorical(ak.array(["a", "b", "c"]))</span>
+<span class="sd">        &gt;&gt;&gt; c_cpy = Categorical(ak.array(["a", "b", "c"]))</span>
 <span class="sd">        &gt;&gt;&gt; c.equals(c_cpy)</span>
 <span class="sd">        np.True_</span>
-<span class="sd">        &gt;&gt;&gt; c2 = Categorical(ak.array([&quot;a&quot;, &quot;x&quot;, &quot;c&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; c2 = Categorical(ak.array(["a", "x", "c"]))</span>
 <span class="sd">        &gt;&gt;&gt; c.equals(c2)</span>
 <span class="sd">        np.False_</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -810,7 +810,7 @@
 <div class="viewcode-block" id="Categorical.set_categories">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.set_categories">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set categories to user-defined values.</span>
 
 <span class="sd">        Parameters</span>
@@ -827,7 +827,7 @@
 <span class="sd">            in new categories will appear unchanged. Old values not present will</span>
 <span class="sd">            be assigned the NA value.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
@@ -857,7 +857,7 @@
         <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">bothcats</span><span class="p">)</span>
         <span class="n">ct</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;User-specified categories must be unique&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"User-specified categories must be unique"</span><span class="p">)</span>
         <span class="c1"># Matches have two hits in concatenated array</span>
         <span class="n">present</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="p">[(</span><span class="n">ct</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)]</span>
         <span class="n">firstinds</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">[</span><span class="n">present</span><span class="p">]</span>
@@ -878,7 +878,7 @@
 <div class="viewcode-block" id="Categorical.to_ndarray">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert the array to a np.ndarray.</span>
 
 <span class="sd">        Convert the array to a np.ndarray, transferring array data from</span>
@@ -902,7 +902,7 @@
 <span class="sd">        may override this limit by setting ak.core.client.maxTransferBytes to a larger</span>
 <span class="sd">        value, but proceed with caution.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="n">newcat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">newcat</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
@@ -916,7 +916,7 @@
 <div class="viewcode-block" id="Categorical.to_pandas">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd_Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the equivalent Pandas Categorical.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the equivalent Pandas Categorical."""</span>
         <span class="k">return</span> <span class="n">pd_Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
             <span class="n">codes</span><span class="o">=</span><span class="n">type_cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()),</span>
             <span class="n">categories</span><span class="o">=</span><span class="n">pd_Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()),</span>
@@ -926,7 +926,7 @@
 <div class="viewcode-block" id="Categorical.tolist">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.tolist">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert the Categorical to a list.</span>
 
 <span class="sd">        Convert the Categorical to a list, transferring data from</span>
@@ -950,14 +950,14 @@
 <span class="sd">        may override this limit by setting ak.core.client.maxTransferBytes to a larger</span>
 <span class="sd">        value, but proceed with caution.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="Categorical.to_strings">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.to_strings">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert the Categorical to Strings.</span>
 
 <span class="sd">        Returns</span>
@@ -969,22 +969,22 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.array([&quot;a&quot;,&quot;b&quot;,&quot;c&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array(["a","b","c"])</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">        array(['a', 'b', 'c'])</span>
 <span class="sd">        &gt;&gt;&gt; c = ak.Categorical(a)</span>
 <span class="sd">        &gt;&gt;&gt; c.to_strings()</span>
-<span class="sd">        array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">        array(['a', 'b', 'c'])</span>
 
 <span class="sd">        &gt;&gt;&gt; isinstance(c.to_strings(), ak.Strings)</span>
 <span class="sd">        True</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Prevent iteration over Categorical objects.</span>
 
 <span class="sd">        Raises</span>
@@ -992,13 +992,13 @@
 <span class="sd">        NotImplementedError</span>
 <span class="sd">            Always raised. Iteration is not supported. Use `.to_ndarray()` instead.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Categorical does not support iteration. To force data transfer from server, use to_ndarray&quot;</span>
+            <span class="s2">"Categorical does not support iteration. To force data transfer from server, use to_ndarray"</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the number of elements in the Categorical.</span>
 
 <span class="sd">        Returns</span>
@@ -1006,11 +1006,11 @@
 <span class="sd">        int</span>
 <span class="sd">            The length of the Categorical array.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a short string representation of the Categorical.</span>
 
 <span class="sd">        Returns</span>
@@ -1018,20 +1018,20 @@
 <span class="sd">        str</span>
 <span class="sd">            A printable preview of the Categorical values.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># limit scope of import to pick up changes to global variable</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;... &quot;</span><span class="p">)</span>
-            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
-        <span class="k">return</span> <span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"... "</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="s2">"[</span><span class="si">{}</span><span class="s2">]"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the official string representation of the Categorical.</span>
 
 <span class="sd">        Returns</span>
@@ -1039,12 +1039,12 @@
 <span class="sd">        str</span>
 <span class="sd">            A string representing the Categorical for debugging.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;array(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"array(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">op</span><span class="p">:</span> <span class="n">str_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Execute the binop.</span>
 
 <span class="sd">        Execute the requested binop on this Categorical instance</span>
@@ -1066,20 +1066,20 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            Raised if (1) the op is not in the self.BinOps set, or (2) if the</span>
-<span class="sd">            sizes of this and the other instance don&#39;t match</span>
+<span class="sd">            sizes of this and the other instance don't match</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown while executing the</span>
 <span class="sd">            binary operation</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BinOps</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Categorical: unsupported operator: </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Categorical: unsupported operator: </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"str"</span><span class="p">:</span>
             <span class="n">idxresult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">idxresult</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Categorical </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">: size mismatch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">type_cast</span><span class="p">(</span><span class="n">Categorical</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Categorical </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">: size mismatch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">type_cast</span><span class="p">(</span><span class="n">Categorical</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
@@ -1092,13 +1092,13 @@
                 <span class="k">return</span> <span class="n">tmpself</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">tmpother</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Operations between Categorical and non-Categorical not yet implemented.&quot;</span>
-                <span class="s2">&quot;Consider converting operands to Categorical.&quot;</span>
+                <span class="s2">"Operations between Categorical and non-Categorical not yet implemented."</span>
+                <span class="s2">"Consider converting operands to Categorical."</span>
             <span class="p">)</span>
 
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">op</span><span class="p">:</span> <span class="n">str_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Execute the reverse binop.</span>
 
 <span class="sd">        Execute the requested reverse binop on this Categorical instance</span>
@@ -1120,16 +1120,16 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            Raised if (1) the op is not in the self.BinOps set, or (2) if the</span>
-<span class="sd">            sizes of this and the other instance don&#39;t match</span>
+<span class="sd">            sizes of this and the other instance don't match</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown while executing the</span>
 <span class="sd">            binary operation</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Perform element-wise equality comparison.</span>
 
 <span class="sd">        Parameters</span>
@@ -1142,11 +1142,11 @@
 <span class="sd">        pdarray</span>
 <span class="sd">            Boolean array indicating element-wise equality.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">"=="</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Perform element-wise inequality comparison.</span>
 
 <span class="sd">        Parameters</span>
@@ -1159,11 +1159,11 @@
 <span class="sd">        pdarray</span>
 <span class="sd">            Boolean array indicating element-wise inequality.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">"!="</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve item(s) from the Categorical.</span>
 
 <span class="sd">        Parameters</span>
@@ -1176,25 +1176,25 @@
 <span class="sd">        Categorical</span>
 <span class="sd">            The selected value(s).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"int64"</span><span class="p">,</span> <span class="s2">"uint64"</span><span class="p">]):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Don&#39;t reset categories because they might have been user-defined</span>
+            <span class="c1"># Don't reset categories because they might have been user-defined</span>
             <span class="c1"># Initialization now determines which categories are used</span>
             <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Categorical.copy">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return an copy of the given Categorical.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Categorical</span>
 <span class="sd">            A deep copy of the Categorical.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">segs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
@@ -1205,14 +1205,14 @@
 <div class="viewcode-block" id="Categorical.isna">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.isna">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find where values are missing or null (as defined by self.na_value).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Find where values are missing or null (as defined by self.na_value)."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span></div>
 
 
 <div class="viewcode-block" id="Categorical.reset_categories">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.reset_categories">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Recompute the category labels, discarding any unused labels.</span>
 
 <span class="sd">        This method is often useful after slicing or indexing a Categorical array,</span>
@@ -1225,7 +1225,7 @@
 <span class="sd">        Categorical</span>
 <span class="sd">            A Categorical object generated from the current instance</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
 
@@ -1241,7 +1241,7 @@
 <a class="viewcode-back" href="../../../usage/categorical.html#arkouda.Categorical.contains">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Check whether each element contains the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -1277,7 +1277,7 @@
 <span class="sd">        on Strings objects, because it searches the unique category labels</span>
 <span class="sd">        instead of the full array.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">categories_contains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="n">regex</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">categories_contains</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span></div>
 
@@ -1286,7 +1286,7 @@
 <a class="viewcode-back" href="../../../usage/categorical.html#arkouda.Categorical.startswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">startswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Check whether each element starts with the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -1322,7 +1322,7 @@
 <span class="sd">        method on Strings objects, because it searches the unique category</span>
 <span class="sd">        labels instead of the full array.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">categories_ends_with</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="n">regex</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">categories_ends_with</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span></div>
 
@@ -1331,7 +1331,7 @@
 <a class="viewcode-back" href="../../../usage/categorical.html#arkouda.Categorical.endswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">endswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Check whether each element ends with the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -1367,7 +1367,7 @@
 <span class="sd">        on Strings objects, because it searches the unique category labels</span>
 <span class="sd">        instead of the full array.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">categories_ends_with</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="n">regex</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">categories_ends_with</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span></div>
 
@@ -1376,7 +1376,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.in1d">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">in1d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Whether each element is also present in the test Strings or Categorical object.</span>
 
 <span class="sd">        Returns a boolean array the same length as `self` that is True</span>
@@ -1385,7 +1385,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        test : Union[Strings,Categorical]</span>
-<span class="sd">            The values against which to test each value of &#39;self`.</span>
+<span class="sd">            The values against which to test each value of 'self`.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1412,20 +1412,20 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([f&#39;String {i}&#39; for i in range(0,5)])</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array([f'String {i}' for i in range(0,5)])</span>
 <span class="sd">        &gt;&gt;&gt; cat = ak.Categorical(strings)</span>
 <span class="sd">        &gt;&gt;&gt; ak.in1d(cat,strings)</span>
 <span class="sd">        array([True True True True True])</span>
-<span class="sd">        &gt;&gt;&gt; strings = ak.array([f&#39;String {i}&#39; for i in range(5,9)])</span>
+<span class="sd">        &gt;&gt;&gt; strings = ak.array([f'String {i}' for i in range(5,9)])</span>
 <span class="sd">        &gt;&gt;&gt; catTwo = ak.Categorical(strings)</span>
 <span class="sd">        &gt;&gt;&gt; ak.in1d(cat,catTwo)</span>
 <span class="sd">        array([False False False False False])</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="c1"># Must use test._categories_used instead of test.categories to avoid</span>
             <span class="c1"># falsely returning True when a value is present in test.categories</span>
-            <span class="c1"># but not used in the array. On the other hand, we don&#39;t need to use</span>
+            <span class="c1"># but not used in the array. On the other hand, we don't need to use</span>
             <span class="c1"># self._categories_used, because indexing with [self.codes] below ensures</span>
             <span class="c1"># that only results for categories used in self.codes will be returned.</span>
             <span class="n">categoriesisin</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">_categories_used</span><span class="p">)</span>
@@ -1437,7 +1437,7 @@
 <div class="viewcode-block" id="Categorical.unique">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.unique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the unique category values in the Categorical.</span>
 
 <span class="sd">        Returns</span>
@@ -1445,7 +1445,7 @@
 <span class="sd">        Categorical</span>
 <span class="sd">            A new Categorical containing only the unique category labels in use.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
 
         <span class="c1"># __doc__ = unique.__doc__</span>
@@ -1457,7 +1457,7 @@
 <div class="viewcode-block" id="Categorical.hash">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.hash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute a 128-bit hash of each element of the Categorical.</span>
 
 <span class="sd">        Returns</span>
@@ -1473,21 +1473,21 @@
 <span class="sd">        to about 10**15), the probability of a collision between two 128-bit hash</span>
 <span class="sd">        values is negligible.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;categoricalHash&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"categoricalHash"</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">"categories"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="s2">"codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="n">hashes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;upperHash&quot;</span><span class="p">]),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;lowerHash&quot;</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">"upperHash"</span><span class="p">]),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">"lowerHash"</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="Categorical.group">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.group">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the permutation that groups the array, placing equivalent categories together.</span>
 
 <span class="sd">        All instances of the same category are guaranteed</span>
@@ -1512,7 +1512,7 @@
 <span class="sd">        Strings.group() because it sorts dense integer values, rather than</span>
 <span class="sd">        128-bit hash values.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1520,13 +1520,13 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_grouping_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Private method for generating grouping keys used by GroupBy.</span>
 
 <span class="sd">        API: this method must be defined by all groupable arrays, and it</span>
 <span class="sd">        must return a list of arrays that can be (co)argsorted.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Categorical.argsort">
@@ -1536,10 +1536,10 @@
         <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
         <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the permutation of indices that would sort the Categorical.</span>
 
-<span class="sd">        Sorting is based on the order of the Categorical&#39;s `categories`,</span>
+<span class="sd">        Sorting is based on the order of the Categorical's `categories`,</span>
 <span class="sd">        not on the underlying codes.</span>
 
 <span class="sd">        Parameters</span>
@@ -1560,7 +1560,7 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 
-<span class="sd">        &gt;&gt;&gt; cat = ak.Categorical(ak.array([&#39;dog&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;bird&#39;]))</span>
+<span class="sd">        &gt;&gt;&gt; cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))</span>
 <span class="sd">        &gt;&gt;&gt; cat.argsort()</span>
 <span class="sd">        array([3 1 0 2])</span>
 
@@ -1570,9 +1570,9 @@
 <span class="sd">        The result can be used to reorder the Categorical:</span>
 <span class="sd">        &gt;&gt;&gt; sorted_cat = cat[cat.argsort()]</span>
 <span class="sd">        &gt;&gt;&gt; sorted_cat</span>
-<span class="sd">        array([&#39;bird&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;dog&#39;])</span>
+<span class="sd">        array(['bird', 'cat', 'dog', 'dog'])</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">zeros_like</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span>
 
@@ -1593,7 +1593,7 @@
 <div class="viewcode-block" id="Categorical.sort_values">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.sort_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a sorted Categorical by category labels.</span>
 
 <span class="sd">        Returns</span>
@@ -1601,7 +1601,7 @@
 <span class="sd">        Categorical</span>
 <span class="sd">            A new Categorical with values sorted by category.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">zeros_like</span>
 
         <span class="n">idxperm</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
@@ -1615,7 +1615,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.concatenate">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Categorical</span><span class="p">],</span> <span class="n">ordered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Merge this Categorical with other Categorical objects in the array.</span>
 
 <span class="sd">        Merge this Categorical with other Categorical objects in the array,</span>
@@ -1645,7 +1645,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        This operation can be expensive -- slower than concatenating Strings.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">others</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="n">others</span> <span class="o">=</span> <span class="p">[</span><span class="n">others</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">others</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1653,7 +1653,7 @@
         <span class="n">samecategories</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">others</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Categorical: can only merge/concatenate with other Categoricals&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Categorical: can only merge/concatenate with other Categoricals"</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">c</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">categories</span>
             <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
@@ -1677,11 +1677,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;categorical_array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
-        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"categorical_array"</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"truncate"</span><span class="p">,</span> <span class="s2">"append"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"truncate"</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"single"</span><span class="p">,</span> <span class="s2">"distribute"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"distribute"</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Save the Categorical to HDF5.</span>
 
 <span class="sd">        The result is a collection of HDF5 files, one file</span>
@@ -1693,11 +1693,11 @@
 <span class="sd">            Directory and filename prefix that all output files will share</span>
 <span class="sd">        dataset : str</span>
 <span class="sd">            Name prefix for saved data within the HDF5 file</span>
-<span class="sd">        mode : {&#39;truncate&#39;, &#39;append&#39;}</span>
+<span class="sd">        mode : {'truncate', 'append'}</span>
 <span class="sd">            By default, truncate (overwrite) output files, if they exist.</span>
-<span class="sd">            If &#39;append&#39;, add data as a new column to existing files.</span>
-<span class="sd">        file_type: {&quot;single&quot;, &quot;distribute&quot;}</span>
-<span class="sd">            Default: &quot;distribute&quot;</span>
+<span class="sd">            If 'append', add data as a new column to existing files.</span>
+<span class="sd">        file_type: {"single", "distribute"}</span>
+<span class="sd">            Default: "distribute"</span>
 <span class="sd">            When set to single, dataset is written to a single file.</span>
 <span class="sd">            When distribute, dataset is written on a file per locale.</span>
 
@@ -1705,34 +1705,34 @@
 <span class="sd">        --------</span>
 <span class="sd">        load</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
-            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
-            <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
-            <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
-            <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="s2">&quot;categorical&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
-            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
+            <span class="s2">"codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
+            <span class="s2">"categories"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
+            <span class="s2">"dset"</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+            <span class="s2">"write_mode"</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
+            <span class="s2">"filename"</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+            <span class="s2">"objType"</span><span class="p">:</span> <span class="s2">"categorical"</span><span class="p">,</span>
+            <span class="s2">"file_format"</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+            <span class="s2">"NA_codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;permutation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span>
-            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;segments&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">"permutation"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">"segments"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>
 
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"tohdf"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Categorical.update_hdf">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.update_hdf">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;categorical_array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">"categorical_array"</span><span class="p">,</span> <span class="n">repack</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Overwrite the dataset with the name provided with this Categorical object.</span>
 
 <span class="sd">        If the dataset does not exist it is added.</span>
@@ -1763,7 +1763,7 @@
 <span class="sd">        - Because HDF5 deletes do not release memory, the repack option allows for</span>
 <span class="sd">          automatic creation of a file without the inaccessible data.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_file_type_to_int</span><span class="p">,</span>
@@ -1773,25 +1773,25 @@
         <span class="p">)</span>
 
         <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
-        <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">"*"</span><span class="p">)</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
-            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
-            <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
-            <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="s2">&quot;append&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
-            <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="s2">&quot;categorical&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
-            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
+            <span class="s2">"codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
+            <span class="s2">"categories"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
+            <span class="s2">"dset"</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+            <span class="s2">"write_mode"</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="s2">"append"</span><span class="p">),</span>
+            <span class="s2">"filename"</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+            <span class="s2">"objType"</span><span class="p">:</span> <span class="s2">"categorical"</span><span class="p">,</span>
+            <span class="s2">"overwrite"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"file_format"</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+            <span class="s2">"NA_codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;permutation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span>
-            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;segments&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">"permutation"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">"segments"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>
 
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"tohdf"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1804,11 +1804,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;categorical_array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"categorical_array"</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"truncate"</span><span class="p">,</span>
         <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        [Not Yet Implemented] Save the Categorical to a Parquet dataset.</span>
 
 <span class="sd">        !!! This method is currently not supported and will raise a RuntimeError. !!!</span>
@@ -1822,14 +1822,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
 <span class="sd">            The directory and filename prefix shared by all output files.</span>
-<span class="sd">        dataset : str, default=&quot;categorical_array&quot;</span>
+<span class="sd">        dataset : str, default="categorical_array"</span>
 <span class="sd">            The dataset name to use to create the Parquet files.</span>
-<span class="sd">        mode : {&#39;truncate&#39;, &#39;append&#39;}, default=&#39;truncate&#39;</span>
-<span class="sd">            Specifies write behavior. Use &#39;truncate&#39; to overwrite existing files or</span>
-<span class="sd">            &#39;append&#39; to add to them. (Appending is not yet efficient.)</span>
+<span class="sd">        mode : {'truncate', 'append'}, default='truncate'</span>
+<span class="sd">            Specifies write behavior. Use 'truncate' to overwrite existing files or</span>
+<span class="sd">            'append' to add to them. (Appending is not yet efficient.)</span>
 <span class="sd">        compression : str, optional</span>
 <span class="sd">            Compression algorithm to use when writing the file.</span>
-<span class="sd">            Supported values include: &#39;snappy&#39;, &#39;gzip&#39;, &#39;brotli&#39;, &#39;zstd&#39;, &#39;lz4&#39;.</span>
+<span class="sd">            Supported values include: 'snappy', 'gzip', 'brotli', 'zstd', 'lz4'.</span>
 <span class="sd">            Default is None (no compression).</span>
 
 <span class="sd">        Returns</span>
@@ -1851,7 +1851,7 @@
 <span class="sd">        - Appending mode is supported, but is not efficient.</span>
 <span class="sd">        - File extensions are not used to determine file type.</span>
 <span class="sd">        - If any of the output files already exist and</span>
-<span class="sd">        the mode is &#39;truncate&#39;, they will be overwritten. If the mode is &#39;append&#39;</span>
+<span class="sd">        the mode is 'truncate', they will be overwritten. If the mode is 'append'</span>
 <span class="sd">        and the number of output files is less than the number of locales or a</span>
 <span class="sd">        dataset with the same name already exists, a ``RuntimeError`` will result.</span>
 
@@ -1859,12 +1859,12 @@
 <span class="sd">        --------</span>
 <span class="sd">        to_hdf : Save the Categorical to HDF5 format (currently supported).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># due to the possibility that components will be different sizes,</span>
         <span class="c1"># writing to Parquet is not supported at this time</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s2">&quot;Categorical cannot be written to Parquet at this time due to its components &quot;</span>
-            <span class="s2">&quot;potentially having different sizes.&quot;</span>
+            <span class="s2">"Categorical cannot be written to Parquet at this time due to its components "</span>
+            <span class="s2">"potentially having different sizes."</span>
         <span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">comp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_components_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
@@ -1877,24 +1877,24 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">v</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span>
                         <span class="n">prefix_path</span><span class="p">,</span>
-                        <span class="n">dataset</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="p">(</span><span class="n">mode</span> <span class="k">if</span> <span class="n">first</span> <span class="k">else</span> <span class="s2">&quot;append&quot;</span><span class="p">),</span>
+                        <span class="n">dataset</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="p">(</span><span class="n">mode</span> <span class="k">if</span> <span class="n">first</span> <span class="k">else</span> <span class="s2">"append"</span><span class="p">),</span>
                         <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                <span class="s2">&quot;The required pieces of `categories` and `codes` were not populated on this Categorical&quot;</span>
+                <span class="s2">"The required pieces of `categories` and `codes` were not populated on this Categorical"</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">";"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Categorical.register">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.register">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Register this Categorical object and underlying components with the Arkouda server.</span>
 
 <span class="sd">        Parameters</span>
@@ -1927,21 +1927,21 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"register"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
-                <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
-                <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
-                <span class="s2">&quot;_akNAcode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
-                <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
+                <span class="s2">"codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
+                <span class="s2">"categories"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
+                <span class="s2">"_akNAcode"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
+                <span class="s2">"segments"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
+                <span class="s2">"permutation"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
@@ -1951,7 +1951,7 @@
 <div class="viewcode-block" id="Categorical.unregister">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Unregister this Categorical object.</span>
 
 <span class="sd">        Unregister this Categorical object in the arkouda server which was previously</span>
@@ -1972,11 +1972,11 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">"This object is not registered"</span><span class="p">)</span>
         <span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -1984,7 +1984,7 @@
 <div class="viewcode-block" id="Categorical.is_registered">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return True iff the object is contained in the registry or is a component of a registered object.</span>
 
 <span class="sd">        Returns</span>
@@ -1995,7 +1995,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        RegistrationError</span>
-<span class="sd">            Raised if there&#39;s a server-side error or a mis-match of registered components</span>
+<span class="sd">            Raised if there's a server-side error or a mis-match of registered components</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -2006,7 +2006,7 @@
 <span class="sd">        Objects registered with the server are immune to deletion until</span>
 <span class="sd">        they are unregistered.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2023,13 +2023,13 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_components_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a dictionary with all required or non-None components of self.</span>
 
 <span class="sd">        Required Categorical components (Codes and Categories) are always included in</span>
 <span class="sd">        returned components_dict</span>
 <span class="sd">        Optional Categorical components (Permutation and Segments) are only included if</span>
-<span class="sd">        they&#39;ve been set (are not None)</span>
+<span class="sd">        they've been set (are not None)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2038,7 +2038,7 @@
 <span class="sd">                Keys: component names (Codes, Categories, Permutation, Segments)</span>
 <span class="sd">                Values: components of self</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">piece_name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece_name</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">piece_name</span> <span class="ow">in</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">RegisterablePieces</span>
@@ -2046,7 +2046,7 @@
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_list_component_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a list of all component names.</span>
 
 <span class="sd">        Returns</span>
@@ -2054,7 +2054,7 @@
 <span class="sd">        List[str]</span>
 <span class="sd">            List of all component names</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
             <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">_list_component_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">_get_components_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -2064,7 +2064,7 @@
 <div class="viewcode-block" id="Categorical.info">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a JSON formatted string containing information about all components of self.</span>
 
 <span class="sd">        Returns</span>
@@ -2072,21 +2072,21 @@
 <span class="sd">        str</span>
 <span class="sd">            JSON string containing information about all components of self</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_component_names</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="Categorical.pretty_print_info">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.pretty_print_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print information about all components of self in a human-readable format.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Print information about all components of self in a human-readable format."""</span>
         <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">pretty_print_info</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">_get_components_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
 
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_hdf_categoricals</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parse mapping of pdarray and Stings objects from hdf5 files.</span>
 
 <span class="sd">        Parse mapping of pdarray and Stings objects</span>
@@ -2112,44 +2112,44 @@
 <span class="sd">        --------</span>
 <span class="sd">        Categorical.save, load_all</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">keys_to_remove</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">grouped</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">full_key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_key</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"."</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_key</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">base</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">full_key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">base</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">full_key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">grouped</span><span class="p">[</span><span class="n">base</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="n">keys_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_key</span><span class="p">)</span>
 
         <span class="n">result_categoricals</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">base_name</span><span class="p">,</span> <span class="n">parts</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s2">&quot;codes&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parts</span> <span class="ow">or</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required components in categorical &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"codes"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parts</span> <span class="ow">or</span> <span class="s2">"categories"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Missing required components in categorical '</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
-            <span class="n">codes</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="s2">&quot;codes&quot;</span><span class="p">]</span>
-            <span class="n">categories</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span>
+            <span class="n">codes</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="s2">"codes"</span><span class="p">]</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="s2">"categories"</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;codes&#39; must be a pdarray in &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'codes' must be a pdarray in '</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">', got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">categories</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;categories&#39; must be a Strings object in &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"'categories' must be a Strings object in '</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">', got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">categories</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">categories</span> <span class="o">=</span> <span class="n">Strings</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not convert &#39;categories&#39; to Strings in &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not convert 'categories' to Strings in '</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="n">cat</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
                 <span class="n">codes</span><span class="o">=</span><span class="n">codes</span><span class="p">,</span>
                 <span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">,</span>
-                <span class="n">permutation</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permutation&quot;</span><span class="p">),</span>
-                <span class="n">segments</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;segments&quot;</span><span class="p">),</span>
-                <span class="n">_akNAcode</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">),</span>
+                <span class="n">permutation</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"permutation"</span><span class="p">),</span>
+                <span class="n">segments</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"segments"</span><span class="p">),</span>
+                <span class="n">_akNAcode</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_akNAcode"</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">result_categoricals</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat</span>
 
@@ -2158,7 +2158,7 @@
 <div class="viewcode-block" id="Categorical.transfer">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.Categorical.transfer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Send a Categorical object to a different Arkouda server.</span>
 
 <span class="sd">        Parameters</span>
@@ -2191,20 +2191,20 @@
 <span class="sd">            Raised if other is not a pdarray or the pdarray.dtype is not</span>
 <span class="sd">            a supported dtype</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="c1"># hostname is the hostname to send to</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
-            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
-            <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
-            <span class="s2">&quot;NA_codes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
-            <span class="s2">&quot;hostname&quot;</span><span class="p">:</span> <span class="n">hostname</span><span class="p">,</span>
-            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
+            <span class="s2">"codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span>
+            <span class="s2">"categories"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
+            <span class="s2">"objType"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
+            <span class="s2">"NA_codes"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">,</span>
+            <span class="s2">"hostname"</span><span class="p">:</span> <span class="n">hostname</span><span class="p">,</span>
+            <span class="s2">"port"</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sendArray&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">"sendArray"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>

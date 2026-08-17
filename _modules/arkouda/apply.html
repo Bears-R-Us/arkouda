@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.apply</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Element-wise function application for Arkouda arrays.</span>
 
 <span class="sd">The `arkouda.apply` module provides functionality for applying user-defined Python</span>
@@ -396,7 +396,7 @@
 <span class="sd">-----------</span>
 <span class="sd">- Experimental: May not work in all environments or server builds.</span>
 <span class="sd">- Any Python modules used in the function must also be available on the server.</span>
-<span class="sd">- String functions must follow a strict format: e.g. `&quot;lambda x,: x+1&quot;` (note the comma).</span>
+<span class="sd">- String functions must follow a strict format: e.g. `"lambda x,: x+1"` (note the comma).</span>
 
 <span class="sd">Examples</span>
 <span class="sd">--------</span>
@@ -409,7 +409,7 @@
 <span class="sd">&gt;&gt;&gt; ak.apply(arr, square)</span>
 <span class="sd">array([1 4 9])</span>
 
-<span class="sd">&gt;&gt;&gt; ak.apply(arr, &quot;lambda x,: x*2&quot;)</span>
+<span class="sd">&gt;&gt;&gt; ak.apply(arr, "lambda x,: x*2")</span>
 <span class="sd">array([2 4 6])</span>
 
 <span class="sd">Notes</span>
@@ -422,7 +422,7 @@
 <span class="sd">- arkouda.pdarray</span>
 <span class="sd">- arkouda.core.client.generic_msg</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -440,7 +440,7 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;apply&quot;</span><span class="p">,</span>
+    <span class="s2">"apply"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -454,7 +454,7 @@
     <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">result_dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Apply a python function to a pdarray.</span>
 
 <span class="sd">    The function should take one argument and return a new value. The function</span>
@@ -477,13 +477,13 @@
 <span class="sd">        The function to apply to the array. This can be a callable function or</span>
 <span class="sd">        a string, but either way it should take a single argument and return a</span>
 <span class="sd">        single value. If a string, it should be a lambda function that takes a</span>
-<span class="sd">        single argument, e.g. ``&quot;lambda x,: x+1&quot;``. Note the dangling comma after</span>
+<span class="sd">        single argument, e.g. ``"lambda x,: x+1"``. Note the dangling comma after</span>
 <span class="sd">        the argument; this is required for string functions.</span>
 
 <span class="sd">    result_dtype : Optional[Union[np.dtype, str]]</span>
 <span class="sd">        The dtype of the resulting pdarray. If None, the dtype of the resulting</span>
 <span class="sd">        pdarray will be the same as the input pdarray. If a string, it should be a</span>
-<span class="sd">        valid NumPy dtype string, e.g. ``&quot;float64&quot;``. If a NumPy dtype, it should</span>
+<span class="sd">        valid NumPy dtype string, e.g. ``"float64"``. If a NumPy dtype, it should</span>
 <span class="sd">        be a valid NumPy dtype object, e.g. ``np.float64``. This is not supported</span>
 <span class="sd">        for functions passed as strings.</span>
 
@@ -504,30 +504,30 @@
 <span class="sd">    &gt;&gt;&gt; arr = ak.randint(0, 10, 4, seed=1)</span>
 <span class="sd">    &gt;&gt;&gt; def times_pi(x):</span>
 <span class="sd">    ...     return x * math.pi</span>
-<span class="sd">    &gt;&gt;&gt; arr = ak.apply(arr, times_pi, &quot;float64&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; arr = ak.apply(arr, times_pi, "float64")</span>
 <span class="sd">    &gt;&gt;&gt; arr</span>
 <span class="sd">    array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
 
-    <span class="n">vers_supported</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">&quot;is_version_supported&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">vers_supported</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">"is_version_supported"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">vers_supported</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">interp_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">cmd_res</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="s2">&quot;isVersionSupported&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;versionString&quot;</span><span class="p">:</span> <span class="n">interp_version</span><span class="p">})</span>
+        <span class="n">interp_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">cmd_res</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="s2">"isVersionSupported"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"versionString"</span><span class="p">:</span> <span class="n">interp_version</span><span class="p">})</span>
         <span class="n">vers_supported</span> <span class="o">=</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cmd_res</span><span class="p">))</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">&quot;is_version_supported&quot;</span><span class="p">,</span> <span class="n">vers_supported</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">"is_version_supported"</span><span class="p">,</span> <span class="n">vers_supported</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">vers_supported</span><span class="p">:</span>
-        <span class="n">interp_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">server_version</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()[</span><span class="s2">&quot;pythonVersion&quot;</span><span class="p">]</span>
+        <span class="n">interp_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">server_version</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()[</span><span class="s2">"pythonVersion"</span><span class="p">]</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The current Python interpreter version (</span><span class="si">{</span><span class="n">interp_version</span><span class="si">}</span><span class="s2">) &quot;</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;does not match the server (</span><span class="si">{</span><span class="n">server_version</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="sa">f</span><span class="s2">"The current Python interpreter version (</span><span class="si">{</span><span class="n">interp_version</span><span class="si">}</span><span class="s2">) "</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">"does not match the server (</span><span class="si">{</span><span class="n">server_version</span><span class="si">}</span><span class="s2">)."</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">&quot;is_initialized&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="n">generic_msg</span><span class="p">(</span><span class="s2">&quot;initPythonInterpreters&quot;</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">&quot;is_initialized&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">"is_initialized"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">generic_msg</span><span class="p">(</span><span class="s2">"initPythonInterpreters"</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">"is_initialized"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">result_dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">result_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
@@ -536,23 +536,23 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">result_type</span> <span class="o">!=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;result_dtype must match the dtype of the input&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"result_dtype must match the dtype of the input"</span><span class="p">)</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;applyStr&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;funcStr&quot;</span><span class="p">:</span> <span class="n">func</span><span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"applyStr&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">"funcStr"</span><span class="p">:</span> <span class="n">func</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="n">pickle_data</span> <span class="o">=</span> <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="n">pickle_data_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">pickle_data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">pickle_data_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">pickle_data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;applyPickle&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">result_type</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;pickleData&quot;</span><span class="p">:</span> <span class="n">pickle_data_str</span><span class="p">},</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"applyPickle&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">result_type</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">"pickleData"</span><span class="p">:</span> <span class="n">pickle_data_str</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;func must be a string or a callable function&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"func must be a string or a callable function"</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

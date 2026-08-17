@@ -403,17 +403,17 @@
 <span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;assert_almost_equivalent&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;assert_arkouda_array_equivalent&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;assert_equivalent&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;assert_frame_equivalent&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;assert_index_equivalent&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;assert_series_equivalent&quot;</span><span class="p">,</span>
+    <span class="s2">"assert_almost_equivalent"</span><span class="p">,</span>
+    <span class="s2">"assert_arkouda_array_equivalent"</span><span class="p">,</span>
+    <span class="s2">"assert_equivalent"</span><span class="p">,</span>
+    <span class="s2">"assert_frame_equivalent"</span><span class="p">,</span>
+    <span class="s2">"assert_index_equivalent"</span><span class="p">,</span>
+    <span class="s2">"assert_series_equivalent"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_arkouda</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert a NumPy or pandas object to an Arkouda object.</span>
 
 <span class="sd">    This function attempts to convert a supported NumPy or pandas object</span>
@@ -448,7 +448,7 @@
 <span class="sd">    2    3</span>
 <span class="sd">    dtype: int64</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="n">obj</span><span class="p">,</span>
         <span class="p">(</span>
@@ -474,7 +474,7 @@
         <span class="n">obj</span><span class="p">,</span>
         <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">),</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;obj must be an arkouda, numpy or pandas object, but was type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"obj must be an arkouda, numpy or pandas object, but was type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">MultiIndex</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -501,7 +501,7 @@
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-5</span><span class="p">,</span>
     <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-8</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check that two objects are approximately equal.</span>
 
 <span class="sd">    By approximately equal, we refer to objects that are numbers or that</span>
@@ -541,7 +541,7 @@
 <span class="sd">    &gt;&gt;&gt; from arkouda.testing import assert_almost_equivalent</span>
 <span class="sd">    &gt;&gt;&gt; assert_almost_equivalent(0.123456, 0.123457, rtol=1e-4)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 
     <span class="n">assert_almost_equal</span><span class="p">(</span>
@@ -565,9 +565,9 @@
     <span class="n">check_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-5</span><span class="p">,</span>
     <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-8</span><span class="p">,</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Index&quot;</span><span class="p">,</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Index"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check that two Index objects are equal.</span>
 
 <span class="sd">    If the objects are pandas Index, they are converted to Arkouda Index.</span>
@@ -594,7 +594,7 @@
 <span class="sd">    atol : float</span>
 <span class="sd">        Absolute tolerance used when check_exact is False. Default is 1e-8.</span>
 <span class="sd">    obj : str</span>
-<span class="sd">        Object name used in error messages. Default is &quot;Index&quot;.</span>
+<span class="sd">        Object name used in error messages. Default is "Index".</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -614,13 +614,13 @@
 <span class="sd">    &gt;&gt;&gt; b = pd.Index([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; tm.assert_index_equivalent(a, b)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="p">(</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="p">(</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;left and right must be type arkouda.Index, or pandas.Index.  &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"left and right must be type arkouda.Index, or pandas.Index.  "</span>
+            <span class="sa">f</span><span class="s2">"Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="n">assert_index_equal</span><span class="p">(</span>
@@ -646,10 +646,10 @@
     <span class="n">check_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">check_same</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pdarray&quot;</span><span class="p">,</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"pdarray"</span><span class="p">,</span>
     <span class="n">index_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">     Check that two Arkouda-compatible arrays are equal.</span>
 
 <span class="sd">    Supported types include numpy arrays, pandas Categorical, and Arkouda arrays.</span>
@@ -664,10 +664,10 @@
 <span class="sd">        Whether to verify that dtypes match. Default is True.</span>
 <span class="sd">    err_msg : str or None</span>
 <span class="sd">        Optional message to display on failure.</span>
-<span class="sd">    check_same : None or {&quot;copy&quot;, &quot;same&quot;}</span>
+<span class="sd">    check_same : None or {"copy", "same"}</span>
 <span class="sd">        Whether to ensure identity or separation in memory. Default is None.</span>
 <span class="sd">    obj : str</span>
-<span class="sd">        Object label for error messages. Default is &quot;pdarray&quot;.</span>
+<span class="sd">        Object label for error messages. Default is "pdarray".</span>
 <span class="sd">    index_values : Index or pdarray, optional</span>
 <span class="sd">        Shared index used in error output. Default is None.</span>
 
@@ -688,20 +688,20 @@
 <span class="sd">    &gt;&gt;&gt; a = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; assert_arkouda_array_equivalent(a, b)</span>
-<span class="sd">    &gt;&gt;&gt; s1 = ak.array([&#39;x&#39;, &#39;y&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; s2 = ak.array([&#39;x&#39;, &#39;y&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; s1 = ak.array(['x', 'y'])</span>
+<span class="sd">    &gt;&gt;&gt; s2 = ak.array(['x', 'y'])</span>
 <span class="sd">    &gt;&gt;&gt; assert_arkouda_array_equivalent(s1, s2)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="n">left</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">)</span>
     <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;left and right must be type np.ndarray, pdarray, Strings, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Categorical, or SegArray.  &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"left and right must be type np.ndarray, pdarray, Strings, "</span>
+            <span class="sa">f</span><span class="s2">"Categorical, or SegArray.  "</span>
+            <span class="sa">f</span><span class="s2">"Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="n">assert_arkouda_array_equal</span><span class="p">(</span>
@@ -730,12 +730,12 @@
     <span class="n">check_category_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-5</span><span class="p">,</span>
     <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-8</span><span class="p">,</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Series"</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">check_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">check_like</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check that two Series are equal.</span>
 
 <span class="sd">    This function compares two Series and raises an assertion if they differ.</span>
@@ -767,7 +767,7 @@
 <span class="sd">    atol : float</span>
 <span class="sd">        Absolute tolerance used when check_exact is False. Default is 1e-8.</span>
 <span class="sd">    obj : str</span>
-<span class="sd">        Object name used in error messages. Default is &quot;Series&quot;.</span>
+<span class="sd">        Object name used in error messages. Default is "Series".</span>
 <span class="sd">    check_index : bool</span>
 <span class="sd">        Whether to check index equivalence. If False, only values are compared. Default is True.</span>
 <span class="sd">    check_like : bool</span>
@@ -792,13 +792,13 @@
 <span class="sd">    &gt;&gt;&gt; b = pd.Series([1, 2, 3, 4])</span>
 <span class="sd">    &gt;&gt;&gt; tm.assert_series_equivalent(a, b)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="p">(</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="p">(</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;left and right must be type arkouda.pandas.Series or pandas.pandas.Series.  &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"left and right must be type arkouda.pandas.Series or pandas.pandas.Series.  "</span>
+            <span class="sa">f</span><span class="s2">"Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
 
     <span class="n">assert_series_equal</span><span class="p">(</span>
@@ -835,9 +835,9 @@
     <span class="n">check_like</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-5</span><span class="p">,</span>
     <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0e-8</span><span class="p">,</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DataFrame&quot;</span><span class="p">,</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"DataFrame"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check that two DataFrames are equal.</span>
 
 <span class="sd">    This function compares two DataFrames and raises an assertion if they differ.</span>
@@ -872,7 +872,7 @@
 <span class="sd">    atol : float</span>
 <span class="sd">        Absolute tolerance used when check_exact is False. Default is 1e-8.</span>
 <span class="sd">    obj : str</span>
-<span class="sd">        Object name used in error messages. Default is &quot;DataFrame&quot;.</span>
+<span class="sd">        Object name used in error messages. Default is "DataFrame".</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -888,21 +888,21 @@
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">    &gt;&gt;&gt; from arkouda.testing import assert_frame_equivalent</span>
-<span class="sd">    &gt;&gt;&gt; df1 = ak.DataFrame({&#39;a&#39;: [1, 2], &#39;b&#39;: [3, 4]})</span>
-<span class="sd">    &gt;&gt;&gt; df2 = pd.DataFrame({&#39;a&#39;: [1, 2], &#39;b&#39;: [3.0, 4.0]})</span>
+<span class="sd">    &gt;&gt;&gt; df1 = ak.DataFrame({'a': [1, 2], 'b': [3, 4]})</span>
+<span class="sd">    &gt;&gt;&gt; df2 = pd.DataFrame({'a': [1, 2], 'b': [3.0, 4.0]})</span>
 
 <span class="sd">    Fails because dtypes are different:</span>
 <span class="sd">    &gt;&gt;&gt; assert_frame_equivalent(df1, df2)  # doctest: +SKIP</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="p">(</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="n">right</span><span class="p">,</span> <span class="p">(</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;left and right must be type arkouda.DataFrame or pandas.DataFrame.  &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"left and right must be type arkouda.DataFrame or pandas.DataFrame.  "</span>
+            <span class="sa">f</span><span class="s2">"Instead types were </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
 
     <span class="n">assert_frame_equal</span><span class="p">(</span>
@@ -926,7 +926,7 @@
 <div class="viewcode-block" id="assert_equivalent">
 <a class="viewcode-back" href="../../../autoapi/arkouda/testing/index.html#arkouda.assert_equivalent">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">assert_equivalent</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dispatch to the appropriate assertion function depending on object types.</span>
 
 <span class="sd">    Parameters</span>
@@ -952,7 +952,7 @@
 <span class="sd">    &gt;&gt;&gt; pd_series = pd.Series([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; assert_equivalent(ak_series, pd_series)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="p">(</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)):</span>

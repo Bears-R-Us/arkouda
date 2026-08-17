@@ -397,11 +397,11 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"Strings"</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;join_on_eq_with_dt&quot;</span><span class="p">,</span> <span class="s2">&quot;gen_ranges&quot;</span><span class="p">,</span> <span class="s2">&quot;compute_join_size&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"join_on_eq_with_dt"</span><span class="p">,</span> <span class="s2">"gen_ranges"</span><span class="p">,</span> <span class="s2">"compute_join_size"</span><span class="p">]</span>
 
-<span class="n">predicates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;true_dt&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;abs_dt&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pos_dt&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="n">predicates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"true_dt"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"abs_dt"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"pos_dt"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="join_on_eq_with_dt">
@@ -416,7 +416,7 @@
     <span class="n">pred</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">result_limit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Inner-join on equality between two integer arrays where the time-window predicate is also true.</span>
 
 <span class="sd">    Parameters</span>
@@ -451,28 +451,28 @@
 <span class="sd">        result_limit is not an int</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        if a1, a2, t1, or t2 dtype is not int64, pred is not</span>
-<span class="sd">        &#39;true_dt&#39;, &#39;abs_dt&#39;, or &#39;pos_dt&#39;, or result_limit is &lt; 0</span>
+<span class="sd">        'true_dt', 'abs_dt', or 'pos_dt', or result_limit is &lt; 0</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;a1 must be int64 dtype&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"a1 must be int64 dtype"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;a2 must be int64 dtype&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"a2 must be int64 dtype"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t1 must be int64 dtype&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"t1 must be int64 dtype"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">t2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t2 must be int64 dtype&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"t2 must be int64 dtype"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">pred</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">predicates</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pred must be one of </span><span class="si">{</span><span class="n">predicates</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"pred must be one of </span><span class="si">{</span><span class="n">predicates</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">result_limit</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the result_limit must 0 or greater&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the result_limit must 0 or greater"</span><span class="p">)</span>
 
     <span class="c1"># format numbers for request message</span>
     <span class="n">dttype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
@@ -485,21 +485,21 @@
     <span class="n">g2</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span>
     <span class="c1"># pass result into server joinEqWithDT operation</span>
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;joinEqWithDT&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"joinEqWithDT"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">a1</span><span class="p">,</span>
-            <span class="s2">&quot;g2seg&quot;</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">segments</span><span class="p">),</span>
-            <span class="s2">&quot;g2keys&quot;</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">),</span>
-            <span class="s2">&quot;g2perm&quot;</span><span class="p">:</span> <span class="n">g2</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
-            <span class="s2">&quot;t1&quot;</span><span class="p">:</span> <span class="n">t1</span><span class="p">,</span>
-            <span class="s2">&quot;t2&quot;</span><span class="p">:</span> <span class="n">t2</span><span class="p">,</span>
-            <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dtstr</span><span class="p">,</span>
-            <span class="s2">&quot;pred&quot;</span><span class="p">:</span> <span class="n">predstr</span><span class="p">,</span>
-            <span class="s2">&quot;resLimit&quot;</span><span class="p">:</span> <span class="n">result_limitstr</span><span class="p">,</span>
+            <span class="s2">"a1"</span><span class="p">:</span> <span class="n">a1</span><span class="p">,</span>
+            <span class="s2">"g2seg"</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">segments</span><span class="p">),</span>
+            <span class="s2">"g2keys"</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">),</span>
+            <span class="s2">"g2perm"</span><span class="p">:</span> <span class="n">g2</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
+            <span class="s2">"t1"</span><span class="p">:</span> <span class="n">t1</span><span class="p">,</span>
+            <span class="s2">"t2"</span><span class="p">:</span> <span class="n">t2</span><span class="p">,</span>
+            <span class="s2">"dt"</span><span class="p">:</span> <span class="n">dtstr</span><span class="p">,</span>
+            <span class="s2">"pred"</span><span class="p">:</span> <span class="n">predstr</span><span class="p">,</span>
+            <span class="s2">"resLimit"</span><span class="p">:</span> <span class="n">result_limitstr</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="c1"># create pdarrays for results</span>
-    <span class="n">res_i_attr</span><span class="p">,</span> <span class="n">res_j_attr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+    <span class="n">res_i_attr</span><span class="p">,</span> <span class="n">res_j_attr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"+"</span><span class="p">)</span>
     <span class="n">res_i</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">res_i_attr</span><span class="p">)</span>
     <span class="n">res_j</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">res_j_attr</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res_i</span><span class="p">,</span> <span class="n">res_j</span></div>
@@ -509,7 +509,7 @@
 <div class="viewcode-block" id="gen_ranges">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/join/index.html#arkouda.gen_ranges">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate a segmented array of variable-length, contiguous ranges between pairs of</span>
 <span class="sd">    start- and end-points.</span>
 
@@ -534,17 +534,17 @@
 <span class="sd">        lengths : pdarray, int64</span>
 <span class="sd">            The lengths of each segment. Only returned if return_lengths=True.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
 
     <span class="k">if</span> <span class="n">starts</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">ends</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;starts and ends must be same length&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"starts and ends must be same length"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">starts</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">),</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
     <span class="n">lengths</span> <span class="o">=</span> <span class="p">(</span><span class="n">ends</span> <span class="o">-</span> <span class="n">starts</span><span class="p">)</span> <span class="o">//</span> <span class="n">stride</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">lengths</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all ends must be greater than or equal to starts&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"all ends must be greater than or equal to starts"</span><span class="p">)</span>
     <span class="n">non_empty</span> <span class="o">=</span> <span class="n">lengths</span> <span class="o">!=</span> <span class="mi">0</span>
     <span class="n">segs</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">-</span> <span class="n">lengths</span>
     <span class="n">totlen</span> <span class="o">=</span> <span class="n">lengths</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -571,10 +571,10 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/join/index.html#arkouda.compute_join_size">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_join_size</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the internal size of a hypothetical join between a and b. Returns</span>
 <span class="sd">    both the number of elements and number of bytes required for the join.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">bya</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">ua</span><span class="p">,</span> <span class="n">asize</span> <span class="o">=</span> <span class="n">bya</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
     <span class="n">byb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
@@ -596,7 +596,7 @@
         <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span> <span class="o">...</span><span class="p">]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Perform inner join on values in &lt;left&gt; and &lt;right&gt;,</span>
 <span class="sd">    using conditions defined by &lt;wherefunc&gt; evaluated on</span>
 <span class="sd">    &lt;whereargs&gt;, returning indices of left-right pairs.</span>
@@ -629,7 +629,7 @@
 <span class="sd">    `assert (left[left_inds] == right[right_inds]).all()`</span>
 <span class="sd">    `assert wherefunc(whereargs[0][left_inds], whereargs[1][right_inds]).all()`</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">signature</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span>
@@ -645,39 +645,39 @@
 
     <span class="k">if</span> <span class="n">is_sequence</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Left must have same num arrays as right&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Left must have same num arrays as right"</span><span class="p">)</span>
         <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">right</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">lf</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">left_size</span> <span class="k">for</span> <span class="n">lf</span> <span class="ow">in</span> <span class="n">left</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
             <span class="n">rt</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">right_size</span> <span class="k">for</span> <span class="n">rt</span> <span class="ow">in</span> <span class="n">right</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must have equal-length arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Multi-array arguments must have equal-length arrays"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">right</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># type: ignore</span>
 
     <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">wherefunc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">wherefunc</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wherefunc must be a function that accepts exactly two arguments&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"wherefunc must be a function that accepts exactly two arguments"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">whereargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;whereargs must be a 2-tuple with left and right arg arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"whereargs must be a 2-tuple with left and right arg arrays"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">is_sequence</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Left must have same num arrays as right&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Left must have same num arrays as right"</span><span class="p">)</span>
             <span class="n">first_wa_size</span><span class="p">,</span> <span class="n">second_wa_size</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">wa</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">first_wa_size</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
                 <span class="n">wa</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">second_wa_size</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must have equal-length arrays&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Multi-array arguments must have equal-length arrays"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">first_wa_size</span><span class="p">,</span> <span class="n">second_wa_size</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">first_wa_size</span> <span class="o">!=</span> <span class="n">left_size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Left whereargs must be same size as left join values&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Left whereargs must be same size as left join values"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">second_wa_size</span> <span class="o">!=</span> <span class="n">right_size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Right whereargs must be same size as right join values&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Right whereargs must be same size as right join values"</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_</span> <span class="o">=</span> <span class="n">wherefunc</span><span class="p">(</span><span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="n">sample</span><span class="p">],</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="n">sample</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error evaluating wherefunc&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Error evaluating wherefunc"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="c1"># Need dense 0-up right index, to filter out left not in right</span>
     <span class="n">keep</span><span class="p">,</span> <span class="p">(</span><span class="n">dense_left</span><span class="p">,</span> <span class="n">dense_right</span><span class="p">)</span> <span class="o">=</span> <span class="n">right_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>

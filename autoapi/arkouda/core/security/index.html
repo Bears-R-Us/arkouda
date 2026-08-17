@@ -416,16 +416,16 @@ user identity, and secure client-side metadata used in communicating with the Ar
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_token</span><span class="p">,</span> <span class="n">get_username</span><span class="p">,</span> <span class="n">generate_username_token_json</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">generate_token</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-<span class="go">&#39;8f3a52e1b75f44d1a3a57a869488b637&#39;</span>
+<span class="go">'8f3a52e1b75f44d1a3a57a869488b637'</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">get_username</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-<span class="go">&#39;emma&#39;</span>
+<span class="go">'emma'</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_username_token_json</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-<span class="go">&#39;{&quot;username&quot;: &quot;emma&quot;, &quot;token&quot;: &quot;8f3a52e1b75f44d1a3a57a869488b637&quot;}&#39;</span>
+<span class="go">'{"username": "emma", "token": "8f3a52e1b75f44d1a3a57a869488b637"}'</span>
 </pre></div>
 </div>
 </section>

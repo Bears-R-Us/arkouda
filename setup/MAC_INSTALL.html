@@ -405,10 +405,10 @@ To provide a different name for the environment, use the <code class="docutils l
 brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>anaconda
 
 <span class="c1"># Add Anaconda to PATH to use the conda command</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/opt/homebrew/anaconda3/bin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+<span class="nb">echo</span><span class="w"> </span><span class="s1">'export PATH="/opt/homebrew/anaconda3/bin:$PATH"'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
 <span class="nb">source</span><span class="w"> </span>~/.zshrc
 
-<span class="c1"># Note - the exact path may vary based on the most current release of Anaconda and your mac&#39;s chipset</span>
+<span class="c1"># Note - the exact path may vary based on the most current release of Anaconda and your mac's chipset</span>
 <span class="c1"># Run the script to install Anaconda.</span>
 /opt/homebrew/Caskroom/anaconda/2022.10/Anaconda3-2022.10-MacOSX-arm64.sh
 
@@ -426,7 +426,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
 <span class="c1"># Install the Arkouda Client Package and add it to your PYTHONPATH.</span>
 <span class="c1"># For this to work properly you need to change directories to where arkouda lives</span>
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
-<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">"</span>
 </pre></div>
 </div>
 </section>
@@ -521,7 +521,7 @@ brew<span class="w"> </span>install<span class="w"> </span>gmp
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>none
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TARGET_CPU</span><span class="o">=</span>native
 <span class="nb">export</span><span class="w"> </span><span class="nv">ARKOUDA_QUICK_COMPILE</span><span class="o">=</span><span class="nb">true</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:/Users/USER/PATH_TO_ARK/arkouda&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="si">}</span><span class="s2">:/Users/USER/PATH_TO_ARK/arkouda"</span>
 </pre></div>
 </div>
 </div></blockquote>

@@ -395,14 +395,14 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;finfo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;finfo_object&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;iinfo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;iinfo_object&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isdtype&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;result_type&quot;</span><span class="p">,</span>
+    <span class="s2">"astype"</span><span class="p">,</span>
+    <span class="s2">"can_cast"</span><span class="p">,</span>
+    <span class="s2">"finfo"</span><span class="p">,</span>
+    <span class="s2">"finfo_object"</span><span class="p">,</span>
+    <span class="s2">"iinfo"</span><span class="p">,</span>
+    <span class="s2">"iinfo_object"</span><span class="p">,</span>
+    <span class="s2">"isdtype"</span><span class="p">,</span>
+    <span class="s2">"result_type"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -413,7 +413,7 @@
 <div class="viewcode-block" id="astype">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.astype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cast an array to a specified data type.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Cast an array to a specified data type."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">copy</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">x</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">dtype</span><span class="p">))</span></div>
@@ -423,20 +423,20 @@
 <div class="viewcode-block" id="can_cast">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.can_cast">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine whether an array or dtype can be cast to another dtype.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Determine whether an array or dtype can be cast to another dtype."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
         <span class="n">from_</span> <span class="o">=</span> <span class="n">from_</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">elif</span> <span class="n">from_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_all_dtypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_</span><span class="si">=}</span><span class="s2">, but should be an array_api array or dtype&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">from_</span><span class="si">=}</span><span class="s2">, but should be an array_api array or dtype"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">to</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_all_dtypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">to</span><span class="si">=}</span><span class="s2">, but should be a dtype&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">to</span><span class="si">=}</span><span class="s2">, but should be a dtype"</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># We promote `from_` and `to` together. We then check if the promoted</span>
         <span class="c1"># dtype is `to`, which indicates if `from_` can (up)cast to `to`.</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">_result_type</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">to</span> <span class="o">==</span> <span class="n">dtype</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="c1"># _result_type() raises if the dtypes don&#39;t promote together</span>
+        <span class="c1"># _result_type() raises if the dtypes don't promote together</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
@@ -491,35 +491,35 @@
 <div class="viewcode-block" id="isdtype">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.isdtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a boolean indicating whether a provided dtype is of a specified data type ``kind``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a boolean indicating whether a provided dtype is of a specified data type ``kind``."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="c1"># Disallow nested tuples</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kind</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;kind&#39; must be a dtype, str, or tuple of dtypes and strs&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"'kind' must be a dtype, str, or tuple of dtypes and strs"</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kind</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"bool"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;signed integer&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"signed integer"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_signed_integer_dtypes</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;unsigned integer&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"unsigned integer"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_unsigned_integer_dtypes</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;integral&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"integral"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_integer_dtypes</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;real floating&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"real floating"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_real_floating_dtypes</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;complex floating&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"complex floating"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_complex_floating_dtypes</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;numeric&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"numeric"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized data type kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unrecognized data type kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">_all_dtypes</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">kind</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;kind&#39; must be a dtype, str, </span><span class="se">\</span>
-<span class="s2">            or tuple of dtypes and strs, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"'kind' must be a dtype, str, </span><span class="se">\</span>
+<span class="s2">            or tuple of dtypes and strs, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span></div>
 
 
@@ -528,7 +528,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.result_type">[docs]</a>
 <span class="nd">@implements_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="n">Dtype</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dtype</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the result dtype for a group of arrays and/or dtypes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Compute the result dtype for a group of arrays and/or dtypes."""</span>
     <span class="n">dtypes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span><span class="p">:</span>
@@ -541,12 +541,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">obj</span>
             <span class="k">if</span> <span class="n">dt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_all_dtypes</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;result_type() inputs must be array_api arrays or dtypes&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"result_type() inputs must be array_api arrays or dtypes"</span><span class="p">)</span>
 
         <span class="n">dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;at least one array or dtype is required&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"at least one array or dtype is required"</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dtypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 

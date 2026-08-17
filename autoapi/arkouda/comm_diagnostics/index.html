@@ -459,7 +459,7 @@ and remote execution</p></li>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">start_comm_diagnostics</span><span class="p">()</span>
-<span class="go">&#39;commDiagnostics started.&#39;</span>
+<span class="go">'commDiagnostics started.'</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
@@ -467,24 +467,24 @@ and remote execution</p></li>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stop_comm_diagnostics</span><span class="p">()</span>
-<span class="go">&#39;commDiagnostics stopped.&#39;</span>
+<span class="go">'commDiagnostics stopped.'</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">get_comm_diagnostics</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-<span class="go">[&#39;put&#39;, &#39;get&#39;, &#39;put_nb&#39;, &#39;get_nb&#39;, &#39;try_nb&#39;, &#39;amo&#39;,</span>
-<span class="go"> &#39;execute_on&#39;, &#39;execute_on_fast&#39;, &#39;execute_on_nb&#39;,</span>
-<span class="go"> &#39;cache_get_hits&#39;, &#39;cache_get_misses&#39;,</span>
-<span class="go"> &#39;cache_put_hits&#39;, &#39;cache_put_misses&#39;,</span>
-<span class="go"> &#39;cache_num_prefetches&#39;, &#39;cache_num_page_readaheads&#39;,</span>
-<span class="go"> &#39;cache_prefetch_unused&#39;, &#39;cache_prefetch_waited&#39;,</span>
-<span class="go"> &#39;cache_readahead_unused&#39;, &#39;cache_readahead_waited&#39;,</span>
-<span class="go"> &#39;wait_nb&#39;]</span>
+<span class="go">['put', 'get', 'put_nb', 'get_nb', 'try_nb', 'amo',</span>
+<span class="go"> 'execute_on', 'execute_on_fast', 'execute_on_nb',</span>
+<span class="go"> 'cache_get_hits', 'cache_get_misses',</span>
+<span class="go"> 'cache_put_hits', 'cache_put_misses',</span>
+<span class="go"> 'cache_num_prefetches', 'cache_num_page_readaheads',</span>
+<span class="go"> 'cache_prefetch_unused', 'cache_prefetch_waited',</span>
+<span class="go"> 'cache_readahead_unused', 'cache_readahead_waited',</span>
+<span class="go"> 'wait_nb']</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">]]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[[</span><span class="s2">"put"</span><span class="p">,</span> <span class="s2">"get"</span><span class="p">]]</span>
 <span class="go">   put  get</span>
 <span class="go">0  162  118</span>
 <span class="go">1  170  198</span>
@@ -504,7 +504,7 @@ and remote execution</p></li>
 <span class="go">+----+-------+-------+--------------+-----------------+</span>
 <span class="go">|  3 |   170 |   198 |          184 |               0 |</span>
 <span class="go">+----+-------+-------+--------------+-----------------+</span>
-<span class="go">&#39;commDiagnostics printed.&#39;</span>
+<span class="go">'commDiagnostics printed.'</span>
 </pre></div>
 </div>
 <p>…</p>

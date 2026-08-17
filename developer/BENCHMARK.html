@@ -446,7 +446,7 @@ given time, will be treated as number of seconds to run for.</p>
 <div><p>Dtypes to run benchmarks against. Comma separated list (NO SPACES) allowing for multiple. Accepted values:
 int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate sets of multiple types.</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--dtype=&quot;int64,bigint,bool,str&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--dtype="int64,bigint,bool,str"</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -485,7 +485,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 <blockquote>
 <div><p>Comma separated list (NO SPACES) allowing for multiple encoding to be used. Accepted values: idna, ascii</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--encoding=&quot;idna,ascii&quot;   </span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--encoding="idna,ascii"   </span>
 </pre></div>
 </div>
 <p><em>Only used by Encoding benchmarks, other benchmarks will be unaffected</em></p>
@@ -519,7 +519,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 <div><p><strong>Default:</strong> All types</p>
 <p>Compression types to run Parquet IO benchmarks against. Comma delimited list (NO SPACES) allowing for multiple.
 Accepted values: none, snappy, gzip, brotli, zstd, and lz4</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--io_compression=&quot;none,snappy,brotli,lz4&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--io_compression="none,snappy,brotli,lz4"</span>
 </pre></div>
 </div>
 <p><em>Only applies to IO benchmarks</em></p>
@@ -541,7 +541,7 @@ Accepted values: none, snappy, gzip, brotli, zstd, and lz4</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">benchmark_v2/encoding_benchmark.py ....                                                                                                                                       [100%]</span>
 <span class="go">Saved benchmark data in: &lt;Arkouda_root&gt;/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0014_31de39be8b19c76d073a8999def6673a305c250d_20230405_145759_uncommited-changes.json</span>
 
-<span class="go">-------------------------------------------------------------------- benchmark &#39;Strings_EncodeDecode&#39;: 4 tests ---------------------------------------------------------------------</span>
+<span class="go">-------------------------------------------------------------------- benchmark 'Strings_EncodeDecode': 4 tests ---------------------------------------------------------------------</span>
 <span class="go">Name (time in ms)          Min               Max              Mean            StdDev            Median               IQR            Outliers       OPS            Rounds  Iterations</span>
 <span class="go">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="go">bench_encode[idna]      3.3304 (1.0)      9.2561 (2.10)     4.7544 (1.27)     2.5306 (6.18)     3.8075 (1.11)     1.9012 (3.62)          1;1  210.3306 (0.79)          5           1</span>
@@ -559,7 +559,7 @@ Accepted values: none, snappy, gzip, brotli, zstd, and lz4</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">benchmark_v2/encoding_benchmark.py ..                                                                                                                                         [100%]</span>
 <span class="go">Saved benchmark data in: &lt;Arkouda_root&gt;/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0015_31de39be8b19c76d073a8999def6673a305c250d_20230405_145947_uncommited-changes.json</span>
 
-<span class="go">-------------------------------------------------------------------- benchmark &#39;Strings_EncodeDecode&#39;: 2 tests ---------------------------------------------------------------------</span>
+<span class="go">-------------------------------------------------------------------- benchmark 'Strings_EncodeDecode': 2 tests ---------------------------------------------------------------------</span>
 <span class="go">Name (time in ms)          Min               Max              Mean            StdDev            Median               IQR            Outliers       OPS            Rounds  Iterations</span>
 <span class="go">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="go">bench_encode[ascii]     3.4298 (1.0)      3.6450 (1.0)      3.5541 (1.0)      0.0889 (1.0)      3.5801 (1.00)     0.1436 (1.0)           2;0  281.3620 (1.0)           5           1</span>
@@ -812,49 +812,49 @@ between related benchmarks.</p>
 </details>
 <p>Simplified version of the JSON with only sections that we care about:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;machine_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.9.0&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5.10.16.3-microsoft-standard-WSL2&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;system&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cpu&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;arch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;X86_64&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;brand_raw&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz&quot;</span>
+<span class="w">    </span><span class="nt">"machine_info"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"python_version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3.9.0"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"release"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5.10.16.3-microsoft-standard-WSL2"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"system"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Linux"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cpu"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"arch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"X86_64"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"brand_raw"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz"</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;benchmarks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">"benchmarks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Strings_EncodeDecode&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bench_encode[ascii]&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;encoding&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ascii&quot;</span>
+<span class="w">            </span><span class="nt">"group"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Strings_EncodeDecode"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bench_encode[ascii]"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"encoding"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ascii"</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;extra_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Measures the performance of Strings.encode&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;problem_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;transfer_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.0002 GiB/sec&quot;</span>
+<span class="w">            </span><span class="nt">"extra_info"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Measures the performance of Strings.encode"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"problem_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"transfer_rate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0002 GiB/sec"</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;stats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;min&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00383609999971668</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;max&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0043372999998609885</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;mean&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.004057779999857303</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;stddev&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00018361238254747651</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;rounds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;median&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0040258999997604406</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;iqr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0002090000002681336</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;q1&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0039507749997937935</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;q3&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.004159775000061927</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;iqr_outliers&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;stddev_outliers&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;outliers&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2;0&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;ld15iqr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00383609999971668</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;hd15iqr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0043372999998609885</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;ops&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">246.44017172817806</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.020288899999286514</span>
+<span class="w">            </span><span class="nt">"stats"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"min"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00383609999971668</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"max"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0043372999998609885</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"mean"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.004057779999857303</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"stddev"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00018361238254747651</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"rounds"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"median"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0040258999997604406</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"iqr"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0002090000002681336</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"q1"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0039507749997937935</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"q3"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.004159775000061927</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"iqr_outliers"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"stddev_outliers"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"outliers"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2;0"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"ld15iqr"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00383609999971668</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"hd15iqr"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0043372999998609885</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"ops"</span><span class="p">:</span><span class="w"> </span><span class="mf">246.44017172817806</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"total"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.020288899999286514</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;datetime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-04-05T15:32:09.097392&quot;</span>
+<span class="w">    </span><span class="nt">"datetime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-04-05T15:32:09.097392"</span>
 <span class="p">}</span>
 </pre></div>
 </div>

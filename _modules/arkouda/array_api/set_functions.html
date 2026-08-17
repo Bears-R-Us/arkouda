@@ -381,13 +381,13 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;UniqueAllResult&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;UniqueCountsResult&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;UniqueInverseResult&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_all&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_counts&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_inverse&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_values&quot;</span><span class="p">,</span>
+    <span class="s2">"UniqueAllResult"</span><span class="p">,</span>
+    <span class="s2">"UniqueCountsResult"</span><span class="p">,</span>
+    <span class="s2">"UniqueInverseResult"</span><span class="p">,</span>
+    <span class="s2">"unique_all"</span><span class="p">,</span>
+    <span class="s2">"unique_counts"</span><span class="p">,</span>
+    <span class="s2">"unique_inverse"</span><span class="p">,</span>
+    <span class="s2">"unique_values"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -420,22 +420,22 @@
 <div class="viewcode-block" id="unique_all">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/set_functions/index.html#arkouda.array_api.set_functions.unique_all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unique_all</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueAllResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a tuple of arrays containing:</span>
 <span class="sd">    - the unique values in `x`.</span>
 <span class="sd">    - the indices of the first occurrence of each unique value.</span>
 <span class="sd">    - the inverse indices that reconstruct `x` from the unique values.</span>
 <span class="sd">    - the counts of each unique value.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">arrays</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span>
         <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueAll&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"uniqueAll&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -452,19 +452,19 @@
 <div class="viewcode-block" id="unique_counts">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/set_functions/index.html#arkouda.array_api.set_functions.unique_counts">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unique_counts</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueCountsResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a tuple of arrays containing:</span>
 <span class="sd">    - the unique values in `x`</span>
 <span class="sd">    - the counts of each unique value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">arrays</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span>
         <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueCounts&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"uniqueCounts&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -479,19 +479,19 @@
 <div class="viewcode-block" id="unique_inverse">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/set_functions/index.html#arkouda.array_api.set_functions.unique_inverse">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unique_inverse</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueInverseResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a tuple of arrays containing:</span>
 <span class="sd">    - the unique values in `x`</span>
 <span class="sd">    - the inverse indices that reconstruct `x` from the unique values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">arrays</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span>
         <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueInverse&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"uniqueInverse&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -506,7 +506,7 @@
 <div class="viewcode-block" id="unique_values">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/set_functions/index.html#arkouda.array_api.set_functions.unique_values">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unique_values</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an array containing the unique values from `x`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return an array containing the unique values from `x`."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
@@ -514,8 +514,8 @@
             <span class="n">cast</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">,</span>
                 <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniqueValues&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"uniqueValues&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">},</span>
                 <span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>

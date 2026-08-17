@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.extension._series_accessor</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Series pandas accessor for Arkouda-backed data.</span>
 
 <span class="sd">This module defines the ``.ak`` accessor for :class:`pandas.Series`,</span>
@@ -401,7 +401,7 @@
 <span class="sd">    Inspect whether the Series is currently Arkouda-backed.</span>
 
 <span class="sd">All operations avoid materializing to NumPy unless explicitly requested.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -426,27 +426,27 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_ak_arr_to_pandas_ea</span><span class="p">(</span><span class="n">akarr</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaExtensionArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Wrap a legacy Arkouda array (pdarray, Strings, Categorical)</span>
 <span class="sd">    into an ArkoudaExtensionArray without NumPy materialization.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">akarr</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_pandas_series_to_ak_array</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert a pandas Series (NumPy or EA-backed) into an Arkouda array.</span>
 
-<span class="sd">    If already Arkouda-backed, peel off the &#39;_data&#39; member.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    If already Arkouda-backed, peel off the '_data' member.</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
     <span class="n">arr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">array</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">):</span>
-        <span class="n">akcol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">akcol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">akcol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arkouda-backed Series array does not expose &#39;_data&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Arkouda-backed Series array does not expose '_data'"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">akcol</span>
 
     <span class="k">return</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -457,12 +457,12 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Wrap a legacy Arkouda array into a pandas Series backed by ArkoudaExtensionArray.</span>
 
 <span class="sd">    If `index` is not provided, construct an Arkouda-backed default index.</span>
 <span class="sd">    If `index` is provided and not Arkouda-backed, convert it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span> <span class="k">as</span> <span class="n">ak_arange</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span><span class="p">,</span> <span class="n">ArkoudaIndexAccessor</span>
 
@@ -484,9 +484,9 @@
 
 <div class="viewcode-block" id="ArkoudaSeriesAccessor">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor">[docs]</a>
-<span class="nd">@register_series_accessor</span><span class="p">(</span><span class="s2">&quot;ak&quot;</span><span class="p">)</span>
+<span class="nd">@register_series_accessor</span><span class="p">(</span><span class="s2">"ak"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaSeriesAccessor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed Series accessor.</span>
 
 <span class="sd">    Provides a symmetric API to the Index accessor for Series-level</span>
@@ -501,7 +501,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; s = pd.Series([1, 2, 3], name=&quot;nums&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; s = pd.Series([1, 2, 3], name="nums")</span>
 
 <span class="sd">    Convert to Arkouda-backed:</span>
 
@@ -519,9 +519,9 @@
 
 <span class="sd">    &gt;&gt;&gt; ak_arr = s.ak.to_ak_legacy()</span>
 <span class="sd">    &gt;&gt;&gt; type(ak_arr)</span>
-<span class="sd">    &lt;class &#39;arkouda.pandas.series.Series&#39;&gt;</span>
+<span class="sd">    &lt;class 'arkouda.pandas.series.Series'&gt;</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pandas_obj</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">pandas_obj</span>
@@ -533,7 +533,7 @@
 <div class="viewcode-block" id="ArkoudaSeriesAccessor.to_ak">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ak</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert this pandas Series into an Arkouda-backed Series.</span>
 
 <span class="sd">        This method produces a pandas ``Series`` whose underlying storage uses</span>
@@ -567,29 +567,29 @@
 
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; s = pd.Series([1, 2, 3], name=&quot;nums&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; s = pd.Series([1, 2, 3], name="nums")</span>
 <span class="sd">        &gt;&gt;&gt; s_ak = s.ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; type(s_ak.array)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'&gt;</span>
 <span class="sd">        &gt;&gt;&gt; s_ak.tolist()</span>
 <span class="sd">        [np.int64(1), np.int64(2), np.int64(3)]</span>
 
 <span class="sd">        Preserving the index and name:</span>
 
-<span class="sd">        &gt;&gt;&gt; idx = pd.Index([10, 20, 30], name=&quot;id&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; s = pd.Series([100, 200, 300], index=idx, name=&quot;values&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; idx = pd.Index([10, 20, 30], name="id")</span>
+<span class="sd">        &gt;&gt;&gt; s = pd.Series([100, 200, 300], index=idx, name="values")</span>
 <span class="sd">        &gt;&gt;&gt; s_ak = s.ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; s_ak.name</span>
-<span class="sd">        &#39;values&#39;</span>
+<span class="sd">        'values'</span>
 <span class="sd">        &gt;&gt;&gt; s_ak.index.name</span>
-<span class="sd">        &#39;id&#39;</span>
+<span class="sd">        'id'</span>
 
 <span class="sd">        String data:</span>
 
-<span class="sd">        &gt;&gt;&gt; s = pd.Series([&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;], name=&quot;colors&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; s = pd.Series(["red", "blue", "green"], name="colors")</span>
 <span class="sd">        &gt;&gt;&gt; s_ak = s.ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; s_ak.tolist()</span>
-<span class="sd">        [np.str_(&#39;red&#39;), np.str_(&#39;blue&#39;), np.str_(&#39;green&#39;)]</span>
+<span class="sd">        [np.str_('red'), np.str_('blue'), np.str_('green')]</span>
 
 <span class="sd">        Idempotence (calling ``to_ak`` repeatedly stays Arkouda-backed):</span>
 
@@ -598,7 +598,7 @@
 <span class="sd">        True</span>
 <span class="sd">        &gt;&gt;&gt; s_ak2.tolist() == s_ak.tolist()</span>
 <span class="sd">        True</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
 
@@ -615,7 +615,7 @@
 <div class="viewcode-block" id="ArkoudaSeriesAccessor.collect">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.collect">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Materialize this Series back to a NumPy-backed pandas Series.</span>
 
 <span class="sd">        Returns</span>
@@ -628,8 +628,8 @@
 <span class="sd">        &gt;&gt;&gt; s = pd.Series([1,2,3]).ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; out = s.ak.collect()</span>
 <span class="sd">        &gt;&gt;&gt; type(out.array)</span>
-<span class="sd">        &lt;class &#39;pandas...NumpyExtensionArray&#39;&gt;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &lt;class 'pandas...NumpyExtensionArray'&gt;</span>
+<span class="sd">        """</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">array</span>
 
@@ -646,7 +646,7 @@
 <div class="viewcode-block" id="ArkoudaSeriesAccessor.to_ak_legacy">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak_legacy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ak_legacy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ak_Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert this Series into a legacy Arkouda Series.</span>
 
 <span class="sd">        Returns</span>
@@ -660,8 +660,8 @@
 <span class="sd">        &gt;&gt;&gt; s = pd.Series([10,20,30])</span>
 <span class="sd">        &gt;&gt;&gt; ak_arr = s.ak.to_ak_legacy()</span>
 <span class="sd">        &gt;&gt;&gt; type(ak_arr)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.series.Series&#39;&gt;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &lt;class 'arkouda.pandas.series.Series'&gt;</span>
+<span class="sd">        """</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">ak_Series</span><span class="p">(</span><span class="n">_pandas_series_to_ak_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
@@ -671,7 +671,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.from_ak_legacy">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_ak_legacy</span><span class="p">(</span><span class="n">akarr</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Construct an Arkouda-backed pandas Series directly from a legacy Arkouda array.</span>
 
 <span class="sd">        This performs zero-copy wrapping using ArkoudaExtensionArray and does</span>
@@ -697,7 +697,7 @@
 <span class="sd">        Basic example with a legacy ``pdarray``:</span>
 
 <span class="sd">        &gt;&gt;&gt; ak_arr = ak.arange(5)</span>
-<span class="sd">        &gt;&gt;&gt; s = pd.Series.ak.from_ak_legacy(ak_arr, name=&quot;values&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; s = pd.Series.ak.from_ak_legacy(ak_arr, name="values")</span>
 <span class="sd">        &gt;&gt;&gt; s</span>
 <span class="sd">        0    0</span>
 <span class="sd">        1    1</span>
@@ -709,12 +709,12 @@
 <span class="sd">        The underlying data remain on the Arkouda server:</span>
 
 <span class="sd">        &gt;&gt;&gt; type(s._values)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+<span class="sd">        &lt;class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'&gt;</span>
 
 <span class="sd">        Using a legacy ``Strings`` object:</span>
 
-<span class="sd">        &gt;&gt;&gt; ak_str = ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])</span>
-<span class="sd">        &gt;&gt;&gt; s_str = pd.Series.ak.from_ak_legacy(ak_str, name=&quot;letters&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ak_str = ak.array(["a", "b", "c"])</span>
+<span class="sd">        &gt;&gt;&gt; s_str = pd.Series.ak.from_ak_legacy(ak_str, name="letters")</span>
 <span class="sd">        &gt;&gt;&gt; s_str</span>
 <span class="sd">        0    a</span>
 <span class="sd">        1    b</span>
@@ -723,8 +723,8 @@
 
 <span class="sd">        Using a legacy ``Categorical``:</span>
 
-<span class="sd">        &gt;&gt;&gt; ak_cat = ak.Categorical(ak.array([&quot;red&quot;, &quot;blue&quot;, &quot;red&quot;]))</span>
-<span class="sd">        &gt;&gt;&gt; s_cat = pd.Series.ak.from_ak_legacy(ak_cat, name=&quot;color&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ak_cat = ak.Categorical(ak.array(["red", "blue", "red"]))</span>
+<span class="sd">        &gt;&gt;&gt; s_cat = pd.Series.ak.from_ak_legacy(ak_cat, name="color")</span>
 <span class="sd">        &gt;&gt;&gt; s_cat</span>
 <span class="sd">        0     red</span>
 <span class="sd">        1    blue</span>
@@ -733,7 +733,7 @@
 
 <span class="sd">        No NumPy copies are made—the Series is a zero-copy wrapper over</span>
 <span class="sd">        Arkouda server-side arrays.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_ak_array_to_pandas_series</span><span class="p">(</span><span class="n">akarr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
 
@@ -743,7 +743,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_arkouda</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return True if this Series is fully Arkouda-backed.</span>
 
 <span class="sd">        A Series is considered Arkouda-backed when both:</span>
@@ -766,9 +766,9 @@
 <span class="sd">        &gt;&gt;&gt; ak_s = s.ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; ak_s.ak.is_arkouda</span>
 <span class="sd">        True</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Check values</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">"array"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -777,11 +777,11 @@
         <span class="c1"># MultiIndex: require every level to be Arkouda-backed</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span> <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">idx</span><span class="o">.</span><span class="n">levels</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s2">"array"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span> <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">idx</span><span class="o">.</span><span class="n">levels</span>
             <span class="p">)</span>
 
         <span class="c1"># Single-level Index</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="s2">"array"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Legacy delegation: thin wrappers over ak.Series</span>
@@ -790,7 +790,7 @@
 <div class="viewcode-block" id="ArkoudaSeriesAccessor.locate">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.locate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">locate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Lookup values by index label on the Arkouda server.</span>
 
 <span class="sd">        This is a thin wrapper around the legacy :meth:`arkouda.pandas.series.Series.locate`</span>
@@ -831,7 +831,7 @@
 <span class="sd">        &gt;&gt;&gt; out = s.ak.locate([3, 1])</span>
 <span class="sd">        &gt;&gt;&gt; out.tolist()</span>
 <span class="sd">        [np.int64(10), np.int64(30)]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Lift the pandas Series into a legacy Arkouda Series</span>
         <span class="n">aks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
 
@@ -851,7 +851,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Construct a pandas Series from a legacy Arkouda return message.</span>
 
 <span class="sd">        This mirrors :meth:`ArkoudaIndexAccessor.from_return_msg`. It calls the legacy</span>
@@ -868,7 +868,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        pd.Series</span>
 <span class="sd">            A pandas Series backed by Arkouda ExtensionArrays (no NumPy materialization).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">ak_s</span> <span class="o">=</span> <span class="n">ak_Series</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
         <span class="c1"># Wrap values and index without materializing</span>
@@ -882,7 +882,7 @@
 <div class="viewcode-block" id="ArkoudaSeriesAccessor.groupby">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.groupby">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">groupby</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroupBy</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return an Arkouda GroupBy object for this Series, without materializing.</span>
 
 <span class="sd">        Returns</span>
@@ -901,14 +901,14 @@
 <span class="sd">        &gt;&gt;&gt; s = pd.Series([80, 443, 80]).ak.to_ak()</span>
 <span class="sd">        &gt;&gt;&gt; g = s.ak.groupby()</span>
 <span class="sd">        &gt;&gt;&gt; keys, counts = g.size()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Series must be Arkouda-backed. Call .ak.to_ak() first.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Series must be Arkouda-backed. Call .ak.to_ak() first."</span><span class="p">)</span>
 
         <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">array</span>
-        <span class="n">akcol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">akcol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">akcol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arkouda-backed Series array does not expose &#39;_data&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Arkouda-backed Series array does not expose '_data'"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span></div>
 
@@ -921,7 +921,7 @@
         <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the integer indices that would sort the Series values.</span>
 
 <span class="sd">        This mirrors ``pandas.Series.argsort`` but returns an Arkouda-backed</span>
@@ -937,7 +937,7 @@
 
 <span class="sd">            Supported keyword arguments</span>
 <span class="sd">            ~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
-<span class="sd">            na_position : {&quot;first&quot;, &quot;last&quot;}, default &quot;last&quot;</span>
+<span class="sd">            na_position : {"first", "last"}, default "last"</span>
 <span class="sd">                Where to place NaN values in the sorted result. Currently only</span>
 <span class="sd">                applied for floating-point ``pdarray`` data; for ``Strings`` and</span>
 <span class="sd">                ``Categorical`` it has no effect.</span>
@@ -954,8 +954,8 @@
 <span class="sd">            If the Series is not Arkouda-backed, or the underlying dtype does not</span>
 <span class="sd">            support sorting.</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            If ``na_position`` is not &quot;first&quot; or &quot;last&quot;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            If ``na_position`` is not "first" or "last".</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span> <span class="k">as</span> <span class="n">ak_argsort</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
@@ -965,22 +965,22 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argsort() requires an Arkouda-backed Series.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"argsort() requires an Arkouda-backed Series."</span><span class="p">)</span>
 
-        <span class="n">na_position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;na_position&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">na_position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">}:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;na_position must be &#39;first&#39; or &#39;last&#39;.&quot;</span><span class="p">)</span>
+        <span class="n">na_position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"na_position"</span><span class="p">,</span> <span class="s2">"last"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">na_position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"first"</span><span class="p">,</span> <span class="s2">"last"</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"na_position must be 'first' or 'last'."</span><span class="p">)</span>
 
         <span class="n">akcol</span> <span class="o">=</span> <span class="n">_pandas_series_to_ak_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">akcol</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported argsort dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported argsort dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">perm</span> <span class="o">=</span> <span class="n">ak_argsort</span><span class="p">(</span><span class="n">akcol</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="n">akcol</span><span class="p">):</span>
             <span class="n">is_nan</span> <span class="o">=</span> <span class="n">ak_isnan</span><span class="p">(</span><span class="n">akcol</span><span class="p">)[</span><span class="n">perm</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">na_position</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">na_position</span> <span class="o">==</span> <span class="s2">"last"</span><span class="p">:</span>
                 <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">]])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">]])</span>
@@ -999,7 +999,7 @@
         <span class="n">func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">result_dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply a Python function element-wise to this Arkouda-backed Series.</span>
 
 <span class="sd">        This delegates to :func:`arkouda.apply.apply`, executing the function</span>
@@ -1009,7 +1009,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        func : Union[Callable[[Any], Any], str]</span>
 <span class="sd">            A Python callable or a specially formatted lambda string</span>
-<span class="sd">            (e.g. ``&quot;lambda x,: x+1&quot;``).</span>
+<span class="sd">            (e.g. ``"lambda x,: x+1"``).</span>
 <span class="sd">        result_dtype : Optional[Union[np.dtype, str]]</span>
 <span class="sd">            The dtype of the resulting array. Required if the function changes dtype.</span>
 <span class="sd">            Must be compatible with :func:`arkouda.apply.apply`.</span>
@@ -1025,24 +1025,24 @@
 <span class="sd">        TypeError</span>
 <span class="sd">            If the Series is not Arkouda-backed or if its values are not</span>
 <span class="sd">            a numeric pdarray.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Series must be Arkouda-backed. Call .ak.to_ak() first.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Series must be Arkouda-backed. Call .ak.to_ak() first."</span><span class="p">)</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.apply</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply</span> <span class="k">as</span> <span class="n">ak_apply</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
         <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">array</span>
-        <span class="n">akcol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">akcol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">akcol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arkouda-backed Series array does not expose &#39;_data&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Arkouda-backed Series array does not expose '_data'"</span><span class="p">)</span>
 
         <span class="c1"># 🔒 Explicitly require pdarray (apply currently only supports pdarray)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">akcol</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Series.ak.apply currently only supports numeric pdarray-backed Series. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="s2">"Series.ak.apply currently only supports numeric pdarray-backed Series. "</span>
+                <span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span>
 
         <span class="n">out</span> <span class="o">=</span> <span class="n">ak_apply</span><span class="p">(</span><span class="n">akcol</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">result_dtype</span><span class="o">=</span><span class="n">result_dtype</span><span class="p">)</span>

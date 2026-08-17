@@ -385,22 +385,22 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;arange&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;empty_like&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;eye&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;full&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;full_like&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;linspace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;meshgrid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ones&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ones_like&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tril&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;triu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zeros_like&quot;</span><span class="p">,</span>
+    <span class="s2">"arange"</span><span class="p">,</span>
+    <span class="s2">"asarray"</span><span class="p">,</span>
+    <span class="s2">"empty"</span><span class="p">,</span>
+    <span class="s2">"empty_like"</span><span class="p">,</span>
+    <span class="s2">"eye"</span><span class="p">,</span>
+    <span class="s2">"from_dlpack"</span><span class="p">,</span>
+    <span class="s2">"full"</span><span class="p">,</span>
+    <span class="s2">"full_like"</span><span class="p">,</span>
+    <span class="s2">"linspace"</span><span class="p">,</span>
+    <span class="s2">"meshgrid"</span><span class="p">,</span>
+    <span class="s2">"ones"</span><span class="p">,</span>
+    <span class="s2">"ones_like"</span><span class="p">,</span>
+    <span class="s2">"tril"</span><span class="p">,</span>
+    <span class="s2">"triu"</span><span class="p">,</span>
+    <span class="s2">"zeros"</span><span class="p">,</span>
+    <span class="s2">"zeros_like"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -427,7 +427,7 @@
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a new Array from one of:</span>
 <span class="sd">    - another Array</span>
 <span class="sd">    - a scalar value (bool, int, float)</span>
@@ -447,11 +447,11 @@
 <span class="sd">        The device on which to create the Array (not yet implemented)</span>
 <span class="sd">    copy: Optional[bool]</span>
 <span class="sd">        Whether to copy the input object (not yet implemented)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -463,7 +463,7 @@
         <span class="n">res</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">xdtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">complex</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;complex dtype is not supported in Arkouda Arrays&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"complex dtype is not supported in Arkouda Arrays"</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="p">):</span>
@@ -471,7 +471,7 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">_to_pdarray</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;asarray not implemented for &#39;NestedSequence&#39; or &#39;SupportsBufferProtocol&#39;&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"asarray not implemented for 'NestedSequence' or 'SupportsBufferProtocol'"</span><span class="p">)</span></div>
 
 
 
@@ -486,7 +486,7 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a 1D of array of evenly spaced values within the half-open interval [start, stop).</span>
 
 <span class="sd">    Parameters</span>
@@ -501,11 +501,11 @@
 <span class="sd">    dtype: Optional[Dtype]</span>
 <span class="sd">        The data type of the output array. If None, use float64.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
@@ -522,11 +522,11 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array of given shape and type, without initializing entries.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array of given shape and type, without initializing entries."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
@@ -534,13 +534,13 @@
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">tshape</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">*=</span> <span class="n">s</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
-            <span class="n">pdarray</span><span class="p">(</span><span class="s2">&quot;__empty__&quot;</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tshape</span><span class="p">),</span> <span class="n">tshape</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">pdarray</span><span class="p">(</span><span class="s2">"__empty__"</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tshape</span><span class="p">),</span> <span class="n">tshape</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">empty</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">vshape</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
-            <span class="n">pdarray</span><span class="p">(</span><span class="s2">&quot;__empty__&quot;</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span> <span class="n">vshape</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">vshape</span><span class="p">,),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">pdarray</span><span class="p">(</span><span class="s2">"__empty__"</span><span class="p">,</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span> <span class="n">vshape</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">vshape</span><span class="p">,),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">empty</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -549,17 +549,17 @@
 <div class="viewcode-block" id="empty_like">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.empty_like">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array whose shape and dtype match the input array, without initializing entries.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array whose shape and dtype match the input array, without initializing entries."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">t</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
         <span class="n">pdarray</span><span class="p">(</span>
-            <span class="s2">&quot;__empty__&quot;</span><span class="p">,</span>
+            <span class="s2">"__empty__"</span><span class="p">,</span>
             <span class="n">t</span><span class="p">,</span>
             <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
             <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
@@ -583,7 +583,7 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a 2D array with ones on the diagonal and zeros elsewhere.</span>
 
 <span class="sd">    Parameters</span>
@@ -598,11 +598,11 @@
 <span class="sd">        lower diagonal.</span>
 <span class="sd">    dtype: Optional[Dtype]</span>
 <span class="sd">        Data type of the returned array. If None, use float64.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">M</span> <span class="o">=</span> <span class="n">N</span>  <span class="c1"># noqa: N806</span>
@@ -616,12 +616,12 @@
 <div class="viewcode-block" id="from_dlpack">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.from_dlpack">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dlpack</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Construct an Array from a DLPack tensor.</span>
 
 <span class="sd">    WARNING: This function is not yet implemented.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div>
+<span class="sd">    """</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Not implemented"</span><span class="p">)</span></div>
 
 
 
@@ -634,7 +634,7 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array of given shape and type, filled with `fill_value`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array of given shape and type, filled with `fill_value`."""</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span></div>
@@ -651,7 +651,7 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array whose shape and dtype match the input array, filled with `fill_value`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array whose shape and dtype match the input array, filled with `fill_value`."""</span>
     <span class="k">return</span> <span class="n">full</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span></div>
 
 
@@ -668,11 +668,11 @@
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">endpoint</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;An Array API compliant wrapper for :func:`arkouda.linspace`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""An Array API compliant wrapper for :func:`arkouda.linspace`."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">))</span></div>
 
@@ -680,13 +680,13 @@
 
 <div class="viewcode-block" id="meshgrid">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.meshgrid">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">indexing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;xy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">indexing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"xy"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return coordinate matrices from coordinate vectors.</span>
 
 <span class="sd">    WARNING: This function is not yet implemented.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div>
+<span class="sd">    """</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Not implemented"</span><span class="p">)</span></div>
 
 
 
@@ -698,7 +698,7 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array with the specified shape and type, filled with ones.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array with the specified shape and type, filled with ones."""</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="n">a</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span></div>
@@ -708,7 +708,7 @@
 <div class="viewcode-block" id="ones_like">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.ones_like">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array whose shape and dtype match the input array, filled with ones.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array whose shape and dtype match the input array, filled with ones."""</span>
     <span class="k">return</span> <span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span></div>
 
 
@@ -716,11 +716,11 @@
 <div class="viewcode-block" id="tril">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.tril">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">tril</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a copy of `x` with elements above the k-th diagonal zeroed.</span>
 
 <span class="sd">    Values on or below the `k`-th diagonal are preserved.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">diag</span><span class="o">=</span><span class="n">k</span><span class="p">))</span></div>
@@ -730,10 +730,10 @@
 <div class="viewcode-block" id="triu">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.triu">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">triu</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a new array with the values from `x` above the `k`-th diagonal, and</span>
 <span class="sd">    all other elements zero.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span></div>
@@ -749,11 +749,11 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array with the specified shape and type, filled with zeros.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array with the specified shape and type, filled with zeros."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 
-    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">return_dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -766,7 +766,7 @@
 <div class="viewcode-block" id="zeros_like">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.zeros_like">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new array whose shape and dtype match the input array, filled with zeros.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a new array whose shape and dtype match the input array, filled with zeros."""</span>
     <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span></div>
 
 </pre></div>

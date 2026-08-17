@@ -385,11 +385,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hstack&quot;</span><span class="p">,</span> <span class="s2">&quot;vstack&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"hstack"</span><span class="p">,</span> <span class="s2">"vstack"</span><span class="p">,</span> <span class="s2">"delete"</span><span class="p">,</span> <span class="s2">"append"</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_max_bits_list</span><span class="p">(</span><span class="n">pda_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Finds the minimum `max_bits` when there are bigint arrays in the input.</span>
 
 <span class="sd">    Determines whether any arrays in the input list use the `bigint` dtype</span>
@@ -407,7 +407,7 @@
 <span class="sd">        int</span>
 <span class="sd">            An integer representing the smallest `max_bits` value among the</span>
 <span class="sd">            `bigint` arrays. Returns -1 if no `bigint` arrays are present.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">m_bits</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">do_warn</span> <span class="o">=</span> <span class="kc">False</span>
@@ -422,7 +422,7 @@
             <span class="k">if</span> <span class="n">curr_bits</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">curr_bits</span> <span class="o">&lt;</span> <span class="n">m_bits</span><span class="p">):</span>
                 <span class="n">m_bits</span> <span class="o">=</span> <span class="n">curr_bits</span>
     <span class="k">if</span> <span class="n">do_warn</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Because two arrays with different max_bits were used, truncating to smaller max_bits&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">"Because two arrays with different max_bits were used, truncating to smaller max_bits"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span>
 
 
@@ -433,9 +433,9 @@
     <span class="n">tup</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">casting</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;equiv&quot;</span><span class="p">,</span> <span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="s2">&quot;unsafe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+    <span class="n">casting</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"no"</span><span class="p">,</span> <span class="s2">"equiv"</span><span class="p">,</span> <span class="s2">"safe"</span><span class="p">,</span> <span class="s2">"same_kind"</span><span class="p">,</span> <span class="s2">"unsafe"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"same_kind"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Stack arrays in sequence horizontally (column wise).</span>
 
 <span class="sd">    This is equivalent to concatenation along the second axis, except for 1-D arrays</span>
@@ -476,18 +476,18 @@
 <span class="sd">    &gt;&gt;&gt; b = ak.array([[4],[5],[6]])</span>
 <span class="sd">    &gt;&gt;&gt; ak.hstack((a, b))</span>
 <span class="sd">    array([array([1 4]) array([2 5]) array([3 6])])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">"same_kind"</span><span class="p">:</span>
         <span class="c1"># TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;casting=</span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2"> is not yet supported&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"casting=</span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2"> is not yet supported"</span><span class="p">)</span>
 
     <span class="c1"># ensure all arrays have the same number of dimensions</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all input arrays must have the same number of dimensions&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"all input arrays must have the same number of dimensions"</span><span class="p">)</span>
 
     <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span> <span class="o">=</span> <span class="n">_max_bits_list</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
@@ -513,11 +513,11 @@
             <span class="n">offsets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">offsets</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
-                    <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                    <span class="s2">&quot;offsets&quot;</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
+                    <span class="s2">"names"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
+                    <span class="s2">"axis"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">"offsets"</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -528,11 +528,11 @@
     <span class="c1"># stack the arrays along the horizontal axis</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
-                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="s2">&quot;offsets&quot;</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
+                <span class="s2">"names"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
+                <span class="s2">"axis"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"offsets"</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
@@ -546,9 +546,9 @@
     <span class="n">tup</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">casting</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;equiv&quot;</span><span class="p">,</span> <span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="s2">&quot;unsafe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+    <span class="n">casting</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"no"</span><span class="p">,</span> <span class="s2">"equiv"</span><span class="p">,</span> <span class="s2">"safe"</span><span class="p">,</span> <span class="s2">"same_kind"</span><span class="p">,</span> <span class="s2">"unsafe"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"same_kind"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Stack arrays in sequence vertically (row wise).</span>
 
 <span class="sd">    This is equivalent to concatenation along the first axis after</span>
@@ -568,7 +568,7 @@
 <span class="sd">        as a separate array.</span>
 <span class="sd">    dtype : str or type, optional</span>
 <span class="sd">        If provided, the destination array will have this dtype.</span>
-<span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;], optional</span>
+<span class="sd">    casting : {"no", "equiv", "safe", "same_kind", "unsafe"], optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Defaults to ‘same_kind’. Currently unused.</span>
 
 <span class="sd">    Returns</span>
@@ -593,22 +593,22 @@
 <span class="sd">    &gt;&gt;&gt; ak.vstack((a, b))</span>
 <span class="sd">    array([array([1]) array([2]) array([3]) array([4]) array([5]) array([6])])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">"same_kind"</span><span class="p">:</span>
         <span class="c1"># TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;casting=</span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2"> is not yet supported&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"casting=</span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2"> is not yet supported"</span><span class="p">)</span>
 
-    <span class="c1"># From docstring: &quot;This is equivalent to concatenation along the first axis after 1-D arrays</span>
-    <span class="c1"># of shape (N,) have been reshaped to (1,N).&quot;</span>
+    <span class="c1"># From docstring: "This is equivalent to concatenation along the first axis after 1-D arrays</span>
+    <span class="c1"># of shape (N,) have been reshaped to (1,N)."</span>
     <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">]</span>
 
     <span class="c1"># ensure all arrays have the same number of dimensions</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all input arrays must have the same number of dimensions&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"all input arrays must have the same number of dimensions"</span><span class="p">)</span>
 
     <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span> <span class="o">=</span> <span class="n">_max_bits_list</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
@@ -635,11 +635,11 @@
     <span class="c1"># stack the arrays along the first axis</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
-                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="s2">&quot;offsets&quot;</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
+                <span class="s2">"names"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
+                <span class="s2">"axis"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">"offsets"</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
@@ -654,15 +654,15 @@
     <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">slice</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">pdarray</span><span class="p">],</span>
     <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a copy of &#39;arr&#39; with elements along the specified axis removed.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return a copy of 'arr' with elements along the specified axis removed.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    arr : pdarray</span>
 <span class="sd">        The array to remove elements from</span>
 <span class="sd">    obj : slice, int, Sequence of int, Sequence of bool, or pdarray</span>
-<span class="sd">        The indices to remove from &#39;arr&#39;. If obj is a pdarray, it must</span>
+<span class="sd">        The indices to remove from 'arr'. If obj is a pdarray, it must</span>
 <span class="sd">        have an integer or bool dtype.</span>
 <span class="sd">    axis : Optional[int], optional</span>
 <span class="sd">        The axis along which to remove elements. If None, the array will</span>
@@ -671,7 +671,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        A copy of &#39;arr&#39; with elements removed</span>
+<span class="sd">        A copy of 'arr' with elements removed</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -686,7 +686,7 @@
 <span class="sd">    array([array([2 4]) array([6 8]) array([10 12])])</span>
 <span class="sd">    &gt;&gt;&gt; ak.delete(arr, [1, 3, 5], None)</span>
 <span class="sd">    array([1 3 5 7 8 9 10 11 12])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
@@ -717,19 +717,19 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">_axis</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;obj must be a slice, int, Sequence of int, Sequence of bool, or pdarray&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"obj must be a slice, int, Sequence of int, Sequence of bool, or pdarray"</span><span class="p">)</span>
         <span class="n">_del</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">_del</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">_axis</span><span class="p">]</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_del</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">slice_weight</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">:</span>
-        <span class="n">alg_choice</span> <span class="o">=</span> <span class="s2">&quot;BulkCopy&quot;</span>
+        <span class="n">alg_choice</span> <span class="o">=</span> <span class="s2">"BulkCopy"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">alg_choice</span> <span class="o">=</span> <span class="s2">&quot;AggCopy&quot;</span>
+        <span class="n">alg_choice</span> <span class="o">=</span> <span class="s2">"AggCopy"</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;delete</span><span class="si">{</span><span class="n">alg_choice</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_del</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_del</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"delete</span><span class="si">{</span><span class="n">alg_choice</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_del</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_del</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;eIn&quot;</span><span class="p">:</span> <span class="n">_arr</span><span class="p">,</span>
-                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">_axis</span><span class="p">,</span>
-                <span class="s2">&quot;del&quot;</span><span class="p">:</span> <span class="n">_del</span><span class="p">,</span>
+                <span class="s2">"eIn"</span><span class="p">:</span> <span class="n">_arr</span><span class="p">,</span>
+                <span class="s2">"axis"</span><span class="p">:</span> <span class="n">_axis</span><span class="p">,</span>
+                <span class="s2">"del"</span><span class="p">:</span> <span class="n">_del</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
@@ -744,7 +744,7 @@
     <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Append values to the end of an array.</span>
 
 <span class="sd">    Parameters</span>
@@ -779,7 +779,7 @@
 <span class="sd">    array([1 2 3 4 5 6 7 8 9])</span>
 <span class="sd">    &gt;&gt;&gt; ak.append(b, b, axis = 0)</span>
 <span class="sd">    array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -791,9 +791,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># ensure both arrays have the same number of dimensions</span>
         <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all input arrays must have the same number of dimensions&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"all input arrays must have the same number of dimensions"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> out of bounds for </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> out of bounds for </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions"</span><span class="p">)</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="p">(</span><span class="n">axis</span> <span class="o">+</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">%</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
 
     <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span> <span class="o">=</span> <span class="n">_max_bits_list</span><span class="p">([</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">])</span>
@@ -804,7 +804,7 @@
     <span class="c1"># cast the input arrays to the output dtype if necessary</span>
     <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype_</span> <span class="k">else</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">)]</span>
 
-    <span class="k">if</span> <span class="n">has_bigint</span> <span class="ow">and</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">has_bigint</span> <span class="ow">and</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"bigint"</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)):</span>
             <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">=</span> <span class="n">m_bits</span>
 
@@ -816,11 +816,11 @@
     <span class="c1"># stack the arrays along the given axis</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">"concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
-                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
-                <span class="s2">&quot;offsets&quot;</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
+                <span class="s2">"names"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
+                <span class="s2">"axis"</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
+                <span class="s2">"offsets"</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>

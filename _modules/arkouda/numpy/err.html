@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.err</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Floating-point error state management for Arkouda.</span>
 
 <span class="sd">This module provides a NumPy-like API for controlling how Arkouda handles</span>
@@ -389,22 +389,22 @@
 
 <span class="sd">Available error modes</span>
 <span class="sd">---------------------</span>
-<span class="sd">Each error category (&#39;divide&#39;, &#39;over&#39;, &#39;under&#39;, &#39;invalid&#39;) may be set to</span>
+<span class="sd">Each error category ('divide', 'over', 'under', 'invalid') may be set to</span>
 <span class="sd">one of the following modes:</span>
 
-<span class="sd">- ``&quot;ignore&quot;`` : silently ignore the error (default).</span>
-<span class="sd">- ``&quot;warn&quot;``   : issue a Python ``RuntimeWarning``.</span>
-<span class="sd">- ``&quot;raise&quot;``  : raise a ``FloatingPointError`` exception.</span>
-<span class="sd">- ``&quot;call&quot;``   : invoke a user-supplied callable (see :func:`seterrcall`).</span>
-<span class="sd">- ``&quot;print&quot;``  : write a message to standard output.</span>
-<span class="sd">- ``&quot;log&quot;``    : log a message via Arkouda&#39;s logger.</span>
+<span class="sd">- ``"ignore"`` : silently ignore the error (default).</span>
+<span class="sd">- ``"warn"``   : issue a Python ``RuntimeWarning``.</span>
+<span class="sd">- ``"raise"``  : raise a ``FloatingPointError`` exception.</span>
+<span class="sd">- ``"call"``   : invoke a user-supplied callable (see :func:`seterrcall`).</span>
+<span class="sd">- ``"print"``  : write a message to standard output.</span>
+<span class="sd">- ``"log"``    : log a message via Arkouda's logger.</span>
 
 <span class="sd">API</span>
 <span class="sd">---</span>
 <span class="sd">- :func:`geterr`       : return the current error handling settings.</span>
 <span class="sd">- :func:`seterr`       : set global error handling, returning the old settings.</span>
-<span class="sd">- :func:`geterrcall`   : get the callable used for ``&quot;call&quot;`` mode.</span>
-<span class="sd">- :func:`seterrcall`   : set the callable used for ``&quot;call&quot;`` mode.</span>
+<span class="sd">- :func:`geterrcall`   : get the callable used for ``"call"`` mode.</span>
+<span class="sd">- :func:`seterrcall`   : set the callable used for ``"call"`` mode.</span>
 <span class="sd">- :func:`errstate`     : context manager to temporarily change settings.</span>
 <span class="sd">- :func:`handle`       : route an error condition through the current policy.</span>
 
@@ -412,19 +412,19 @@
 <span class="sd">-------</span>
 <span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">&gt;&gt;&gt; ak.geterr()</span>
-<span class="sd">{&#39;divide&#39;: &#39;ignore&#39;, &#39;over&#39;: &#39;ignore&#39;, &#39;under&#39;: &#39;ignore&#39;, &#39;invalid&#39;: &#39;ignore&#39;}</span>
+<span class="sd">{'divide': 'ignore', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}</span>
 
-<span class="sd">&gt;&gt;&gt; with ak.errstate(divide=&quot;warn&quot;):</span>
+<span class="sd">&gt;&gt;&gt; with ak.errstate(divide="warn"):</span>
 <span class="sd">...     out = ak.array([1.0]) / 0</span>
 
-<span class="sd">&gt;&gt;&gt; def myhandler(kind, msg): print(f&quot;[ak] {kind}: {msg}&quot;)</span>
-<span class="sd">&gt;&gt;&gt; ak.seterr(divide=&quot;call&quot;)</span>
-<span class="sd">{&#39;divide&#39;: &#39;ignore&#39;, &#39;over&#39;: &#39;ignore&#39;, &#39;under&#39;: &#39;ignore&#39;, &#39;invalid&#39;: &#39;ignore&#39;}</span>
+<span class="sd">&gt;&gt;&gt; def myhandler(kind, msg): print(f"[ak] {kind}: {msg}")</span>
+<span class="sd">&gt;&gt;&gt; ak.seterr(divide="call")</span>
+<span class="sd">{'divide': 'ignore', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}</span>
 <span class="sd">&gt;&gt;&gt; ak.seterrcall(myhandler)</span>
 <span class="sd">&gt;&gt;&gt; out = ak.array([1.0]) / 0</span>
 <span class="sd">[ak] divide: divide by zero encountered</span>
 <span class="sd">[ak] divide: divide by zero encountered in divide</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -440,21 +440,21 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;geterr&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;seterr&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;geterrcall&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;seterrcall&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;errstate&quot;</span><span class="p">,</span>
+    <span class="s2">"geterr"</span><span class="p">,</span>
+    <span class="s2">"seterr"</span><span class="p">,</span>
+    <span class="s2">"geterrcall"</span><span class="p">,</span>
+    <span class="s2">"seterrcall"</span><span class="p">,</span>
+    <span class="s2">"errstate"</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="n">_ErrorMode</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">,</span> <span class="s2">&quot;print&quot;</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">]</span>
+<span class="n">_ErrorMode</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="s2">"warn"</span><span class="p">,</span> <span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"call"</span><span class="p">,</span> <span class="s2">"print"</span><span class="p">,</span> <span class="s2">"log"</span><span class="p">]</span>
 
-<span class="c1"># Default modes chosen to mirror NumPy&#39;s defaults</span>
+<span class="c1"># Default modes chosen to mirror NumPy's defaults</span>
 <span class="n">_default_errstate</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;divide&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;over&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;under&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+    <span class="s2">"divide"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">,</span>
+    <span class="s2">"over"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">,</span>
+    <span class="s2">"under"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">,</span>
+    <span class="s2">"invalid"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># Global state (lightweight; consulted only if you wire checks later)</span>
@@ -462,54 +462,54 @@
 <span class="n">_ak_errcall</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (errtype, message) -&gt; None</span>
 
 
-<span class="n">_logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="s2">&quot;arkouda.err&quot;</span><span class="p">)</span>
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="s2">"arkouda.err"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_dispatch</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Perform the side-effect for an FP error according to the current mode.</span>
 <span class="sd">    No-ops unless explicitly invoked (e.g., via postcheck_* helpers).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mode</span> <span class="o">=</span> <span class="n">_ak_errstate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">_ak_errstate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="s2">"ignore"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"ignore"</span><span class="p">:</span>
         <span class="k">return</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"warn"</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">return</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FloatingPointError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;call&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"raise"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FloatingPointError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"call"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">_ak_errcall</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_ak_errcall</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">return</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;print&quot;</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"print"</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
-        <span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"log"</span><span class="p">:</span>
+        <span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
         <span class="k">return</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Public hook so other modules (or users) can route an error through the policy.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Public hook so other modules (or users) can route an error through the policy."""</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_default_errstate</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown error type: </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown error type: </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">_dispatch</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="geterr">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.geterr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">geterr</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the current Arkouda floating-point error handling settings.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
-<span class="sd">        Mapping of {&#39;divide&#39;, &#39;over&#39;, &#39;under&#39;, &#39;invalid&#39;} to one of</span>
-<span class="sd">        {&#39;ignore&#39;, &#39;warn&#39;, &#39;raise&#39;, &#39;call&#39;, &#39;print&#39;, &#39;log&#39;}.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        Mapping of {'divide', 'over', 'under', 'invalid'} to one of</span>
+<span class="sd">        {'ignore', 'warn', 'raise', 'call', 'print', 'log'}.</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_ak_errstate</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
@@ -517,12 +517,12 @@
 <div class="viewcode-block" id="seterr">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.seterr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">_ErrorMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Set how Arkouda handles floating-point errors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    divide, over, under, invalid : {&#39;ignore&#39;, &#39;warn&#39;, &#39;raise&#39;, &#39;call&#39;, &#39;print&#39;, &#39;log&#39;}, optional</span>
+<span class="sd">    divide, over, under, invalid : {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional</span>
 <span class="sd">        Behavior for the corresponding error category.</span>
 
 <span class="sd">    Returns</span>
@@ -534,17 +534,17 @@
 <span class="sd">    -----</span>
 <span class="sd">    This is a *scaffold* API. It does not change backend behavior yet; it only</span>
 <span class="sd">    records the desired policy so future operations can consult it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">old</span> <span class="o">=</span> <span class="n">_ak_errstate</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">valid</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">_ErrorMode</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">,</span> <span class="s2">&quot;print&quot;</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">}</span>
+    <span class="n">valid</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">_ErrorMode</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="s2">"warn"</span><span class="p">,</span> <span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"call"</span><span class="p">,</span> <span class="s2">"print"</span><span class="p">,</span> <span class="s2">"log"</span><span class="p">}</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;over&quot;</span><span class="p">,</span> <span class="s2">&quot;under&quot;</span><span class="p">,</span> <span class="s2">&quot;invalid&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">!=</span> <span class="n">_ak_errstate</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> error type is not implemented yet and therefore will have no effect.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"over"</span><span class="p">,</span> <span class="s2">"under"</span><span class="p">,</span> <span class="s2">"invalid"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">!=</span> <span class="n">_ak_errstate</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> error type is not implemented yet and therefore will have no effect."</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_default_errstate</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown error type: </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown error type: </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid setting </span><span class="si">{</span><span class="n">val</span><span class="si">!r}</span><span class="s2"> for </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid setting </span><span class="si">{</span><span class="n">val</span><span class="si">!r}</span><span class="s2"> for </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">_ak_errstate</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="k">return</span> <span class="n">old</span></div>
 
@@ -553,14 +553,14 @@
 <div class="viewcode-block" id="geterrcall">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.geterrcall">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">geterrcall</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the current callable used when error mode is &#39;call&#39;.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Get the current callable used when error mode is 'call'.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    callable or None</span>
 <span class="sd">        A function of signature (errtype: str, message: str) -&gt; None, or None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_ak_errcall</span></div>
 
 
@@ -568,8 +568,8 @@
 <div class="viewcode-block" id="seterrcall">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.seterrcall">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">seterrcall</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Set the callable invoked when an error category is set to &#39;call&#39;.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Set the callable invoked when an error category is set to 'call'.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -586,11 +586,11 @@
 <span class="sd">    -----</span>
 <span class="sd">    This is a *stub* for API compatibility. Arkouda does not currently invoke</span>
 <span class="sd">    this callable; it is stored for future use.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">global</span> <span class="n">_ak_errcall</span>
     <span class="n">old</span> <span class="o">=</span> <span class="n">_ak_errcall</span>
     <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;seterrcall expects a callable or None&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"seterrcall expects a callable or None"</span><span class="p">)</span>
     <span class="n">_ak_errcall</span> <span class="o">=</span> <span class="n">func</span>
     <span class="k">return</span> <span class="n">old</span></div>
 
@@ -607,15 +607,15 @@
     <span class="n">invalid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_ErrorMode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">call</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Context manager to temporarily set floating-point error handling.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    divide, over, under, invalid : {&#39;ignore&#39;, &#39;warn&#39;, &#39;raise&#39;, &#39;call&#39;, &#39;print&#39;, &#39;log&#39;}, optional</span>
+<span class="sd">    divide, over, under, invalid : {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional</span>
 <span class="sd">        Temporary behavior within the context.</span>
 <span class="sd">    call : callable or None, optional</span>
-<span class="sd">        Temporary callable used if any category is set to &#39;call&#39;.</span>
+<span class="sd">        Temporary callable used if any category is set to 'call'.</span>
 <span class="sd">        Signature: (errtype: str, message: str) -&gt; None.</span>
 
 <span class="sd">    Yields</span>
@@ -628,16 +628,16 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; ak.geterr()</span>
-<span class="sd">    {&#39;divide&#39;: &#39;call&#39;, &#39;over&#39;: &#39;ignore&#39;, &#39;under&#39;: &#39;ignore&#39;, &#39;invalid&#39;: &#39;ignore&#39;}</span>
-<span class="sd">    &gt;&gt;&gt; with ak.errstate(divide=&#39;warn&#39;):</span>
+<span class="sd">    {'divide': 'call', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}</span>
+<span class="sd">    &gt;&gt;&gt; with ak.errstate(divide='warn'):</span>
 <span class="sd">    ...     _ = ak.array([1.0]) / 0  # gives a warning</span>
-<span class="sd">    &gt;&gt;&gt; ak.geterr()[&#39;divide&#39;]   # doctest: +SKIP</span>
-<span class="sd">    &#39;ignore&#39;</span>
+<span class="sd">    &gt;&gt;&gt; ak.geterr()['divide']   # doctest: +SKIP</span>
+<span class="sd">    'ignore'</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This affects only stored policy; it does not add runtime checks by itself.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Save old state</span>
     <span class="n">old_modes</span> <span class="o">=</span> <span class="n">geterr</span><span class="p">()</span>
     <span class="n">old_call</span> <span class="o">=</span> <span class="n">geterrcall</span><span class="p">()</span>
@@ -645,13 +645,13 @@
     <span class="c1"># Apply temporary modes</span>
     <span class="n">updates</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">divide</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;divide&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">divide</span>
+        <span class="n">updates</span><span class="p">[</span><span class="s2">"divide"</span><span class="p">]</span> <span class="o">=</span> <span class="n">divide</span>
     <span class="k">if</span> <span class="n">over</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;over&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">over</span>
+        <span class="n">updates</span><span class="p">[</span><span class="s2">"over"</span><span class="p">]</span> <span class="o">=</span> <span class="n">over</span>
     <span class="k">if</span> <span class="n">under</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;under&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">under</span>
+        <span class="n">updates</span><span class="p">[</span><span class="s2">"under"</span><span class="p">]</span> <span class="o">=</span> <span class="n">under</span>
     <span class="k">if</span> <span class="n">invalid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;invalid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invalid</span>
+        <span class="n">updates</span><span class="p">[</span><span class="s2">"invalid"</span><span class="p">]</span> <span class="o">=</span> <span class="n">invalid</span>
     <span class="k">if</span> <span class="n">updates</span><span class="p">:</span>
         <span class="n">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">updates</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

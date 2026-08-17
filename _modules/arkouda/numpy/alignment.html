@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.alignment</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Alignment and lookup utilities for Arkouda arrays.</span>
 
 <span class="sd">This module provides functions to align multiple arrays to a common</span>
@@ -413,7 +413,7 @@
 <span class="sd">&gt;&gt;&gt; ak.numpy.alignment.interval_lookup((starts, ends), values, x)</span>
 <span class="sd">array([100 200 200])</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 
@@ -436,25 +436,25 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;NonUniqueError&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;align&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;find&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;in1d_intervals&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;interval_lookup&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;is_cosorted&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;left_align&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;lookup&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;right_align&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;search_intervals&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unsqueeze&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zero_up&quot;</span><span class="p">,</span>
+    <span class="s2">"NonUniqueError"</span><span class="p">,</span>
+    <span class="s2">"align"</span><span class="p">,</span>
+    <span class="s2">"find"</span><span class="p">,</span>
+    <span class="s2">"in1d_intervals"</span><span class="p">,</span>
+    <span class="s2">"interval_lookup"</span><span class="p">,</span>
+    <span class="s2">"is_cosorted"</span><span class="p">,</span>
+    <span class="s2">"left_align"</span><span class="p">,</span>
+    <span class="s2">"lookup"</span><span class="p">,</span>
+    <span class="s2">"right_align"</span><span class="p">,</span>
+    <span class="s2">"search_intervals"</span><span class="p">,</span>
+    <span class="s2">"unsqueeze"</span><span class="p">,</span>
+    <span class="s2">"zero_up"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="unsqueeze">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.unsqueeze">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unsqueeze</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Ensure that the input is returned as a list.</span>
 <span class="sd">    If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.</span>
 <span class="sd">    Otherwise, return the input unchanged.</span>
@@ -475,7 +475,7 @@
 <span class="sd">    &gt;&gt;&gt; a = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; unsqueeze(a)</span>
 <span class="sd">    [array([1 2 3])]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -486,7 +486,7 @@
 <div class="viewcode-block" id="zero_up">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.zero_up">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">zero_up</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Map an array of sparse values to 0-up indices.</span>
 
 <span class="sd">    Parameters</span>
@@ -499,7 +499,7 @@
 <span class="sd">    aligned : pdarray</span>
 <span class="sd">        Array with values replaced by 0-up indices</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
     <span class="n">unique_size</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
     <span class="n">unique_inds</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">unique_size</span><span class="p">)</span>
@@ -511,7 +511,7 @@
 <div class="viewcode-block" id="align">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.align">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">align</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Map multiple arrays of sparse identifiers to a common 0-up index.</span>
 
 <span class="sd">    Parameters</span>
@@ -524,13 +524,13 @@
 <span class="sd">    aligned : list of pdarrays</span>
 <span class="sd">        Arrays with values replaced by 0-up indices</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">full</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="n">zero_up</span><span class="p">(</span><span class="n">concatenate</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If any of the arguments are a sequence of pdarray, they all have to be&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"If any of the arguments are a sequence of pdarray, they all have to be"</span><span class="p">)</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">full</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="n">zero_up</span><span class="p">([</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)])</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="n">key</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">))]</span></div>
@@ -540,7 +540,7 @@
 <div class="viewcode-block" id="right_align">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.right_align">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">right_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Map two arrays of sparse values to the 0-up index.</span>
 
 <span class="sd">    Map two arrays of sparse values to the 0-up index set implied by the right array,</span>
@@ -561,7 +561,7 @@
 <span class="sd">        aligned : (pdarray, pdarray)</span>
 <span class="sd">            Left and right arrays with values replaced by 0-up indices</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">is_sequence</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span>
     <span class="n">uright</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">uright</span><span class="p">)</span>
@@ -573,12 +573,12 @@
 <div class="viewcode-block" id="left_align">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.left_align">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">left_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Map two arrays of sparse identifiers to the 0-up index.</span>
 
 <span class="sd">    Map two arrays of sparse identifiers to the 0-up index set implied by the left array,</span>
 <span class="sd">    discarding values from right that do not appear in left.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">right_align</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span></div>
 
 
@@ -586,7 +586,7 @@
 <div class="viewcode-block" id="NonUniqueError">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.NonUniqueError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NonUniqueError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Exception raised when duplicate values are found in a set of keys that are expected to be unique.</span>
 <span class="sd">    This is typically raised in lookup and alignment operations that assume</span>
 <span class="sd">    a one-to-one mapping between keys and values.</span>
@@ -594,11 +594,11 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from arkouda.numpy.alignment import NonUniqueError</span>
-<span class="sd">    &gt;&gt;&gt; raise NonUniqueError(&quot;Duplicate values found in key array.&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; raise NonUniqueError("Duplicate values found in key array.")</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
 <span class="sd">    arkouda.numpy.alignment.NonUniqueError: Duplicate values found in key array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">pass</span></div>
 
@@ -607,13 +607,13 @@
 <div class="viewcode-block" id="find">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.find">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return indices of query items in a search list of items.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    query : (sequence of) array-like</span>
-<span class="sd">        The items to search for. If multiple arrays, each &quot;row&quot; is an item.</span>
+<span class="sd">        The items to search for. If multiple arrays, each "row" is an item.</span>
 <span class="sd">    space : (sequence of) array-like</span>
 <span class="sd">        The set of items in which to search. Must have same shape/dtype as query.</span>
 <span class="sd">    all_occurrences: bool</span>
@@ -644,7 +644,7 @@
 <span class="sd">    &gt;&gt;&gt; arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]</span>
 
 <span class="sd">    Remove some values to ensure we have some values</span>
-<span class="sd">    which don&#39;t appear in the search space</span>
+<span class="sd">    which don't appear in the search space</span>
 
 <span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 9]</span>
 <span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 3]</span>
@@ -685,30 +685,30 @@
 <span class="sd">     [5, 7],</span>
 <span class="sd">     [0, 4]]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
 
     <span class="c1"># Concatenate the space and query in fast (block interleaved) mode</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">space</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arguments must have same type&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Arguments must have same type"</span><span class="p">)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">space</span><span class="p">,</span> <span class="n">query</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">spacesize</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">size</span>
         <span class="n">querysize</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">size</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">space</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must have same number of arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Multi-array arguments must have same number of arrays"</span><span class="p">)</span>
         <span class="n">spacesize</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">space</span><span class="p">}</span>
         <span class="n">querysize</span> <span class="o">=</span> <span class="p">{</span><span class="n">q</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">query</span><span class="p">}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spacesize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">querysize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must be non-empty and have equal-length arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Multi-array arguments must be non-empty and have equal-length arrays"</span><span class="p">)</span>
         <span class="n">spacesize</span> <span class="o">=</span> <span class="n">spacesize</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">querysize</span> <span class="o">=</span> <span class="n">querysize</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">atypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ai</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">ai</span> <span class="ow">in</span> <span class="n">query</span><span class="p">])</span>
         <span class="n">btypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">bi</span> <span class="ow">in</span> <span class="n">space</span><span class="p">])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">atypes</span> <span class="o">==</span> <span class="n">btypes</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Array dtypes of arguments must match&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Array dtypes of arguments must match"</span><span class="p">)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">concatenate</span><span class="p">((</span><span class="n">si</span><span class="p">,</span> <span class="n">qi</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">si</span><span class="p">,</span> <span class="n">qi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">query</span><span class="p">)]</span>
     <span class="c1"># Combined index of space and query elements, in block interleaved order</span>
     <span class="c1"># All space indices are less than all query indices</span>
@@ -720,13 +720,13 @@
     <span class="c1"># since we reuse (i &lt; spacesize)[g.permutation] later, we call sum aggregation manually</span>
     <span class="n">less_than</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">spacesize</span><span class="p">)[</span><span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">]</span>
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">"segmentedReduction"</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">less_than</span><span class="p">,</span>
-            <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
-            <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;skip_nan&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"values"</span><span class="p">:</span> <span class="n">less_than</span><span class="p">,</span>
+            <span class="s2">"segments"</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
+            <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"sum"</span><span class="p">,</span>
+            <span class="s2">"skip_nan"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"ddof"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
@@ -736,13 +736,13 @@
     <span class="k">if</span> <span class="n">has_duplicates</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">all_occurrences</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;finding all_occurrences is not yet supported on sequences of arrays&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"finding all_occurrences is not yet supported on sequences of arrays"</span><span class="p">)</span>
 
             <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
 
             <span class="c1"># create a segarray which contains all the indices from query</span>
             <span class="c1"># in our search space, instead of just the min for each segment</span>
-            <span class="c1"># im not completely convinced there&#39;s not a better way to get this given the</span>
+            <span class="c1"># im not completely convinced there's not a better way to get this given the</span>
             <span class="c1"># amount of structure but this is not the bottleneck of the computation anymore</span>
             <span class="n">min_k_vals</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">less_than</span><span class="p">]</span>
             <span class="n">seg_idx</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span><span class="p">))[</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">spacesize</span><span class="p">]</span>
@@ -751,8 +751,8 @@
             <span class="k">return</span> <span class="n">sa</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Duplicate terms present in search space. Only first instance of each query term&quot;</span>
-                <span class="s2">&quot; will be reported. To return all occurrences, set all_occurrences=True.&quot;</span>
+                <span class="s2">"Duplicate terms present in search space. Only first instance of each query term"</span>
+                <span class="s2">" will be reported. To return all occurrences, set all_occurrences=True."</span>
             <span class="p">)</span>
     <span class="c1"># For query terms in the space, the min combined index will be the first index of that</span>
     <span class="c1"># term in the space</span>
@@ -771,7 +771,7 @@
 <div class="viewcode-block" id="lookup">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.lookup">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Apply the function defined by the mapping ``keys --&gt; values`` to arguments.</span>
 
 <span class="sd">    Parameters</span>
@@ -804,11 +804,11 @@
 
 <span class="sd">    Lookup numbers by two-word name:</span>
 
-<span class="sd">    &gt;&gt;&gt; keys1 = ak.array([&#39;twenty&#39; for _ in range(5)])</span>
-<span class="sd">    &gt;&gt;&gt; keys2 = ak.array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; keys1 = ak.array(['twenty' for _ in range(5)])</span>
+<span class="sd">    &gt;&gt;&gt; keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])</span>
 <span class="sd">    &gt;&gt;&gt; values = ak.array([21, 22, 23, 24, 25])</span>
-<span class="sd">    &gt;&gt;&gt; args1 = ak.array([&#39;twenty&#39;, &#39;thirty&#39;, &#39;twenty&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; args2 = ak.array([&#39;four&#39;, &#39;two&#39;, &#39;two&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; args1 = ak.array(['twenty', 'thirty', 'twenty'])</span>
+<span class="sd">    &gt;&gt;&gt; args2 = ak.array(['four', 'two', 'two'])</span>
 <span class="sd">    &gt;&gt;&gt; ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])</span>
 <span class="sd">    array([24 -1 22])</span>
 
@@ -819,9 +819,9 @@
 <span class="sd">    &gt;&gt;&gt; revargs = ak.array([24, 21, 22])</span>
 <span class="sd">    &gt;&gt;&gt; idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)</span>
 <span class="sd">    &gt;&gt;&gt; keys1[idx], keys2[idx]</span>
-<span class="sd">    (array([&#39;twenty&#39;, &#39;twenty&#39;, &#39;twenty&#39;]),</span>
-<span class="sd">     array([&#39;four&#39;, &#39;one&#39;, &#39;two&#39;]))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    (array(['twenty', 'twenty', 'twenty']),</span>
+<span class="sd">     array(['four', 'one', 'two']))</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">na_value</span><span class="p">)</span>
@@ -839,7 +839,7 @@
 <div class="viewcode-block" id="in1d_intervals">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.in1d_intervals">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">in1d_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">intervals</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Test each value for membership in *any* of a set of half-open (pythonic) intervals.</span>
 
 <span class="sd">    Parameters</span>
@@ -878,7 +878,7 @@
 <span class="sd">        ((intervals[0] &lt;= vals[-1]) &amp; (intervals[1] &gt; vals[-1]))</span>
 <span class="sd">    But much faster when vals is non-trivial size.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">intervals</span><span class="p">)</span>
     <span class="n">found</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
@@ -892,7 +892,7 @@
 <div class="viewcode-block" id="search_intervals">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.search_intervals">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">intervals</span><span class="p">,</span> <span class="n">tiebreak</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the index of the best interval containing each query value.</span>
 
 <span class="sd">    Given an array of query values and non-overlapping, half-open intervals,</span>
@@ -903,7 +903,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    vals : (sequence of) pdarray (int, uint, float)</span>
 <span class="sd">        Values to search for in intervals. If multiple arrays are provided,</span>
-<span class="sd">        each &quot;row&quot; is treated as a single item.</span>
+<span class="sd">        each "row" is treated as a single item.</span>
 <span class="sd">    intervals : 2-tuple of (sequences of) pdarrays</span>
 <span class="sd">        Non-overlapping, half-open intervals, given as</span>
 <span class="sd">        ``(lower_bounds_inclusive, upper_bounds_exclusive)``.</span>
@@ -957,32 +957,32 @@
 
 <span class="sd">    &gt;&gt;&gt; ak.numpy.alignment.search_intervals(bi_vals, (bi_starts, bi_ends))</span>
 <span class="sd">    array([0 0 0 0 1 1 1 -1])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.join</span><span class="w"> </span><span class="kn">import</span> <span class="n">gen_ranges</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_inclusive)&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_inclusive)"</span><span class="p">)</span>
 
     <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">intervals</span>
     <span class="n">singleton</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
     <span class="n">lowsize</span> <span class="o">=</span> <span class="n">low</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">low</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
 
     <span class="k">if</span> <span class="n">tiebreak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tiebreak</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tiebreak</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">lowsize</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Tiebreak must be pdarray of same size as number of intervals&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Tiebreak must be pdarray of same size as number of intervals"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">singleton</span><span class="p">:</span>
         <span class="c1"># argument validation for pdarray</span>
         <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;arguments must be numeric arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"arguments must be numeric arrays"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;intervals must be same objtype as vals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"intervals must be same objtype as vals"</span><span class="p">)</span>
 
         <span class="c1"># validate the dtypes</span>
         <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">low</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">or</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">high</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;vals and intervals must all have the same dtype. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">low</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, and </span><span class="si">{</span><span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"vals and intervals must all have the same dtype. "</span>
+                <span class="sa">f</span><span class="s2">"Found </span><span class="si">{</span><span class="n">low</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, and </span><span class="si">{</span><span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
@@ -995,12 +995,12 @@
 
         <span class="c1"># verify lower and upper bounds are same length</span>
         <span class="k">if</span> <span class="n">low</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">high</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lower and upper bound arrays must be same size&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Lower and upper bound arrays must be same size"</span><span class="p">)</span>
         <span class="c1"># verify upper bounds are greater than lower bounds</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">high</span> <span class="o">&gt;=</span> <span class="n">low</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Upper bounds must be greater than lower bounds&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Upper bounds must be greater than lower bounds"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="o">.</span><span class="n">is_sorted</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Intervals must be sorted in ascending order&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Intervals must be sorted in ascending order"</span><span class="p">)</span>
 
         <span class="n">not_overlapping</span> <span class="o">=</span> <span class="p">(</span><span class="n">low</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;</span> <span class="n">high</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="n">valsize</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">size</span>
@@ -1008,42 +1008,42 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># argument validation for multi-array</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;intervals must be same objtype as vals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"intervals must be same objtype as vals"</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">({</span><span class="nb">len</span><span class="p">(</span><span class="n">low</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">high</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)})</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must have same number of arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Multi-array arguments must have same number of arrays"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">lo</span> <span class="ow">in</span> <span class="n">low</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">hi</span> <span class="ow">in</span> <span class="n">high</span><span class="p">)</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All elements of Multi-array arguments must be pdarrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"All elements of Multi-array arguments must be pdarrays"</span><span class="p">)</span>
 
         <span class="n">valsize</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">}</span>
         <span class="n">lowsize</span> <span class="o">=</span> <span class="p">{</span><span class="n">lo</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">lo</span> <span class="ow">in</span> <span class="n">low</span><span class="p">}</span>
         <span class="n">highsize</span> <span class="o">=</span> <span class="p">{</span><span class="n">hi</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">hi</span> <span class="ow">in</span> <span class="n">high</span><span class="p">}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valsize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">lowsize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">highsize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Multi-array arguments must be non-empty and have equal-length arrays&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Multi-array arguments must be non-empty and have equal-length arrays"</span><span class="p">)</span>
 
         <span class="c1"># validate the dtypes</span>
         <span class="n">valtypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span>
         <span class="n">lowtypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lo</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">lo</span> <span class="ow">in</span> <span class="n">low</span><span class="p">])</span>
         <span class="n">hightypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">hi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">hi</span> <span class="ow">in</span> <span class="n">high</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">valtypes</span> <span class="o">!=</span> <span class="n">lowtypes</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">valtypes</span> <span class="o">!=</span> <span class="n">hightypes</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Values and intervals must have matching dtypes&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Values and intervals must have matching dtypes"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">valtypes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;arguments must be numeric arrays&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"arguments must be numeric arrays"</span><span class="p">)</span>
 
         <span class="n">valsize</span> <span class="o">=</span> <span class="n">valsize</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">lowsize</span> <span class="o">=</span> <span class="n">lowsize</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">highsize</span> <span class="o">=</span> <span class="n">highsize</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="c1"># verify lower and upper bounds are same length</span>
         <span class="k">if</span> <span class="n">lowsize</span> <span class="o">!=</span> <span class="n">highsize</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lower and upper bound arrays must be same size&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Lower and upper bound arrays must be same size"</span><span class="p">)</span>
         <span class="c1"># verify upper bounds are greater than lower bounds</span>
         <span class="k">if</span> <span class="n">hierarchical</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_cosorted</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Intervals must be sorted in ascending order&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Intervals must be sorted in ascending order"</span><span class="p">)</span>
             <span class="n">bounds_okay</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">checked</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">lowsize</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
             <span class="n">needtocheck</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">lowsize</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -1076,7 +1076,7 @@
             <span class="n">bounds_okay</span> <span class="o">=</span> <span class="nb">all</span><span class="p">((</span><span class="n">hi</span> <span class="o">&gt;=</span> <span class="n">lo</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">hi</span><span class="p">,</span> <span class="n">lo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bounds_okay</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Upper bounds must be greater than lower bounds&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Upper bounds must be greater than lower bounds"</span><span class="p">)</span>
 
         <span class="n">perm</span> <span class="o">=</span> <span class="n">coargsort</span><span class="p">([</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lo</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">hi</span><span class="p">))</span> <span class="k">for</span> <span class="n">lo</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">hi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">high</span><span class="p">)])</span>
 
@@ -1156,7 +1156,7 @@
                 <span class="p">[</span><span class="n">mi</span><span class="p">[</span><span class="n">vm</span><span class="p">]</span> <span class="k">for</span> <span class="n">mi</span><span class="p">,</span> <span class="n">vm</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">match_interval_idx</span><span class="p">,</span> <span class="n">valid_match</span><span class="p">)],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
             <span class="n">by_val_interval</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">([</span><span class="n">all_uval_idx</span><span class="p">,</span> <span class="n">all_match_interval_idx</span><span class="p">])</span>
-            <span class="c1"># a true hit happens when a value is contained in all of an interval&#39;s 1-d projections</span>
+            <span class="c1"># a true hit happens when a value is contained in all of an interval's 1-d projections</span>
             <span class="n">is_a_hit</span> <span class="o">=</span> <span class="n">by_val_interval</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
             <span class="c1"># indices of the true hits and their containing intervals</span>
             <span class="n">val_hits</span><span class="p">,</span> <span class="n">interval_hits</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">is_a_hit</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">by_val_interval</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">]</span>
@@ -1170,14 +1170,14 @@
             <span class="n">containing_interval</span><span class="p">[</span><span class="n">by_val</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">]</span> <span class="o">=</span> <span class="n">interval_hits</span><span class="p">[</span><span class="n">best_match_idx</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">containing_interval</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;arguments must be numeric pdarrays or a sequence of numeric pdarrays&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"arguments must be numeric pdarrays or a sequence of numeric pdarrays"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="is_cosorted">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.is_cosorted">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_cosorted</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return True iff the arrays are cosorted.</span>
 
 <span class="sd">    Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table</span>
@@ -1200,15 +1200,15 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if arrays is not a list-like of pdarrays</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input must be a list-like of pdarrays&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Input must be a list-like of pdarrays"</span><span class="p">)</span>
 
     <span class="c1"># check for equal length</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">({</span><span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">})</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arrays must all be same length&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Arrays must all be same length"</span><span class="p">)</span>
 
-    <span class="c1"># fail fast if the first array isn&#39;t sorted</span>
+    <span class="c1"># fail fast if the first array isn't sorted</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_sorted</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -1228,7 +1228,7 @@
 <div class="viewcode-block" id="interval_lookup">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.interval_lookup">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">interval_lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tiebreak</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Apply a function defined over intervals to an array of arguments.</span>
 
 <span class="sd">    Parameters</span>
@@ -1239,7 +1239,7 @@
 <span class="sd">    values : pdarray</span>
 <span class="sd">        Function value to return for each entry in keys.</span>
 <span class="sd">    arguments : (sequences of) pdarray</span>
-<span class="sd">        Values to search for in intervals. If multiple arrays, each &quot;row&quot; is an item.</span>
+<span class="sd">        Values to search for in intervals. If multiple arrays, each "row" is an item.</span>
 <span class="sd">    fillvalue : scalar</span>
 <span class="sd">        Default value to return when argument is not in any interval.</span>
 <span class="sd">    tiebreak : (optional) pdarray, numeric</span>
@@ -1254,7 +1254,7 @@
 <span class="sd">        containing each argument, or fillvalue if argument not</span>
 <span class="sd">        in any interval.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="n">interval_lookup</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">na_value</span><span class="p">)</span>

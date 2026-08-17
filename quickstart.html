@@ -414,7 +414,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>arkouda
 </div>
 </li>
 <li><p>Add your conda env to <cite>Makefile.paths</cite>, so <cite>make</cite> knows where to find dependencies</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\$(eval \$(call add-path,</span><span class="nv">$CONDA_PREFIX</span><span class="s2">))&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>Makefile.paths
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">"\$(eval \$(call add-path,</span><span class="nv">$CONDA_PREFIX</span><span class="s2">))"</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>Makefile.paths
 </pre></div>
 </div>
 </li>
@@ -458,7 +458,7 @@ bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </
 <p>In another terminal window, launch an interactive Python 3 session, such as <code class="docutils literal notranslate"><span class="pre">ipython</span></code> or <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">notebook</span></code> (both included with the Anaconda distribution). To connect to the arkouda server, you must import the arkouda module and call connect with the connection url from the server startup messages. In Python, run</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="go"># default way to connect is</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">connect_url</span><span class="o">=</span><span class="s1">&#39;tcp://node01:5555&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">connect_url</span><span class="o">=</span><span class="s1">'tcp://node01:5555'</span><span class="p">)</span>
 <span class="gp">...</span>
 <span class="go">connected to tcp://node01:5555</span>
 </pre></div>

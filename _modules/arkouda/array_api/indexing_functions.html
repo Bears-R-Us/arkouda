@@ -379,14 +379,14 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;take&quot;</span><span class="p">,</span>
+    <span class="s2">"take"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="take">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/indexing_functions/index.html#arkouda.array_api.indexing_functions.take">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the specified elements of an array along an axis.</span>
 
 <span class="sd">    Parameters</span>
@@ -397,11 +397,11 @@
 <span class="sd">        A 1D integer array of indices to take from `x`</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis along which to take elements. If None, `x` must be 1D.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">take</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;axis must be specified for multidimensional arrays&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"axis must be specified for multidimensional arrays"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">take</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">indices</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span></div>
 

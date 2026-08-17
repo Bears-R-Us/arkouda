@@ -387,9 +387,9 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"Strings"</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;from_series&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"from_series"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="from_series">
@@ -397,13 +397,13 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_series</span><span class="p">(</span>
     <span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="s2">&quot;Strings&quot;</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="s2">"Strings"</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert a pandas ``Series`` to an Arkouda ``pdarray`` or ``Strings``.</span>
 
 <span class="sd">    If ``dtype`` is not provided, the dtype is inferred from the pandas</span>
 <span class="sd">    ``Series`` (using pandas dtype metadata). If ``dtype`` is provided, it</span>
-<span class="sd">    is used as an override and normalized via Arkouda&#39;s dtype resolution rules.</span>
+<span class="sd">    is used as an override and normalized via Arkouda's dtype resolution rules.</span>
 
 <span class="sd">    In addition to the core numeric and boolean types, this function supports</span>
 <span class="sd">    datetime and timedelta ``Series`` of any resolution (``ns``, ``us``, ``ms``,</span>
@@ -418,8 +418,8 @@
 <span class="sd">        a NumPy scalar type (e.g. ``np.int64``), or a dtype string.</span>
 
 <span class="sd">        String-like spellings are normalized to Arkouda string dtype, including</span>
-<span class="sd">        ``&quot;object&quot;``, ``&quot;str&quot;``, ``&quot;string&quot;``, ``&quot;string[python]&quot;``, and</span>
-<span class="sd">        ``&quot;string[pyarrow]&quot;``.</span>
+<span class="sd">        ``"object"``, ``"str"``, ``"string"``, ``"string[python]"``, and</span>
+<span class="sd">        ``"string[pyarrow]"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -445,7 +445,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.randint(0, 10, 5)))</span>
 <span class="sd">    array([4 3 3 5 0])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;]), dtype=np.int64)</span>
+<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(['1', '2', '3', '4', '5']), dtype=np.int64)</span>
 <span class="sd">    array([1 2 3 4 5])</span>
 
 <span class="sd">    Floats:</span>
@@ -462,15 +462,15 @@
 
 <span class="sd">    Strings (pandas dtype spellings normalized to Arkouda ``Strings``):</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;], dtype=&quot;string&quot;))</span>
-<span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))</span>
+<span class="sd">    array(['a', 'b', 'c', 'd', 'e'])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], dtype=&quot;string[pyarrow]&quot;))</span>
-<span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(['a', 'b', 'c'], dtype="string[pyarrow]"))</span>
+<span class="sd">    array(['a', 'b', 'c'])</span>
 
 <span class="sd">    Datetime (any resolution is accepted and returned as ``int64`` nanoseconds):</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(pd.to_datetime([&#39;1/1/2018&#39;, np.datetime64(&#39;2018-01-01&#39;)])))</span>
+<span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))</span>
 <span class="sd">    array([1514764800000000000 1514764800000000000])</span>
 
 <span class="sd">    Notes</span>
@@ -479,7 +479,7 @@
 
 <span class="sd">    String-like pandas dtypes (including ``object``) are treated as string</span>
 <span class="sd">    and converted to Arkouda ``Strings``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dtype</span><span class="p">:</span>
@@ -488,29 +488,29 @@
         <span class="n">dt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="c1"># normalize pandas string dtype spellings</span>
-    <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;string[python]&quot;</span><span class="p">,</span> <span class="s2">&quot;string[pyarrow]&quot;</span><span class="p">}:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"object"</span><span class="p">,</span> <span class="s2">"str"</span><span class="p">,</span> <span class="s2">"string[python]"</span><span class="p">,</span> <span class="s2">"string[pyarrow]"</span><span class="p">}:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="s2">"string"</span>
 
     <span class="k">try</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        If the Series has a object dtype, set dtype to string to comply with method</span>
 <span class="sd">        signature that does not require a dtype; this is required because Pandas can infer</span>
 <span class="sd">        non-str dtypes from the input np or Python array.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># handle datetime/timedelta with any resolution (us, ms, ns, ...)</span>
-        <span class="k">if</span> <span class="n">series</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">series</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"M"</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">):</span>
             <span class="c1"># normalize to ns then convert to int64 nanoseconds</span>
-            <span class="k">if</span> <span class="n">series</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;M&quot;</span><span class="p">:</span>
-                <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;datetime64[ns]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">series</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"M"</span><span class="p">:</span>
+                <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">"datetime64[ns]"</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;timedelta64[ns]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+                <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">"timedelta64[ns]"</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">n_array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
 
         <span class="n">n_array</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">SeriesDTypes</span><span class="p">[</span><span class="n">dt</span><span class="p">])</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;dtype </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is unsupported. Supported dtypes are bool, float64, int64, string, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;datetime64[ns], and timedelta64[ns]&quot;</span>
+            <span class="sa">f</span><span class="s2">"dtype </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is unsupported. Supported dtypes are bool, float64, int64, string, "</span>
+            <span class="sa">f</span><span class="s2">"datetime64[ns], and timedelta64[ns]"</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">n_array</span><span class="p">)</span></div>
 

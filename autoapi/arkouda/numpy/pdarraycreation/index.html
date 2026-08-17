@@ -647,9 +647,9 @@ this function recursively creates a <cite>Strings</cite> object from two interna
 <span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">'string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
-<span class="go">&lt;class &#39;arkouda.numpy.strings.Strings&#39;&gt;</span>
+<span class="go">&lt;class 'arkouda.numpy.strings.Strings'&gt;</span>
 </pre></div>
 </div>
 </section>
@@ -1072,7 +1072,7 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span><span class="p">,</span> <span class="n">promoted</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">promote_to_common_dtype</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span>
-<span class="go">dtype(&#39;float64&#39;)</span>
+<span class="go">dtype('float64')</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">promoted</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
@@ -1170,11 +1170,11 @@ zero, and a heavy tail towards longer strings.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_lognormal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([&#39;VWHJEX&#39;, &#39;BEBBXJHGM&#39;, &#39;RWOVKBUR&#39;, &#39;LNJCSDXD&#39;, &#39;NKEDQC&#39;])</span>
+<span class="go">array(['VWHJEX', 'BEBBXJHGM', 'RWOVKBUR', 'LNJCSDXD', 'NKEDQC'])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_lognormal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">characters</span><span class="o">=</span><span class="s1">&#39;printable&#39;</span><span class="p">)</span>
-<span class="go">array([&#39;eL96&lt;O&#39;, &#39;)o-GOe lR&#39;, &#39;)PV yHf(&#39;, &#39;._b3Yc&amp;K&#39;, &#39;,7Wjef&#39;])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_lognormal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">characters</span><span class="o">=</span><span class="s1">'printable'</span><span class="p">)</span>
+<span class="go">array(['eL96&lt;O', ')o-GOe lR', ')PV yHf(', '._b3Yc&amp;K', ',7Wjef'])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1211,12 +1211,12 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_uniform</span><span class="p">(</span><span class="n">minlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">8675309</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([&#39;ECWO&#39;, &#39;WSS&#39;, &#39;TZG&#39;, &#39;RW&#39;, &#39;C&#39;])</span>
+<span class="go">array(['ECWO', 'WSS', 'TZG', 'RW', 'C'])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">random_strings_uniform</span><span class="p">(</span><span class="n">minlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">8675309</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-<span class="gp">... </span><span class="n">characters</span><span class="o">=</span><span class="s1">&#39;printable&#39;</span><span class="p">)</span>
-<span class="go">array([&#39;2 .z&#39;, &#39;aom&#39;, &#39;2d|&#39;, &#39;o(&#39;, &#39;M&#39;])</span>
+<span class="gp">... </span><span class="n">characters</span><span class="o">=</span><span class="s1">'printable'</span><span class="p">)</span>
+<span class="go">array(['2 .z', 'aom', '2d|', 'o(', 'M'])</span>
 </pre></div>
 </div>
 </dd></dl>

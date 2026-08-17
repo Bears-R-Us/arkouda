@@ -418,7 +418,7 @@ to it with the python client using another Linux terminal running on WSL <em>or<
 on Windows such as VcXsrv, X410, or an alternative.  Follow the setup instructions for whichever one you choose, but
 keep in mind you may need to update your Windows firewall to allow the Xserver to connect.  Also, on the Linux side of
 the house we found it necessary to add</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>/etc/resolv.conf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nameserver<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2; exit;}&#39;</span><span class="k">)</span>:0.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>/etc/resolv.conf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nameserver<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'{print $2; exit;}'</span><span class="k">)</span>:0.0
 </pre></div>
 </div>
 <p>to our <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file to get the display correctly forwarded.</p>

@@ -418,13 +418,13 @@ structures.</p>
 </pre></div>
 </div>
 <p>Create Fields with named binary flags:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Fields</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">],</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Fields</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">'read'</span><span class="p">,</span> <span class="s1">'write'</span><span class="p">,</span> <span class="s1">'exec'</span><span class="p">],</span> <span class="n">separator</span><span class="o">=</span><span class="s1">':'</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">--:--:read (1)</span>
 </pre></div>
 </div>
 <p>Convert and work with IP addresses:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ips</span> <span class="o">=</span> <span class="n">ip_address</span><span class="p">([</span><span class="s1">&#39;192.168.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;10.0.0.1&#39;</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ips</span> <span class="o">=</span> <span class="n">ip_address</span><span class="p">([</span><span class="s1">'192.168.0.1'</span><span class="p">,</span> <span class="s1">'10.0.0.1'</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ips</span><span class="p">)</span>
 <span class="go">IPv4([192.168.0.1,</span>
 <span class="go">      10.0.0.1],</span>

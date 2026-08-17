@@ -417,16 +417,16 @@ one of the following modes:</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">geterr</span><span class="p">()</span>
-<span class="go">{&#39;divide&#39;: &#39;ignore&#39;, &#39;over&#39;: &#39;ignore&#39;, &#39;under&#39;: &#39;ignore&#39;, &#39;invalid&#39;: &#39;ignore&#39;}</span>
+<span class="go">{'divide': 'ignore', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ak</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ak</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"warn"</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">out</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">0</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">myhandler</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[ak] </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;call&quot;</span><span class="p">)</span>
-<span class="go">{&#39;divide&#39;: &#39;ignore&#39;, &#39;over&#39;: &#39;ignore&#39;, &#39;under&#39;: &#39;ignore&#39;, &#39;invalid&#39;: &#39;ignore&#39;}</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">myhandler</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[ak] </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"call"</span><span class="p">)</span>
+<span class="go">{'divide': 'ignore', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">seterrcall</span><span class="p">(</span><span class="n">myhandler</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">0</span>
 <span class="go">[ak] divide: divide by zero encountered</span>
@@ -483,11 +483,11 @@ block will be executed with the temporary error handling settings.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">geterr</span><span class="p">()</span>
-<span class="go">{&#39;divide&#39;: &#39;call&#39;, &#39;over&#39;: &#39;ignore&#39;, &#39;under&#39;: &#39;ignore&#39;, &#39;invalid&#39;: &#39;ignore&#39;}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ak</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">):</span>
+<span class="go">{'divide': 'call', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ak</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">'warn'</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">0</span>  <span class="c1"># gives a warning</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">geterr</span><span class="p">()[</span><span class="s1">&#39;divide&#39;</span><span class="p">]</span>
-<span class="go">&#39;ignore&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">geterr</span><span class="p">()[</span><span class="s1">'divide'</span><span class="p">]</span>
+<span class="go">'ignore'</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>

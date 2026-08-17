@@ -396,7 +396,7 @@ However, if you have manually installed dependencies (such as ZeroMQ or HDF5), y
 <h4>Using <code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#using-conda" title="Link to this heading">¶</a></h4>
 <p>If you are using a conda environment to manage your dependencies. All you need to do is <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span></code> that
 environment and run this command:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo -e &quot;\$(eval \$(call add-path,$CONDA_PREFIX))&quot; &gt;&gt; Makefile.paths</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo -e "\$(eval \$(call add-path,$CONDA_PREFIX))" &gt;&gt; Makefile.paths</span>
 </pre></div>
 </div>
 </section>
@@ -412,7 +412,7 @@ environment and run this command:</p>
 </div>
 <p>The path may vary based on the installation location of pip and your environment name.
 Here are some tips to locate the path.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>when<span class="w"> </span>installing<span class="w"> </span>via<span class="w"> </span>pip,<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>pip<span class="w"> </span>show<span class="sb">`</span><span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>package<span class="w"> </span>you<span class="err">&#39;</span>ve<span class="w"> </span>installed<span class="w"> </span>with<span class="w"> </span>pip
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>when<span class="w"> </span>installing<span class="w"> </span>via<span class="w"> </span>pip,<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>pip<span class="w"> </span>show<span class="sb">`</span><span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>package<span class="w"> </span>you<span class="err">'</span>ve<span class="w"> </span>installed<span class="w"> </span>with<span class="w"> </span>pip
 <span class="gp">% </span>pip<span class="w"> </span>show<span class="w"> </span>hdf5<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Location
 <span class="go">Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site-packages</span>
 </pre></div>
@@ -478,10 +478,33 @@ pip<span class="w"> </span>install<span class="w"> </span>boost<span class="w"> 
 </pre></div>
 </div>
 </section>
+<section id="chapel-parquet-package">
+<h4>Chapel Parquet Package<a class="headerlink" href="#chapel-parquet-package" title="Link to this heading">¶</a></h4>
+<p>The server build downloads and compiles the Chapel <code class="docutils literal notranslate"><span class="pre">Parquet</span></code> package into
+<code class="docutils literal notranslate"><span class="pre">dep/build/Parquet</span></code>. Arrow and Parquet C++ libraries must still be available
+through <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> as described above.</p>
+<p>You can optionally build against an existing package checkout or select a different
+repository reference. You can also download the <code class="docutils literal notranslate"><span class="pre">Parquet</span></code> source ahead of time
+using <code class="docutils literal notranslate"><span class="pre">wget</span> <span class="pre">https://github.com/chapel-lang/Parquet/archive/refs/heads/main.tar.gz</span></code>,
+untar it, and then point <code class="docutils literal notranslate"><span class="pre">ARKOUDA_PARQUET_SRC_DIR</span></code> to the untarred location before running <code class="docutils literal notranslate"><span class="pre">make</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use an existing checkout without cloning it into dep/build.</span>
+<span class="nv">ARKOUDA_PARQUET_SRC_DIR</span><span class="o">=</span>/path/to/Parquet<span class="w"> </span>make
+
+<span class="c1"># Select a branch or tag when creating a new checkout.</span>
+<span class="nv">ARKOUDA_PARQUET_REF</span><span class="o">=</span>my-branch<span class="w"> </span>make
+
+<span class="c1"># Relocate Arkouda's downloaded checkout.</span>
+make<span class="w"> </span><span class="nv">PARQUET_INSTALL_DIR</span><span class="o">=</span>/path/to/build/Parquet
+</pre></div>
+</div>
+<p>Delete the downloaded checkout before changing <code class="docutils literal notranslate"><span class="pre">ARKOUDA_PARQUET_REF</span></code>; an
+existing checkout is reused as-is. <code class="docutils literal notranslate"><span class="pre">ARKOUDA_PARQUET_REPO</span></code> can override the
+default package repository.</p>
+</section>
 <section id="distributable-package">
 <h4>Distributable Package<a class="headerlink" href="#distributable-package" title="Link to this heading">¶</a></h4>
 <p>Alternatively you can build a distributable package:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># We&#39;ll use a virtual environment to build</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># We'll use a virtual environment to build</span>
 python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>build-client-env
 <span class="nb">source</span><span class="w"> </span>build-client-env/bin/activate
 python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>build<span class="w"> </span>wheel<span class="w"> </span>versioneer
@@ -520,7 +543,7 @@ If you are running in wsl or a container and your build fails, consider increasi
 <section id="chapel-instantiation-limit-errors">
 <h3>Chapel Instantiation Limit Errors<a class="headerlink" href="#chapel-instantiation-limit-errors" title="Link to this heading">¶</a></h3>
 <p>If you encounter an error similar to the following during the build:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$CHPL_HOME</span>/modules/standard/CTypes.chpl:611:<span class="w"> </span>error:<span class="w"> </span>Function<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>instantiated<span class="w"> </span>too<span class="w"> </span>many<span class="w"> </span><span class="nb">times</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$CHPL_HOME</span>/modules/standard/CTypes.chpl:611:<span class="w"> </span>error:<span class="w"> </span>Function<span class="w"> </span><span class="s1">':'</span><span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>instantiated<span class="w"> </span>too<span class="w"> </span>many<span class="w"> </span><span class="nb">times</span>
 note:<span class="w"> </span>If<span class="w"> </span>this<span class="w"> </span>is<span class="w"> </span>intentional,<span class="w"> </span>try<span class="w"> </span>increasing<span class="w"> </span>the<span class="w"> </span>instantiation<span class="w"> </span>limit<span class="w"> </span>from<span class="w"> </span><span class="m">512</span>
 make:<span class="w"> </span>***<span class="w"> </span><span class="o">[</span>Makefile:575:<span class="w"> </span>arkouda_server<span class="o">]</span><span class="w"> </span>Error<span class="w"> </span><span class="m">1</span>
 </pre></div>
@@ -536,7 +559,7 @@ This flag passes <code class="docutils literal notranslate"><span class="pre">--
 <h3>Overriding Supported Array Dimensions<a class="headerlink" href="#overriding-supported-array-dimensions" title="Link to this heading">¶</a></h3>
 <p>Arkouda generates its server-side command registry from a JSON configuration that specifies which array dimensionalities (<code class="docutils literal notranslate"><span class="pre">nd</span></code>) are supported.</p>
 <p>By default, this value is set to:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;nd&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="m">1</span><span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s2">"nd"</span>:<span class="w"> </span><span class="o">[</span><span class="m">1</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>If you want to build Arkouda with support for additional array dimensions, you can override this at build time by specifying the environment variable <code class="docutils literal notranslate"><span class="pre">ARRAY_ND_MAX</span></code> when invoking <code class="docutils literal notranslate"><span class="pre">make</span></code>.</p>
@@ -674,6 +697,7 @@ Arkouda documentation homepage will be displayed.</p>
 </li>
 <li><a class="reference internal" href="#individual-installs">Individual Installs</a></li>
 <li><a class="reference internal" href="#arrow-install-troubleshooting">Arrow Install Troubleshooting</a></li>
+<li><a class="reference internal" href="#chapel-parquet-package">Chapel Parquet Package</a></li>
 <li><a class="reference internal" href="#distributable-package">Distributable Package</a></li>
 <li><a class="reference internal" href="#installing-the-chapel-py-dependency-manually">installing the <code class="docutils literal notranslate"><span class="pre">chapel-py</span></code> dependency manually</a></li>
 </ul>

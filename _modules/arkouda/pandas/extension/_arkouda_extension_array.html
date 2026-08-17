@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.extension._arkouda_extension_array</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Base extension array infrastructure for Arkouda-backed pandas objects.</span>
 
 <span class="sd">This module defines :class:`ArkoudaExtensionArray`, an abstract base class implementing</span>
@@ -393,8 +393,8 @@
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
-<span class="sd">This module is designed to integrate with pandas&#39; extension array interface. It</span>
-<span class="sd">is used internally by Arkouda&#39;s pandas extension types and not generally part of</span>
+<span class="sd">This module is designed to integrate with pandas' extension array interface. It</span>
+<span class="sd">is used internally by Arkouda's pandas extension types and not generally part of</span>
 <span class="sd">the public user-facing API. Subclasses must implement certain abstract or</span>
 <span class="sd">datatype-specific methods, such as ``_fill_missing``.</span>
 
@@ -415,7 +415,7 @@
 <span class="sd">&gt;&gt;&gt; a.take(idx, allow_fill=True, fill_value=99).to_numpy()</span>
 <span class="sd">array([ 1, 99,  3])</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -438,13 +438,13 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"Strings"</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_ensure_numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"_ensure_numpy"</span><span class="p">,</span> <span class="s2">"ArkoudaExtensionArray"</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;to_ndarray&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">"to_ndarray"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
@@ -461,7 +461,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the number of elements in the array.</span>
 
 <span class="sd">        Returns</span>
@@ -474,7 +474,7 @@
 <span class="sd">        This method delegates to ``len(self._data)``, which uses the length</span>
 <span class="sd">        protocol defined by the underlying Arkouda object (e.g., ``pdarray`` or</span>
 <span class="sd">        ``Strings``). Equivalent to querying ``self._data.size``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -486,7 +486,7 @@
         <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">op</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">NotImplementedType</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply an elementwise arithmetic operation between this ExtensionArray and</span>
 <span class="sd">        ``other``.</span>
 
@@ -522,10 +522,10 @@
 <span class="sd">          at the Series/DataFrame level before calling into the ExtensionArray.</span>
 <span class="sd">        * Type coercion / promotion behavior is determined by the underlying Arkouda</span>
 <span class="sd">          implementation of ``op``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">):</span>
             <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
                 <span class="n">other</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -544,7 +544,7 @@
 <div class="viewcode-block" id="ArkoudaExtensionArray.copy">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a copy of the array.</span>
 
 <span class="sd">        Parameters</span>
@@ -599,7 +599,7 @@
 
 <span class="sd">        &gt;&gt;&gt; arr._data is c2._data</span>
 <span class="sd">        False</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">deep</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">data</span><span class="p">)</span></div>
 
@@ -608,7 +608,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._concat_same_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_concat_same_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">to_concat</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Concatenate a sequence of same-type extension arrays into a new instance.</span>
 
 <span class="sd">        Parameters</span>
@@ -625,12 +625,12 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If `to_concat` is empty, contains mixed types, or has incompatible dtypes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">seq</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">to_concat</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">seq</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;to_concat must contain at least one array&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"to_concat must contain at least one array"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All items passed to _concat_same_type must be instances of the same class&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All items passed to _concat_same_type must be instances of the same class"</span><span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">_data</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">ak_concat</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -645,8 +645,8 @@
         <span class="n">scalars</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ArkoudaExtensionArray"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Construct an Arkouda-backed pandas ExtensionArray from Arkouda objects</span>
 <span class="sd">        or Python/NumPy scalars.</span>
 
@@ -661,7 +661,7 @@
 <span class="sd">          :class:`~arkouda.pandas.categorical.Categorical`</span>
 
 <span class="sd">        This method is the primary construction hook used by pandas when creating</span>
-<span class="sd">        Arkouda-backed arrays via ``pd.array(..., dtype=&quot;ak&quot;)``.</span>
+<span class="sd">        Arkouda-backed arrays via ``pd.array(..., dtype="ak")``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -670,7 +670,7 @@
 <span class="sd">            ``Categorical``) or a sequence of Python/NumPy scalars.</span>
 <span class="sd">        dtype : object, optional</span>
 <span class="sd">            Pandas-provided dtype argument. The generic Arkouda dtype</span>
-<span class="sd">            (``&quot;ak&quot;`` or :class:`ArkoudaDtype`) is interpreted as a request for</span>
+<span class="sd">            (``"ak"`` or :class:`ArkoudaDtype`) is interpreted as a request for</span>
 <span class="sd">            backend inference and is ignored during server-side construction.</span>
 <span class="sd">            Concrete Arkouda dtypes are not interpreted here.</span>
 <span class="sd">        copy : bool, default False</span>
@@ -703,10 +703,10 @@
 
 <span class="sd">        From Arkouda Strings:</span>
 
-<span class="sd">        &gt;&gt;&gt; s = ak.array([&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; s = ak.array(["red", "green", "blue"])</span>
 <span class="sd">        &gt;&gt;&gt; ea = ArkoudaExtensionArray._from_sequence(s)</span>
 <span class="sd">        &gt;&gt;&gt; ea</span>
-<span class="sd">        ArkoudaStringArray([&#39;red&#39;, &#39;green&#39;, &#39;blue&#39;])</span>
+<span class="sd">        ArkoudaStringArray(['red', 'green', 'blue'])</span>
 
 <span class="sd">        From Python scalars (type inferred server-side):</span>
 
@@ -720,7 +720,7 @@
 <span class="sd">        &gt;&gt;&gt; ea = ArkoudaExtensionArray._from_sequence([1, np.int64(2), 3])</span>
 <span class="sd">        &gt;&gt;&gt; ea</span>
 <span class="sd">        ArkoudaArray([1 2 3])</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
@@ -732,16 +732,16 @@
 
         <span class="c1"># dtype may be:</span>
         <span class="c1">#   - None</span>
-        <span class="c1">#   - a string like &quot;ak&quot; or &quot;ak_int64&quot;</span>
+        <span class="c1">#   - a string like "ak" or "ak_int64"</span>
         <span class="c1">#   - an ExtensionDtype instance (e.g. ArkoudaDtype())</span>
 
-        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;ak&quot;</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaDtype</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">"ak"</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaDtype</span><span class="p">):</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ExtensionDtype</span><span class="p">)</span>
             <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;_numpy_dtype&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">"_numpy_dtype"</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">_numpy_dtype</span>
 
@@ -750,7 +750,7 @@
         <span class="c1"># TODO: streamline Categorical handling</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">ak_Categorical</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">):</span>
-                <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">ak_Categorical</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">))</span>
+                <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">ak_Categorical</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"str_"</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -766,16 +766,16 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">,</span> <span class="n">ak_Categorical</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">ArkoudaCategorical</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported Arkouda construction result: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported Arkouda construction result: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fill_missing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Subclasses must implement _fill_missing&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Subclasses must implement _fill_missing"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.take">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.take">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexer</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_fill</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Take elements by (0-based) position, returning a new array.</span>
 
 <span class="sd">        This implementation:</span>
@@ -786,7 +786,7 @@
 <span class="sd">            negative index raises ``ValueError``.</span>
 <span class="sd">          * validates bounds (raising IndexError) when allow_fill=True,</span>
 <span class="sd">          * gathers once, then fills masked positions in a single pass.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
@@ -794,9 +794,9 @@
 
         <span class="c1"># Normalize indexer to ak int64</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indexer</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">indexer</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">indexer</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">indexer</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;int64&quot;</span><span class="p">:</span>
-            <span class="n">indexer</span> <span class="o">=</span> <span class="n">indexer</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+            <span class="n">indexer</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">indexer</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int64"</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">indexer</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">"int64"</span><span class="p">:</span>
+            <span class="n">indexer</span> <span class="o">=</span> <span class="n">indexer</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)</span>
 
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -814,7 +814,7 @@
             <span class="c1"># Bounds check (pandas/NumPy behavior): any remaining OOB → IndexError</span>
             <span class="n">oob</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_fix</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">idx_fix</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">oob</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;indexer out of bounds in take&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">"indexer out of bounds in take"</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">idx_fix</span><span class="p">])</span>
 
@@ -822,7 +822,7 @@
 
         <span class="c1"># Only -1 is allowed as a sentinel for missing</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">indexer</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid negative indexer when allow_fill=True&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid negative indexer when allow_fill=True"</span><span class="p">)</span>
 
         <span class="c1"># Resolve fill_value</span>
         <span class="k">if</span> <span class="n">fill_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -831,7 +831,7 @@
         <span class="c1"># Pandas commonly passes fill_value=-1 for integer-like data when allow_fill=True.</span>
         <span class="c1"># That cannot be represented in unsigned dtypes; fall back to a safe fill.</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;kind&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span> <span class="ow">and</span> <span class="n">fill_value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"u"</span> <span class="ow">and</span> <span class="n">fill_value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">fill_value</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="c1"># Non-numeric fill_value; let the cast below raise a sensible error</span>
@@ -847,7 +847,7 @@
         <span class="c1"># Bounds check for the non-missing positions</span>
         <span class="n">oob</span> <span class="o">=</span> <span class="p">((</span><span class="n">idx_fix</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">idx_fix</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">oob</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;indexer out of bounds in take with allow_fill=True&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">"indexer out of bounds in take with allow_fill=True"</span><span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">idx_fix</span><span class="p">]</span>
 
@@ -862,8 +862,8 @@
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.factorize">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.factorize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">factorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_na_sentinel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">],</span> <span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">factorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_na_sentinel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">],</span> <span class="s2">"ArkoudaExtensionArray"</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Encode the values of this array as integer codes and unique values.</span>
 
 <span class="sd">        This is similar to :func:`pandas.factorize`, but the grouping/factorization</span>
@@ -899,7 +899,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        * Only floating-point dtypes treat ``NaN`` as missing; for other dtypes,</span>
 <span class="sd">          all values are treated as non-missing.</span>
-<span class="sd">        * ``uniques`` are constructed from Arkouda&#39;s unique keys and returned as</span>
+<span class="sd">        * ``uniques`` are constructed from Arkouda's unique keys and returned as</span>
 <span class="sd">          ``type(self)(uniques_ak)`` so that pandas internals (e.g. ``groupby``)</span>
 <span class="sd">          can treat them as an ExtensionArray.</span>
 <span class="sd">        * String/None/null missing-value behavior is not yet unified with pandas.</span>
@@ -914,7 +914,7 @@
 <span class="sd">        array([0, 1, 0, 2])</span>
 <span class="sd">        &gt;&gt;&gt; uniques</span>
 <span class="sd">        ArkoudaArray([1 2 3])</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARKOUDA_SUPPORTED_FLOATS</span><span class="p">,</span> <span class="n">bool_</span><span class="p">,</span> <span class="n">int64</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
@@ -966,8 +966,8 @@
         <span class="n">codes_nn</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">groupid_to_code</span><span class="p">)</span>
 
         <span class="c1"># Assemble full codes with sentinel</span>
-        <span class="n">sentinel</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">use_na_sentinel</span> <span class="k">else</span> <span class="n">uniques_ak</span><span class="o">.</span><span class="n">size</span>
-        <span class="n">codes_ak</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">sentinel</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+        <span class="nb">sentinel</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">use_na_sentinel</span> <span class="k">else</span> <span class="n">uniques_ak</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">codes_ak</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">sentinel</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
         <span class="n">codes_ak</span><span class="p">[</span><span class="n">non_na</span><span class="p">]</span> <span class="o">=</span> <span class="n">codes_nn</span>
 
         <span class="n">codes_np</span> <span class="o">=</span> <span class="n">codes_ak</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -979,8 +979,8 @@
 <div class="viewcode-block" id="ArkoudaExtensionArray._values_for_factorize">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._values_for_factorize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_values_for_factorize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Return a small NumPy &quot;codes-like&quot; view + na_value</span>
-        <span class="c1"># If you can&#39;t return codes here, still return a compact NumPy representation.</span>
+        <span class="c1"># Return a small NumPy "codes-like" view + na_value</span>
+        <span class="c1"># If you can't return codes here, still return a compact NumPy representation.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_factorize_view</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>  <span class="c1"># both NumPy</span></div>
 
 
@@ -995,7 +995,7 @@
 <div class="viewcode-block" id="ArkoudaExtensionArray.to_numpy">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.to_numpy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert the array to a NumPy ndarray.</span>
 
 <span class="sd">        Parameters</span>
@@ -1011,7 +1011,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        numpy.ndarray</span>
 <span class="sd">            NumPy array representation of the data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
@@ -1026,7 +1026,7 @@
 <div class="viewcode-block" id="ArkoudaExtensionArray.to_ndarray">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert to a NumPy ndarray, without any dtype conversion or copy options.</span>
 
 <span class="sd">        Returns</span>
@@ -1036,11 +1036,11 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        This is a lightweight convenience wrapper around the backend&#39;s</span>
+<span class="sd">        This is a lightweight convenience wrapper around the backend's</span>
 <span class="sd">        ``.to_ndarray()`` method. Unlike :meth:`to_numpy`, this method does</span>
 <span class="sd">        not accept ``dtype`` or ``copy`` arguments and always performs a</span>
 <span class="sd">        materialization step.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span></div>
 
 
@@ -1050,10 +1050,10 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;quicksort&quot;</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"quicksort"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the indices that would sort the array.</span>
 
 <span class="sd">        This method computes the permutation indices that would sort the underlying</span>
@@ -1069,13 +1069,13 @@
 <span class="sd">        ascending : bool, default True</span>
 <span class="sd">            If True, sort values in ascending order. If False, sort in descending</span>
 <span class="sd">            order.</span>
-<span class="sd">        kind : str, default &quot;quicksort&quot;</span>
+<span class="sd">        kind : str, default "quicksort"</span>
 <span class="sd">            Sorting algorithm. Present for API compatibility with NumPy and pandas</span>
 <span class="sd">            but currently ignored.</span>
 <span class="sd">        **kwargs</span>
 <span class="sd">            Additional keyword arguments for compatibility. Supported keyword:</span>
 
-<span class="sd">            * ``na_position`` : {&quot;first&quot;, &quot;last&quot;}, default &quot;last&quot;</span>
+<span class="sd">            * ``na_position`` : {"first", "last"}, default "last"</span>
 <span class="sd">              Where to place ``NaN`` values in the sorted result. This option is</span>
 <span class="sd">              currently only applied for floating-point ``pdarray`` data; for</span>
 <span class="sd">              ``Strings`` and ``Categorical`` data it has no effect.</span>
@@ -1089,7 +1089,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            If ``na_position`` is not &quot;first&quot; or &quot;last&quot;.</span>
+<span class="sd">            If ``na_position`` is not "first" or "last".</span>
 <span class="sd">        TypeError</span>
 <span class="sd">            If the underlying data type does not support sorting.</span>
 
@@ -1106,12 +1106,12 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
-<span class="sd">        &gt;&gt;&gt; a = ArkoudaArray(ak.array([3.0, float(&quot;nan&quot;), 1.0]))</span>
+<span class="sd">        &gt;&gt;&gt; a = ArkoudaArray(ak.array([3.0, float("nan"), 1.0]))</span>
 <span class="sd">        &gt;&gt;&gt; a.argsort() # NA last by default</span>
 <span class="sd">        array([2, 0, 1])</span>
-<span class="sd">        &gt;&gt;&gt; a.argsort(na_position=&quot;first&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort(na_position="first")</span>
 <span class="sd">        array([1, 2, 0])</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span>
@@ -1120,10 +1120,10 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="c1"># Extract na_position from kwargs</span>
-        <span class="n">na_position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;na_position&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">)</span>
+        <span class="n">na_position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"na_position"</span><span class="p">,</span> <span class="s2">"last"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">na_position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">}:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;na_position must be &#39;first&#39; or &#39;last&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">na_position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"first"</span><span class="p">,</span> <span class="s2">"last"</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"na_position must be 'first' or 'last'."</span><span class="p">)</span>
 
         <span class="n">perm</span><span class="p">:</span> <span class="n">pdarray</span>
 
@@ -1132,12 +1132,12 @@
 
             <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">):</span>
                 <span class="n">is_nan</span> <span class="o">=</span> <span class="n">ak_isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)[</span><span class="n">perm</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">na_position</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">na_position</span> <span class="o">==</span> <span class="s2">"last"</span><span class="p">:</span>
                     <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">]])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">]])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported argsort dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported argsort dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">perm</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -1145,7 +1145,7 @@
 <div class="viewcode-block" id="ArkoudaExtensionArray.view">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.view">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a shallow view of the ExtensionArray.</span>
 
 <span class="sd">        This method is used by pandas internals (e.g. ``BlockManager.copy(deep=False)``)</span>
@@ -1174,7 +1174,7 @@
 <span class="sd">          requested.</span>
 <span class="sd">        * Optional internal attributes (e.g. masks, categorical metadata, caches)</span>
 <span class="sd">          are copied by reference when present, to preserve logical consistency.</span>
-<span class="sd">        * This method exists to satisfy pandas&#39; expectations around ``.view()``</span>
+<span class="sd">        * This method exists to satisfy pandas' expectations around ``.view()``</span>
 <span class="sd">          and ``copy(deep=False)`` semantics for ``ExtensionArray`` implementations.</span>
 
 <span class="sd">        Examples</span>
@@ -1194,8 +1194,8 @@
 <span class="sd">        Requesting a dtype conversion delegates to ``astype`` without copying</span>
 <span class="sd">        the underlying data unless required:</span>
 
-<span class="sd">        &gt;&gt;&gt; v2 = ea.view(dtype=&quot;float64&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; v2.dtype == ea.astype(&quot;float64&quot;).dtype</span>
+<span class="sd">        &gt;&gt;&gt; v2 = ea.view(dtype="float64")</span>
+<span class="sd">        &gt;&gt;&gt; v2.dtype == ea.astype("float64").dtype</span>
 <span class="sd">        True</span>
 
 <span class="sd">        This method is commonly invoked indirectly by pandas during operations</span>
@@ -1203,13 +1203,13 @@
 
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">        &gt;&gt;&gt; s = pd.Series(ea)</span>
-<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({&quot;col&quot;: s})  # does not raise</span>
+<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({"col": s})  # does not raise</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        copy : Create a shallow or deep copy of the array.</span>
 <span class="sd">        astype : Cast the array to a new dtype.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -1217,7 +1217,7 @@
         <span class="n">new</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
         <span class="c1"># copy optional attributes if they exist</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_mask&quot;</span><span class="p">,</span> <span class="s2">&quot;_categories&quot;</span><span class="p">,</span> <span class="s2">&quot;_codes&quot;</span><span class="p">,</span> <span class="s2">&quot;_na_value&quot;</span><span class="p">,</span> <span class="s2">&quot;_cache&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"_mask"</span><span class="p">,</span> <span class="s2">"_categories"</span><span class="p">,</span> <span class="s2">"_codes"</span><span class="p">,</span> <span class="s2">"_na_value"</span><span class="p">,</span> <span class="s2">"_cache"</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
 
@@ -1228,95 +1228,95 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.broadcast_arrays">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">broadcast_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arrays</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;ArkoudaExtensionArray.broadcast_arrays is not implemented in Arkouda yet&quot;</span>
+            <span class="s2">"ArkoudaExtensionArray.broadcast_arrays is not implemented in Arkouda yet"</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.broadcast_to">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.broadcast_to">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.broadcast_to is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.broadcast_to is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.concat">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.concat">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.concat is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.concat is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.duplicated">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.duplicated">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.duplicated is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.duplicated is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.expand_dims">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.expand_dims">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.expand_dims is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.expand_dims is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.permute_dims">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.permute_dims">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">permute_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.permute_dims is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.permute_dims is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.reshape">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.reshape">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.reshape is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.reshape is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.split">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.split">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.split is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.split is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.squeeze">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.squeeze">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.squeeze is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.squeeze is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.stack">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.stack">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;ArkoudaExtensionArray.stack is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"ArkoudaExtensionArray.stack is not implemented in Arkouda yet"</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;__hash__ is not yet implemented for ArkoudaExtensionArray. &quot;</span>
-            <span class="s2">&quot;Use .to_numpy() and hash the result if needed.&quot;</span>
+            <span class="s2">"__hash__ is not yet implemented for ArkoudaExtensionArray. "</span>
+            <span class="s2">"Use .to_numpy() and hash the result if needed."</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.argmax">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;argmax is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"argmax is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.argmin">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.argmin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;argmin is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"argmin is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_mode is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_mode is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_quantile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_quantile is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_quantile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_quantile is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_empty is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_empty is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ArkoudaExtensionArray._accumulate">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._accumulate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_accumulate is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_accumulate is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray._from_sequence_of_strings">
@@ -1324,26 +1324,26 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_sequence_of_strings</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;_from_sequence_of_strings is not yet implemented for ArkoudaExtensionArray.&quot;</span>
+            <span class="s2">"_from_sequence_of_strings is not yet implemented for ArkoudaExtensionArray."</span>
         <span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_values_for_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_values_for_json is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_values_for_json is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_where</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_where is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_where is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.interpolate">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.interpolate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;interpolate is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"interpolate is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray._pad_or_backfill">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._pad_or_backfill">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_pad_or_backfill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_pad_or_backfill is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_pad_or_backfill is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span></div>
 
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -1351,10 +1351,10 @@
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_cmp_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_cmp_method is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_cmp_method is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_logical_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_logical_method is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_logical_method is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># NDArray-backed construction / wrapping</span>
@@ -1362,31 +1362,31 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_backing_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_from_backing_data is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_from_backing_data is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_simple_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_simple_new is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_simple_new is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_box_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_box_func is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_box_func is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_validate_scalar is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"_validate_scalar is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_setitem_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;_validate_setitem_value is not yet implemented for ArkoudaExtensionArray.&quot;</span>
+            <span class="s2">"_validate_setitem_value is not yet implemented for ArkoudaExtensionArray."</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_ndarray_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;_wrap_ndarray_result is not yet implemented for ArkoudaExtensionArray.&quot;</span>
+            <span class="s2">"_wrap_ndarray_result is not yet implemented for ArkoudaExtensionArray."</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_reduction_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;_wrap_reduction_result is not yet implemented for ArkoudaExtensionArray.&quot;</span>
+            <span class="s2">"_wrap_reduction_result is not yet implemented for ArkoudaExtensionArray."</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -1394,36 +1394,36 @@
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reduction_not_implemented</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not yet implemented for ArkoudaExtensionArray."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.kurt">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.kurt">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kurt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">&quot;kurt&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">"kurt"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.median">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.median">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">&quot;median&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">"median"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.sem">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.sem">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">&quot;sem&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">"sem"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.skew">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.skew">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">skew</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">&quot;skew&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">"skew"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray.swapaxes">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.swapaxes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">&quot;swapaxes&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduction_not_implemented</span><span class="p">(</span><span class="s2">"swapaxes"</span><span class="p">)</span></div>
 
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -1431,163 +1431,163 @@
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_string_not_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not supported for ArkoudaExtensionArray.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not supported for ArkoudaExtensionArray."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_capitalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_capitalize&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_capitalize"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_casefold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_casefold&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_casefold"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_contains&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_contains"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_count&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_count"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_encode&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_encode"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_endswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_endswith&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_endswith"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_extract&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_extract"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_find&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_find"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_find_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_find_&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_find_"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_findall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_findall&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_findall"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_fullmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_fullmatch&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_fullmatch"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_get&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_get"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_get_dummies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_get_dummies&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_get_dummies"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_getitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_getitem&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_getitem"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_index&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_index"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isalnum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isalnum&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isalnum"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isalpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isalpha&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isalpha"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isdecimal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isdecimal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isdecimal"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isdigit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isdigit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isdigit"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_islower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_islower&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_islower"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isnumeric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isnumeric&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isnumeric"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isspace&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isspace"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_istitle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_istitle&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_istitle"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_isupper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_isupper&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_isupper"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_join&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_join"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_len</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_len&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_len"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_lower&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_lower"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_lstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_lstrip&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_lstrip"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_map&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_map"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_match&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_match"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_normalize&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_normalize"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_pad&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_pad"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_partition&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_partition"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_removeprefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_removeprefix&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_removeprefix"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_removesuffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_removesuffix&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_removesuffix"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_repeat&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_repeat"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_replace&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_replace"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_rfind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_rfind&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_rfind"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_rindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_rindex&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_rindex"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_rpartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_rpartition&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_rpartition"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_rsplit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_rsplit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_rsplit"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_rstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_rstrip&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_rstrip"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_slice&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_slice"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_slice_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_slice_replace&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_slice_replace"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_split&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_split"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_startswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_startswith&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_startswith"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_strip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_strip&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_strip"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_swapcase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_swapcase&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_swapcase"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_title&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_title"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_translate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_translate"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_upper&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_upper"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">&quot;_str_wrap&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_string_not_supported</span><span class="p">(</span><span class="s2">"_str_wrap"</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

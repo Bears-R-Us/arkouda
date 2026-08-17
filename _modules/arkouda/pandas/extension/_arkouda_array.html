@@ -401,15 +401,15 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">pdarray</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">)</span>
+    <span class="n">pdarray</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"pdarray"</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ArkoudaArray&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ArkoudaArray"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="ArkoudaArray">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaArray</span><span class="p">(</span><span class="n">ArkoudaExtensionArray</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Arkouda-backed numeric/bool pandas ExtensionArray.</span>
 
 <span class="sd">    Wraps or converts supported inputs into an Arkouda ``pdarray`` to serve as the</span>
@@ -451,7 +451,7 @@
 <span class="sd">    ArkoudaArray([0 1 2 3 4])</span>
 <span class="sd">    &gt;&gt;&gt; ArkoudaArray([10, 20, 30])</span>
 <span class="sd">    ArkoudaArray([10 20 30])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">default_fill_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
@@ -472,14 +472,14 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected arkouda.pdarray, ndarray, or ArkoudaArray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Expected arkouda.pdarray, ndarray, or ArkoudaArray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">copy</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"ndim"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;ArkoudaArray must be 1-dimensional, got shape </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;shape&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"ArkoudaArray must be 1-dimensional, got shape </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="s1">'shape'</span><span class="p">,</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
@@ -496,15 +496,15 @@
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;bigint&quot;</span><span class="p">,</span> <span class="s2">&quot;ak.bigint&quot;</span><span class="p">}</span>
-                <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;bigint&quot;</span><span class="p">,</span> <span class="s2">&quot;ak.bigint&quot;</span><span class="p">}</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"bigint"</span><span class="p">,</span> <span class="s2">"ak.bigint"</span><span class="p">}</span>
+                <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"bigint"</span><span class="p">,</span> <span class="s2">"ak.bigint"</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="n">ArkoudaBigintDtype</span>
             <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaBigintDtype</span><span class="p">)</span>
         <span class="p">):</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="s2">"bigint"</span>
 
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;numpy_dtype&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">"numpy_dtype"</span><span class="p">):</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
@@ -515,7 +515,7 @@
                 <span class="n">codes</span> <span class="o">=</span> <span class="n">codes</span><span class="o">.</span><span class="n">_data</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Categorical.codes expected pdarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Categorical.codes expected pdarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">codes</span> <span class="o">=</span> <span class="n">ak_cast</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
@@ -525,7 +525,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve one or more values using a pandas/NumPy-style indexer.</span>
 
 <span class="sd">        Parameters</span>
@@ -581,7 +581,7 @@
 <span class="sd">        &gt;&gt;&gt; mask = np.array([True, False, True, False, True])</span>
 <span class="sd">        &gt;&gt;&gt; arr[mask]</span>
 <span class="sd">        ArkoudaArray([0 2 4])</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
@@ -590,11 +590,11 @@
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"int64"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">):</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;uint64&quot;</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"uint64"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported NumPy index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported NumPy index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># Normalize Python lists</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -609,7 +609,7 @@
                 <span class="n">item_dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">first_dtype</span> <span class="o">!=</span> <span class="n">item_dtype</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Mixed dtypes are not supported: </span><span class="si">{</span><span class="n">item_dtype</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">first_dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Mixed dtypes are not supported: </span><span class="si">{</span><span class="n">item_dtype</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">first_dtype</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
@@ -617,7 +617,7 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported list index type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported list index type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># Perform the indexing operation</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -633,7 +633,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Assign one or more values to the underlying Arkouda array in-place.</span>
 
 <span class="sd">        Parameters</span>
@@ -727,7 +727,7 @@
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
 <span class="sd">        IndexError: Boolean indexer has wrong length: 3 instead of 5</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
@@ -745,17 +745,17 @@
                     <span class="n">has_int</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                        <span class="s2">&quot;Only lists of ints or bools are supported for __setitem__ indexers.&quot;</span>
+                        <span class="s2">"Only lists of ints or bools are supported for __setitem__ indexers."</span>
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">has_bool</span> <span class="ow">and</span> <span class="n">has_int</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Mixed index list dtypes (bool + int) are not supported.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Mixed index list dtypes (bool + int) are not supported."</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">has_bool</span><span class="p">:</span>
                 <span class="c1"># boolean mask must match array length</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Boolean indexer has wrong length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Boolean indexer has wrong length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -804,7 +804,7 @@
         <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">op</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaArray</span> <span class="o">|</span> <span class="n">NotImplementedType</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Perform an elementwise comparison operation.</span>
 
 <span class="sd">        This method implements the pandas ``ExtensionArray`` comparison</span>
@@ -834,14 +834,14 @@
 <span class="sd">        -----</span>
 <span class="sd">        Length compatibility is enforced for elementwise comparisons.</span>
 <span class="sd">        Scalar operands are broadcast. Comparison results are always boolean.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binary_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">op</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">NotImplemented</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_other_for_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Normalize ``other`` for binary operations.</span>
 
 <span class="sd">        Parameters</span>
@@ -858,47 +858,47 @@
 
 <span class="sd">            - ``other_norm`` is the normalized operand (a scalar or an Arkouda ``pdarray``),</span>
 <span class="sd">              or ``None`` when unsupported.</span>
-<span class="sd">            - ``kind`` is one of ``&quot;scalar&quot;``, ``&quot;pdarray&quot;``, or ``&quot;notimpl&quot;``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            - ``kind`` is one of ``"scalar"``, ``"pdarray"``, or ``"notimpl"``.</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaArray</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">&quot;pdarray&quot;</span>
+            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">"pdarray"</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">other</span><span class="p">,</span> <span class="s2">&quot;pdarray&quot;</span>
+            <span class="k">return</span> <span class="n">other</span><span class="p">,</span> <span class="s2">"pdarray"</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">other</span><span class="p">,</span> <span class="s2">&quot;scalar&quot;</span>
+            <span class="k">return</span> <span class="n">other</span><span class="p">,</span> <span class="s2">"scalar"</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="s2">&quot;pdarray&quot;</span>
+            <span class="k">return</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="s2">"pdarray"</span>
 
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;notimpl&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"notimpl"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_compatible_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Enforce elementwise length compatibility.</span>
 <span class="sd">        Allow scalar-broadcast pdarray of size 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other_pdarray</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise operation&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other_pdarray</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Lengths must match for elementwise operation"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_binary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">require_bool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Core binary operator for self &lt;op&gt; other.</span>
 <span class="sd">        `op` should be a callable accepting (lhs, rhs) returning a pdarray/scalar.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">other_norm</span><span class="p">,</span> <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_other_for_binop</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;notimpl&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"notimpl"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-        <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">"bool"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;pdarray&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other_norm</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"pdarray"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other_norm</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"bool"</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">NotImplemented</span>
             <span class="c1"># elementwise length check unless scalar-broadcast pdarray</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_compatible_lengths</span><span class="p">(</span><span class="n">other_norm</span><span class="p">)</span>
@@ -910,16 +910,16 @@
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">other_norm</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_rbinary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">require_bool</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Core binary operator for other &lt;op&gt; self (reverse op).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Core binary operator for other &lt;op&gt; self (reverse op)."""</span>
         <span class="n">other_norm</span><span class="p">,</span> <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_other_for_binop</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;notimpl&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"notimpl"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-        <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">"bool"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;pdarray&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other_norm</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"pdarray"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">require_bool</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other_norm</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"bool"</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">NotImplemented</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_compatible_lengths</span><span class="p">(</span><span class="n">other_norm</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">op</span><span class="p">(</span><span class="n">other_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">))</span>
@@ -930,7 +930,7 @@
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">op</span><span class="p">(</span><span class="n">other_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_unary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Core unary operator, returning ArkoudaArray or NotImplemented.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Core unary operator, returning ArkoudaArray or NotImplemented."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -1036,7 +1036,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># ~ only makes sense for boolean arrays here (or integer bitwise if you later want it)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">"bool"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
 
@@ -1059,14 +1059,14 @@
         <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Cast the array to a specified dtype.</span>
 
 <span class="sd">        Casting rules:</span>
 
 <span class="sd">        * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of</span>
 <span class="sd">          dtype ``object`` containing the array values.</span>
-<span class="sd">        * Otherwise, the target dtype is normalized using Arkouda&#39;s dtype</span>
+<span class="sd">        * Otherwise, the target dtype is normalized using Arkouda's dtype</span>
 <span class="sd">          resolution rules.</span>
 <span class="sd">        * If the normalized dtype matches the current dtype and ``copy=False``,</span>
 <span class="sd">          returns ``self``.</span>
@@ -1094,19 +1094,19 @@
 
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
-<span class="sd">        &gt;&gt;&gt; a = ArkoudaArray(ak.array([1, 2, 3], dtype=&quot;int64&quot;))</span>
-<span class="sd">        &gt;&gt;&gt; a.astype(&quot;float64&quot;).to_ndarray()</span>
+<span class="sd">        &gt;&gt;&gt; a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))</span>
+<span class="sd">        &gt;&gt;&gt; a.astype("float64").to_ndarray()</span>
 <span class="sd">        array([1., 2., 3.])</span>
 
 <span class="sd">        Casting to the same dtype with ``copy=False`` returns the original object:</span>
 
-<span class="sd">        &gt;&gt;&gt; b = a.astype(&quot;int64&quot;, copy=False)</span>
+<span class="sd">        &gt;&gt;&gt; b = a.astype("int64", copy=False)</span>
 <span class="sd">        &gt;&gt;&gt; b is a</span>
 <span class="sd">        True</span>
 
 <span class="sd">        Forcing a copy when the dtype is unchanged returns a new array:</span>
 
-<span class="sd">        &gt;&gt;&gt; c = a.astype(&quot;int64&quot;, copy=True)</span>
+<span class="sd">        &gt;&gt;&gt; c = a.astype("int64", copy=True)</span>
 <span class="sd">        &gt;&gt;&gt; c is a</span>
 <span class="sd">        False</span>
 <span class="sd">        &gt;&gt;&gt; c.to_ndarray()</span>
@@ -1120,15 +1120,15 @@
 <span class="sd">        NumPy and pandas dtype objects are also accepted:</span>
 
 <span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">        &gt;&gt;&gt; a.astype(np.dtype(&quot;bool&quot;)).to_ndarray()</span>
+<span class="sd">        &gt;&gt;&gt; a.astype(np.dtype("bool")).to_ndarray()</span>
 <span class="sd">        array([ True,  True,  True])</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">ak_dtype</span>
 
         <span class="c1"># --- 1) ExtensionDtype branch (satisfies overload #2) ---</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ExtensionDtype</span><span class="p">):</span>
             <span class="c1"># pandas extension dtypes typically have .numpy_dtype</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;numpy_dtype&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">"numpy_dtype"</span><span class="p">):</span>
                 <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
 
             <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span> <span class="o">==</span> <span class="n">dtype</span><span class="p">:</span>
@@ -1139,7 +1139,7 @@
 
         <span class="c1"># --- 2) object -&gt; numpy (satisfies overload #1 / general) ---</span>
 
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">,</span> <span class="s2">"object"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"O"</span><span class="p">)):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
@@ -1153,20 +1153,20 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;int64&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"int64"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaInt64Dtype</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"float64"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaFloat64Dtype</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"bool"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaBoolDtype</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;uint64&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"uint64"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaUint64Dtype</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;uint8&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"uint8"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaUint8Dtype</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"bigint"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ArkoudaBigintDtype</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported dtype </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported dtype </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1181,7 +1181,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reduce the array to a single value (or a small array result) using a named reduction.</span>
 
 <span class="sd">        This implements the pandas ExtensionArray reduction protocol and is called by pandas</span>
@@ -1190,7 +1190,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        name : str</span>
-<span class="sd">            Name of the reduction to perform (e.g., ``&quot;sum&quot;``, ``&quot;min&quot;``, ``&quot;std&quot;``).</span>
+<span class="sd">            Name of the reduction to perform (e.g., ``"sum"``, ``"min"``, ``"std"``).</span>
 <span class="sd">        skipna : bool</span>
 <span class="sd">            Whether to ignore missing values. Accepted for pandas compatibility.</span>
 <span class="sd">            Default is True.</span>
@@ -1218,24 +1218,24 @@
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
 <span class="sd">            If ``name`` is not a recognized reduction.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span>
 
-        <span class="n">ddof</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ddof&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ddof</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ddof"</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="n">op</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_count_nonmissing</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
             <span class="c1"># Minimal NA handling: treat NaN as missing only for float64.</span>
-            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"float64"</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
             <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_first</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># Throw an error for now; pandas often raises or returns NA depending on context.</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Reduction &#39;first&#39; requires at least one element&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Reduction 'first' requires at least one element"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_var</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -1246,21 +1246,21 @@
 
         <span class="c1"># All listed reductions are guaranteed to exist on pdarray for all dtypes</span>
         <span class="n">scalar_fns</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span>
-            <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">_count_nonmissing</span><span class="p">,</span>
-            <span class="s2">&quot;prod&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">prod</span><span class="p">,</span>
-            <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
-            <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
-            <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
-            <span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="n">_var</span><span class="p">,</span>
-            <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="n">_std</span><span class="p">,</span>
-            <span class="s2">&quot;argmin&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">argmin</span><span class="p">,</span>
-            <span class="s2">&quot;argmax&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">argmax</span><span class="p">,</span>
-            <span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="n">_first</span><span class="p">,</span>
-            <span class="s2">&quot;any&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">any</span><span class="p">,</span>
-            <span class="s2">&quot;or&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">any</span><span class="p">,</span>  <span class="c1"># &quot;any&quot; and &quot;or&quot; are the same op</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>
-            <span class="s2">&quot;and&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>  <span class="c1"># &quot;all&quot; and &quot;and&quot; are the same op</span>
+            <span class="s2">"sum"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span>
+            <span class="s2">"count"</span><span class="p">:</span> <span class="n">_count_nonmissing</span><span class="p">,</span>
+            <span class="s2">"prod"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">prod</span><span class="p">,</span>
+            <span class="s2">"min"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
+            <span class="s2">"max"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
+            <span class="s2">"mean"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+            <span class="s2">"var"</span><span class="p">:</span> <span class="n">_var</span><span class="p">,</span>
+            <span class="s2">"std"</span><span class="p">:</span> <span class="n">_std</span><span class="p">,</span>
+            <span class="s2">"argmin"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">argmin</span><span class="p">,</span>
+            <span class="s2">"argmax"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">argmax</span><span class="p">,</span>
+            <span class="s2">"first"</span><span class="p">:</span> <span class="n">_first</span><span class="p">,</span>
+            <span class="s2">"any"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">any</span><span class="p">,</span>
+            <span class="s2">"or"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">any</span><span class="p">,</span>  <span class="c1"># "any" and "or" are the same op</span>
+            <span class="s2">"all"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>
+            <span class="s2">"and"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>  <span class="c1"># "all" and "and" are the same op</span>
         <span class="p">}</span>
 
         <span class="n">fn</span> <span class="o">=</span> <span class="n">scalar_fns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
@@ -1268,21 +1268,21 @@
             <span class="k">return</span> <span class="n">fn</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#   op was not in the keys of scalar_fns:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown reduction &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown reduction '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"ArkoudaArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="c1">#   TODO:  refine this.</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_values_for_factorize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return (values, na_value) as NumPy for pandas.factorize.</span>
-<span class="sd">        Ensure &#39;values&#39; is 1-D numpy array and &#39;na_value&#39; is the sentinel to use.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        Ensure 'values' is 1-D numpy array and 'na_value' is the sentinel to use.</span>
+<span class="sd">        """</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>  <span class="c1"># materialize to numpy</span>
-        <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">}:</span>
-            <span class="n">na</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># strings: empty as sentinel is OK for factorize</span>
-        <span class="k">elif</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">}:</span>
+        <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"U"</span><span class="p">,</span> <span class="s2">"S"</span><span class="p">,</span> <span class="s2">"O"</span><span class="p">}:</span>
+            <span class="n">na</span> <span class="o">=</span> <span class="s2">""</span>  <span class="c1"># strings: empty as sentinel is OK for factorize</span>
+        <span class="k">elif</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"i"</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">}:</span>
             <span class="n">na</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">na</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -1296,31 +1296,31 @@
 <div class="viewcode-block" id="ArkoudaArray.all">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return whether all elements are True.</span>
 
-<span class="sd">        This is mainly to support pandas&#39; BaseExtensionArray.equals, which</span>
+<span class="sd">        This is mainly to support pandas' BaseExtensionArray.equals, which</span>
 <span class="sd">        calls `.all()` on the result of a boolean expression.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaArray.any">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return whether any element is True.</span>
 
 <span class="sd">        Added for symmetry with `.all()` and to support potential pandas</span>
 <span class="sd">        boolean-reduction calls.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">any</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaArray.isna">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray.isna">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a boolean mask indicating missing values.</span>
 
 <span class="sd">        This method implements the pandas ExtensionArray.isna contract</span>
@@ -1337,7 +1337,7 @@
 <span class="sd">        TypeError</span>
 <span class="sd">            If the underlying data buffer does not support missing-value</span>
 <span class="sd">            detection or cannot produce a boolean mask.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
@@ -1348,14 +1348,14 @@
 
         <span class="c1"># SegArray</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;isna is not supported for SegArray-backed ArkoudaArray&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"isna is not supported for SegArray-backed ArkoudaArray"</span><span class="p">)</span>
 
         <span class="c1"># Categorical</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">codes</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
         <span class="c1"># pdarray</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;float32&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"float64"</span><span class="p">,</span> <span class="s2">"float32"</span><span class="p">):</span>
                 <span class="k">return</span> <span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">))</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
 
             <span class="k">return</span> <span class="p">(</span><span class="n">full</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
@@ -1366,14 +1366,14 @@
 <div class="viewcode-block" id="ArkoudaArray.isnull">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray.isnull">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isnull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for isna().&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Alias for isna()."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaArray.value_counts">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray.value_counts">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return counts of unique values as a pandas Series.</span>
 
 <span class="sd">        This method computes the frequency of each distinct value in the</span>
@@ -1417,23 +1417,23 @@
 
 <span class="sd">        Floating-point data with NaN values:</span>
 
-<span class="sd">        &gt;&gt;&gt; b = ArkoudaArray(ak.array([1.0, 2.0, float(&quot;nan&quot;), 1.0]))</span>
+<span class="sd">        &gt;&gt;&gt; b = ArkoudaArray(ak.array([1.0, 2.0, float("nan"), 1.0]))</span>
 <span class="sd">        &gt;&gt;&gt; b.value_counts()</span>
 <span class="sd">        1.0    2</span>
 <span class="sd">        2.0    1</span>
 <span class="sd">        dtype: int64</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
         <span class="c1"># Handle NA only for floats (pandas-compatible)</span>
-        <span class="k">if</span> <span class="n">dropna</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dropna</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">"float64"</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">ak_isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">"int64"</span><span class="p">)</span>
 
         <span class="n">keys</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 

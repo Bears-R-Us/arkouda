@@ -377,18 +377,18 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Row&quot;</span><span class="p">,</span>
+    <span class="s2">"Row"</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Row structure based on UserDict.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <div class="viewcode-block" id="Row">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/row/index.html#arkouda.Row">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Row</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dictionary-like representation of a single row in an Arkouda ``DataFrame``.</span>
 
 <span class="sd">    Wraps the column-to-value mapping for one row and provides convenient</span>
@@ -403,43 +403,43 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; from arkouda.pandas.row import Row</span>
-<span class="sd">    &gt;&gt;&gt; df = ak.DataFrame({&quot;x&quot;: ak.array([10, 20]), &quot;y&quot;: ak.array([&quot;a&quot;, &quot;b&quot;])})</span>
+<span class="sd">    &gt;&gt;&gt; df = ak.DataFrame({"x": ak.array([10, 20]), "y": ak.array(["a", "b"])})</span>
 
-<span class="sd">    Suppose ``df[0]`` returns ``{&quot;x&quot;: 10, &quot;y&quot;: &quot;a}``:</span>
+<span class="sd">    Suppose ``df[0]`` returns ``{"x": 10, "y": "a}``:</span>
 
-<span class="sd">    &gt;&gt;&gt; row = Row({&quot;x&quot;: 10, &quot;y&quot;: &quot;a&quot;})</span>
+<span class="sd">    &gt;&gt;&gt; row = Row({"x": 10, "y": "a"})</span>
 <span class="sd">    &gt;&gt;&gt; print(row)</span>
 <span class="sd">    keys    values</span>
 <span class="sd">    ------  --------</span>
 <span class="sd">    x       10</span>
 <span class="sd">    y       a</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return an ASCII‐formatted table representation of the row.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            An ASCII table with two columns: &#39;keys&#39; and &#39;values&#39;.</span>
+<span class="sd">            An ASCII table with two columns: 'keys' and 'values'.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.pandas.row import Row</span>
-<span class="sd">        &gt;&gt;&gt; row = Row({&#39;a&#39;: 1, &#39;b&#39;: &#39;foo&#39;})</span>
+<span class="sd">        &gt;&gt;&gt; row = Row({'a': 1, 'b': 'foo'})</span>
 <span class="sd">        &gt;&gt;&gt; print(str(row))</span>
 <span class="sd">        keys    values</span>
 <span class="sd">        ------  --------</span>
 <span class="sd">        a       1</span>
 <span class="sd">        b       foo</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">showindex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">"keys"</span><span class="p">,</span> <span class="s2">"values"</span><span class="p">],</span> <span class="n">showindex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the standard dictionary representation of the row.</span>
 
 <span class="sd">        Returns</span>
@@ -447,30 +447,30 @@
 <span class="sd">        str</span>
 <span class="sd">            The string returned by `dict(self).__repr__()`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return an HTML‐formatted table representation of the row.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            An HTML table with two columns: &#39;keys&#39; and &#39;values&#39;.</span>
+<span class="sd">            An HTML table with two columns: 'keys' and 'values'.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.pandas.row import Row</span>
-<span class="sd">        &gt;&gt;&gt; row = Row({&#39;a&#39;: 1, &#39;b&#39;: &#39;foo&#39;})</span>
+<span class="sd">        &gt;&gt;&gt; row = Row({'a': 1, 'b': 'foo'})</span>
 <span class="sd">        &gt;&gt;&gt; html = row._repr_html_()</span>
-<span class="sd">        &gt;&gt;&gt; print(html.startswith(&#39;&lt;table&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; print(html.startswith('&lt;table'))</span>
 <span class="sd">        True</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">showindex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"keys"</span><span class="p">,</span> <span class="s2">"values"</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">"html"</span><span class="p">,</span> <span class="n">showindex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

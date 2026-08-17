@@ -371,7 +371,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.history</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">History retrieval utilities for Arkouda command execution.</span>
 
 <span class="sd">This module provides tools for retrieving the history of commands executed</span>
@@ -390,7 +390,7 @@
 
 <span class="sd">NotebookHistoryRetriever</span>
 <span class="sd">    Retrieves command history from a Jupyter notebook or IPython shell</span>
-<span class="sd">    via IPython&#39;s history database.</span>
+<span class="sd">    via IPython's history database.</span>
 
 <span class="sd">Usage</span>
 <span class="sd">-----</span>
@@ -405,20 +405,20 @@
 <span class="sd">REPL mode:</span>
 
 <span class="sd">&gt;&gt;&gt; h = ShellHistoryRetriever()</span>
-<span class="sd">&gt;&gt;&gt; h.retrieve(command_filter=&quot;ak.&quot;, num_commands=5)  # doctest: +SKIP</span>
-<span class="sd">[&#39;ak.array([1,2,3])&#39;, &#39;ak.sum(...)&#39;, ...]</span>
+<span class="sd">&gt;&gt;&gt; h.retrieve(command_filter="ak.", num_commands=5)  # doctest: +SKIP</span>
+<span class="sd">['ak.array([1,2,3])', 'ak.sum(...)', ...]</span>
 
 <span class="sd">Notebook mode:</span>
 
 <span class="sd">&gt;&gt;&gt; h = NotebookHistoryRetriever()  # doctest: +SKIP</span>
 <span class="sd">&gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP</span>
-<span class="sd">[&#39;ak.connect()&#39;, &#39;df = ak.DataFrame(...)&#39;, &#39;ak.argsort(...)&#39;]</span>
+<span class="sd">['ak.connect()', 'df = ak.DataFrame(...)', 'ak.argsort(...)']</span>
 
 <span class="sd">See Also</span>
 <span class="sd">--------</span>
 <span class="sd">arkouda.generate_history</span>
 <span class="sd">    High-level function for retrieving command history.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">readline</span>
 
@@ -428,36 +428,36 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;HistoryRetriever&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;NotebookHistoryRetriever&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ShellHistoryRetriever&quot;</span><span class="p">,</span>
+    <span class="s2">"HistoryRetriever"</span><span class="p">,</span>
+    <span class="s2">"NotebookHistoryRetriever"</span><span class="p">,</span>
+    <span class="s2">"ShellHistoryRetriever"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="HistoryRetriever">
 <a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.HistoryRetriever">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HistoryRetriever</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class that defines the retrieve method signature.</span>
 
 <span class="sd">    Implements _filter_arkouda_command.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_filter_arkouda_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filter_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ak&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_filter_arkouda_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filter_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"ak"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return command string.</span>
 
 <span class="sd">        Return command string if the filter string is in the command and the</span>
 <span class="sd">        command is not generate_history. Otherwise, returns None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">command</span> <span class="k">if</span> <span class="p">(</span><span class="n">filter_string</span> <span class="ow">in</span> <span class="n">command</span> <span class="ow">and</span> <span class="s2">&quot;generate_history&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">command</span> <span class="k">if</span> <span class="p">(</span><span class="n">filter_string</span> <span class="ow">in</span> <span class="n">command</span> <span class="ow">and</span> <span class="s2">"generate_history"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="HistoryRetriever.retrieve">
 <a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.HistoryRetriever.retrieve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Generate list of commands executed.</span>
 
 <span class="sd">        Generate list of commands executed within a Python REPL shell, Jupyter notebook,</span>
@@ -475,8 +475,8 @@
 <span class="sd">        List[str]</span>
 <span class="sd">            A list of commands from the Python shell, Jupyter notebook, or IPython notebook</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Derived classes must implement retrieve&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Derived classes must implement retrieve"</span><span class="p">)</span></div>
 </div>
 
 
@@ -484,14 +484,14 @@
 <div class="viewcode-block" id="ShellHistoryRetriever">
 <a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.ShellHistoryRetriever">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShellHistoryRetriever</span><span class="p">(</span><span class="n">HistoryRetriever</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement the retrieve method to get command history from the Python REPL shell.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Implement the retrieve method to get command history from the Python REPL shell."""</span>
 
 <div class="viewcode-block" id="ShellHistoryRetriever.retrieve">
 <a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.ShellHistoryRetriever.retrieve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Generate list of commands executed.</span>
 
 <span class="sd">        Generate list of commands executed within the a Python REPL shell, with an</span>
@@ -519,9 +519,9 @@
 <span class="sd">        &gt;&gt;&gt; 1 + 2</span>
 <span class="sd">        3</span>
 <span class="sd">        &gt;&gt;&gt; h.retrieve() # doctest: +SKIP</span>
-<span class="sd">        [&#39; 1 + 2&#39;, &#39;h.retrieve()&#39;]</span>
+<span class="sd">        [' 1 + 2', 'h.retrieve()']</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">length_of_history</span> <span class="o">=</span> <span class="n">readline</span><span class="o">.</span><span class="n">get_current_history_length</span><span class="p">()</span>
         <span class="n">num_to_return</span> <span class="o">=</span> <span class="n">num_commands</span> <span class="k">if</span> <span class="n">num_commands</span> <span class="k">else</span> <span class="n">length_of_history</span>
 
@@ -542,14 +542,14 @@
 <div class="viewcode-block" id="NotebookHistoryRetriever">
 <a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.NotebookHistoryRetriever">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NotebookHistoryRetriever</span><span class="p">(</span><span class="n">HistoryAccessor</span><span class="p">,</span> <span class="n">HistoryRetriever</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement the retrieve method to get command history from a Jupyter notebook or IPython shell.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Implement the retrieve method to get command history from a Jupyter notebook or IPython shell."""</span>
 
 <div class="viewcode-block" id="NotebookHistoryRetriever.retrieve">
 <a class="viewcode-back" href="../../autoapi/arkouda/history/index.html#arkouda.history.NotebookHistoryRetriever.retrieve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Generate list of commands executed.</span>
 
 <span class="sd">        Generate list of commands executed within a Jupyter notebook or IPython shell,</span>
@@ -579,18 +579,18 @@
 <span class="sd">        &gt;&gt;&gt; 2**3</span>
 <span class="sd">        8</span>
 <span class="sd">        &gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP</span>
-<span class="sd">        [&#39;1+2&#39;, &#39;4*6&#39;, &#39;2**3&#39;]</span>
+<span class="sd">        ['1+2', '4*6', '2**3']</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># HistoryAccessor _run_sql method parameter</span>
         <span class="n">output</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># HistoryAccessor _run_sql method parameter</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># HistoryAccessor _run_sql method parameter</span>
         <span class="n">num_to_return</span> <span class="o">=</span> <span class="n">num_commands</span> <span class="k">if</span> <span class="n">num_commands</span> <span class="k">else</span> <span class="mi">100</span>
 
         <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_sql</span><span class="p">(</span><span class="s2">&quot;ORDER BY session DESC, line DESC LIMIT ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_sql</span><span class="p">(</span><span class="s2">"ORDER BY session DESC, line DESC LIMIT ?"</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_sql</span><span class="p">(</span><span class="s2">&quot;ORDER BY session DESC, line DESC&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_sql</span><span class="p">(</span><span class="s2">"ORDER BY session DESC, line DESC"</span><span class="p">,</span> <span class="p">(),</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
         <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cur</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">str</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">command_filter</span><span class="p">:</span>
