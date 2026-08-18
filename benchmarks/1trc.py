@@ -10,6 +10,11 @@ from math import ceil
 import numpy as np
 import pandas as pd
 
+import dask
+import dask.dataframe as dd
+from dask.distributed import Client
+from dask_jobqueue import PBSCluster
+
 import arkouda as ak
 
 from server_util.test.server_test_util import get_default_temp_directory
@@ -73,21 +78,17 @@ def measurement_files(data):
     return files
 
 
+def dataset_bytes(files):
+    """On-disk size of the dataset, used as a common rate denominator for both engines."""
+    return sum(os.path.getsize(f) for f in files)
+
+
 def remove_files(path):
     for f in glob(os.path.join(path, FILE_PATTERN)):
         os.remove(f)
 
 
 def start_dask_cluster(args, num_jobs):
-    """Start a PBS backed dask cluster; ``(None, None)`` means use the local scheduler."""
-    if args.dask_cluster != "pbs":
-        return None, None
-
-    import dask
-
-    from dask.distributed import Client
-    from dask_jobqueue import PBSCluster
-
     dask.config.set(
         {
             "distributed.scheduler.worker-ttl": "1h",
@@ -120,23 +121,15 @@ def start_dask_cluster(args, num_jobs):
     return client, cluster
 
 
-def time_dask_1trc(size, trials, data):
+def time_dask_1trc(trials, file_paths, totalbytes):
     """Time the reference dask implementation of the challenge."""
     print(">>> dask 1trc")
-    try:
-        import dask.dataframe as dd
-    except ImportError:
-        print("dask is not installed, skipping the dask comparison")
-        return None
-
-    glob_path = os.path.join(data, FILE_PATTERN)
-    totalbytes = sum(os.path.getsize(f) for f in measurement_files(data))
 
     timings = []
     result = None
     for _ in range(trials):
         start = time.time()
-        df = dd.read_parquet(glob_path, dtype_backend="pyarrow")
+        df = dd.read_parquet(file_paths, dtype_backend="pyarrow")
         # split_out=1 forces a tree reduction
         result = df.groupby("station").agg(["min", "max", "mean"], split_out=1).compute()
         result = result.sort_values("station")
@@ -159,15 +152,13 @@ def materialize_result_df(station_keys, mins, maxs, means):
         },
         index=pd.Index(station_keys.to_ndarray(), name="station"),
     )
-    result_df.columns = pd.MultiIndex.from_tuples(result_df.columns)
     return result_df
 
 
-def time_ak_1trc(size, trials, data):
+def time_ak_1trc(trials, file_paths, totalbytes):
     """Time the arkouda implementation of the challenge."""
     print(">>> arkouda 1trc")
     cfg = ak.get_config()
-    file_paths = measurement_files(data)
     print(
         "numLocales = {}, numNodes = {}, files = {:,}".format(
             cfg["numLocales"], cfg["numNodes"], len(file_paths)
@@ -175,7 +166,6 @@ def time_ak_1trc(size, trials, data):
     )
 
     timings = []
-    totalbytes = 0
     result = None
     for _ in range(trials):
         start = time.time()
@@ -194,8 +184,9 @@ def time_ak_1trc(size, trials, data):
         end = time.time()
 
         timings.append(end - start)
-        totalbytes = stations.nbytes + measures.size * measures.itemsize
         result = (station_keys, mins, maxs, means)
+        # Release the per-trial server arrays outside the timed region
+        del columns, stations, measures, order, grouped
 
     tavg = sum(timings) / trials
     print("arkouda Average time = {:.4f} sec".format(tavg))
@@ -226,15 +217,8 @@ def create_parser():
         default=os.path.join(get_default_temp_directory(), "ak-1trc-test"),
         help="Target path for the generated dataset",
     )
-    parser.add_argument(
-        "--dask-cluster",
-        default="local",
-        choices=("local", "pbs"),
-        help="Scheduler for the dask comparison. 'pbs' scales a PBSCluster to the same number "
-        "of jobs as the arkouda server has nodes",
-    )
-    parser.add_argument("--dask-cores", type=int, default=128, help="Cores per PBS job")
-    parser.add_argument("--dask-memory", default="500GB", help="Memory per PBS job")
+    parser.add_argument("--dask-cores", type=int, default=32, help="Cores per PBS job")
+    parser.add_argument("--dask-memory", default="400GB", help="Memory per PBS job")
     parser.add_argument("--dask-walltime", default="5-00:00:00", help="Walltime per PBS job")
     parser.add_argument("--dask-queue", default="", help="PBS queue to submit to")
     parser.add_argument("--dask-account", default="", help="PBS account to charge")
@@ -256,6 +240,10 @@ if __name__ == "__main__":
     # Use the supplied dataset if there is one, otherwise generate it
     data = args.data if args.data else generate_data(args.size, args.path)
 
+    # Both engines read the same files, so resolve them and their size once
+    file_paths = measurement_files(data)
+    totalbytes = dataset_bytes(file_paths)
+
     print("number of trials = ", args.trials)
     print("number of rows = ", args.size)
 
@@ -263,13 +251,12 @@ if __name__ == "__main__":
     num_nodes = ak.get_config()["numNodes"]
     dask_client, dask_cluster = start_dask_cluster(args, num_nodes)
     try:
-        dask_time = time_dask_1trc(args.size, args.trials, data)
+        dask_time = time_dask_1trc(args.trials, file_paths, totalbytes)
     finally:
-        if dask_client is not None:
-            dask_client.close()
-            dask_cluster.close()
+        dask_client.close()
+        dask_cluster.close()
 
-    arkouda_time = time_ak_1trc(args.size, args.trials, data)
+    arkouda_time = time_ak_1trc(args.trials, file_paths, totalbytes)
 
     if dask_time and arkouda_time:
         print("arkouda/dask ratio = {:.2f}x".format(arkouda_time / dask_time))
