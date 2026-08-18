@@ -8,3 +8,5 @@ arkouda-comp.graph
 arkouda-sort-cases.graph
 # suite: Bigint Benchmarks
 arkouda-bigint.graph
+# suite: 1TRC
+arkouda-1trc.graph
