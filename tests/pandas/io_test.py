@@ -824,6 +824,12 @@ class TestParquet:
             rd_df = ak.DataFrame(rd_data)
             pd.testing.assert_frame_equal(akdf.to_pandas(), rd_df.to_pandas())
 
+            # Arkouda Strings cannot represent null, so an empty string must be
+            # encoded as a defined zero-length value rather than a Parquet null.
+            for parquet_path in glob.glob(f"{tmp_dirname}/multi_col_parquet*"):
+                string_column = pq.read_table(parquet_path, columns=["c_9"])["c_9"]
+                assert string_column.null_count == 0
+
             # test save with index true
             akdf.to_parquet(f"{tmp_dirname}/idx_multi_col_parquet", index=True, compression=comp)
             rd_data = ak.read_parquet(f"{tmp_dirname}/idx_multi_col_parquet*")
@@ -1050,13 +1056,7 @@ class TestParquet:
             columns = ak.get_datasets(filename)
             assert columns == ans
             # Merely test that read succeeds, do not check output
-            if "delta_byte_array.parquet" not in filename:
-                ak.read_parquet(filename, datasets=columns)
-            else:
-                # Since delta encoding is not supported, the columns in
-                # this file should raise an error and not crash the server
-                with pytest.raises(RuntimeError):
-                    ak.read_parquet(filename, datasets=columns)
+            ak.read_parquet(filename, datasets=columns)
 
     def test_null_handling_all(self, par_test_base_tmp):
         df = pd.DataFrame(

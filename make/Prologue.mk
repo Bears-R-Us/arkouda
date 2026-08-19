@@ -5,10 +5,10 @@ include make/prologue/core.mk
 include make/prologue/chapel.mk
 include make/prologue/paths.mk
 include make/prologue/config.mk
-include make/prologue/arrow_shims.mk
 
 # Dependency meta-targets and per-dependency rules
 include make/deps/common.mk
+include make/deps/parquet.mk
 include make/deps/zmq.mk
 include make/deps/hdf5.mk
 include make/deps/arrow.mk

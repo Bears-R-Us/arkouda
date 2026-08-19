@@ -35,15 +35,14 @@ check-re2: $(RE2_CHECK)
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
-check-arrow: $(ARROW_CHECK) $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O)
+check-arrow: $(ARROW_CHECK)
 	@echo "Checking for Arrow"
-	$(MAKE) compile-arrow-cpp --no-print-directory
-	@$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< \
-		$(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) \
-		-I $(ARKOUDA_SOURCE_DIR)/parquet \
+	@PARQUET_PKG_FLAGS="$$($(PARQUET_PACKAGE_FLAGS_CMD))" && \
+		$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< \
+		$$PARQUET_PKG_FLAGS \
 		-o $(DEP_INSTALL_DIR)/$@ && \
-		([ $$? -eq 0 ] && echo "Success compiling program") || \
-		echo "\nERROR: Please ensure that dependencies have been installed correctly (see -> https://github.com/Bears-R-Us/arkouda/blob/main/pydoc/setup/BUILD.md)\n"
+		echo "Success compiling program" || \
+		{ echo "\nERROR: Please ensure that dependencies have been installed correctly (see -> https://github.com/Bears-R-Us/arkouda/blob/main/pydoc/setup/BUILD.md)\n"; exit 1; }
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
