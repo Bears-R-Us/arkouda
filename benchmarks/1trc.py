@@ -65,8 +65,7 @@ def generate_chunk(partition_idx, chunksize, std, lookup_df, out_dir="."):
 
 @contextmanager
 def generate_data(size, out_dir, chunksize):
-    """Write ``size`` rows of measurements to parquet files and yield their directory.
-    """
+    """Write ``size`` rows of measurements to parquet files and yield their directory."""
     os.makedirs(out_dir, exist_ok=True)
     remove_files(out_dir)
     lookup_df = load_lookup()
@@ -232,9 +231,9 @@ def check_correctness(path):
 
         assert list(ak_result.index) == list(expected.index), "station keys do not match pandas"
         for stat in ("min", "max", "mean"):
-            assert np.allclose(
-                ak_result[("measure", stat)].to_numpy(), expected[stat].to_numpy()
-            ), "{} does not match pandas".format(stat)
+            assert np.allclose(ak_result[("measure", stat)].to_numpy(), expected[stat].to_numpy()), (
+                "{} does not match pandas".format(stat)
+            )
 
 
 def create_parser():
