@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.abspath(util_dir))
 logging.basicConfig(level=logging.INFO)
 
 BENCHMARKS = [
+    "1trc",
     "stream",
     "argsort",
     "coargsort",
