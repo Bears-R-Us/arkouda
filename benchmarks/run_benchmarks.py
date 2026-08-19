@@ -158,12 +158,6 @@ def create_parser():
     )
     parser.add_argument("-sp", "--server-port", default="5555", help="Port number to use for the server")
     parser.add_argument("--server-args", action="append", help="Additional server arguments")
-    parser.add_argument(
-        "--node-counts",
-        default="",
-        help="Comma separated list of node counts to sweep, e.g. '16,32,64,128'. Each count is "
-        "recorded as its own configuration so that all counts share a graph",
-    )
     parser.add_argument("--numtrials", default=1, type=int, help="Number of trials to run")
     parser.add_argument(
         "benchmarks",
@@ -216,59 +210,46 @@ def main():
     parser = create_parser()
     args, client_args = parser.parse_known_args()
     args.graph_dir = args.graph_dir or os.path.join(args.dat_dir, "html")
+    config_dat_dir = os.path.join(args.dat_dir, args.description)
     run_isolated = bool(args.isolated)
 
-    node_counts = [n.strip() for n in args.node_counts.split(",") if n.strip()]
-    if node_counts:
-        # One configuration per node count puts every count on the same graph as its own series
-        sweep = [(n, "{}-nodes".format(n)) for n in node_counts]
-        args.configs = args.configs or ",".join("{}:v".format(desc) for _, desc in sweep)
-    else:
-        sweep = [(args.num_locales, args.description)]
+    if args.save_data or args.gen_graphs:
+        os.makedirs(config_dat_dir, exist_ok=True)
+
+    if not run_isolated:
+        _my_start_server(args)
 
     args.benchmarks = args.benchmarks or BENCHMARKS
-
-    for num_locales, description in sweep:
-        args.num_locales = num_locales
-        config_dat_dir = os.path.join(args.dat_dir, description)
-
-        if args.save_data or args.gen_graphs:
-            os.makedirs(config_dat_dir, exist_ok=True)
-
-        if not run_isolated:
+    for benchmark in args.benchmarks:
+        if run_isolated:
             _my_start_server(args)
 
-        for benchmark in args.benchmarks:
-            if run_isolated:
-                _my_start_server(args)
+        for trial in range(args.numtrials):
+            benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))
+            out = run_client(benchmark_py, client_args)
+            if args.save_data or args.gen_graphs:
+                add_to_dat(benchmark, out, config_dat_dir, args.graph_infra)
+            print(out)
 
-            for trial in range(args.numtrials):
-                benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))
-                out = run_client(benchmark_py, client_args)
-                if args.save_data or args.gen_graphs:
-                    add_to_dat(benchmark, out, config_dat_dir, args.graph_infra)
-                print(out)
-
-            if run_isolated:
-                stop_arkouda_server()
-
-        if not run_isolated:
+        if run_isolated:
             stop_arkouda_server()
 
-        if args.save_data or args.gen_graphs:
-            comp_file = os.getenv("ARKOUDA_PRINT_PASSES_FILE", "")
-            if os.path.isfile(comp_file):
-                with open(comp_file, "r") as f:
-                    out = f.read()
-                add_to_dat("comp-time", out, config_dat_dir, args.graph_infra)
-            emitted_code_file = os.getenv("ARKOUDA_EMITTED_CODE_SIZE_FILE", "")
-            if os.path.isfile(emitted_code_file):
-                with open(emitted_code_file, "r") as f:
-                    out = f.read()
-                add_to_dat("emitted-code-size", out, config_dat_dir, args.graph_infra)
+    if not run_isolated:
+        stop_arkouda_server()
 
-    if args.gen_graphs:
-        generate_graphs(args)
+    if args.save_data or args.gen_graphs:
+        comp_file = os.getenv("ARKOUDA_PRINT_PASSES_FILE", "")
+        if os.path.isfile(comp_file):
+            with open(comp_file, "r") as f:
+                out = f.read()
+            add_to_dat("comp-time", out, config_dat_dir, args.graph_infra)
+        emitted_code_file = os.getenv("ARKOUDA_EMITTED_CODE_SIZE_FILE", "")
+        if os.path.isfile(emitted_code_file):
+            with open(emitted_code_file, "r") as f:
+                out = f.read()
+            add_to_dat("emitted-code-size", out, config_dat_dir, args.graph_infra)
+        if args.gen_graphs:
+            generate_graphs(args)
 
 
 if __name__ == "__main__":
