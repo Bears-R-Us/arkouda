@@ -4,6 +4,7 @@ import argparse
 import os
 import time
 
+from contextlib import contextmanager, nullcontext
 from glob import glob
 from math import ceil
 
@@ -20,7 +21,7 @@ import arkouda as ak
 from server_util.test.server_test_util import get_default_temp_directory
 
 
-CHUNK_SIZE = 1_000_000
+CORRECTNESS_SIZE = 10**4
 STD = 10.0
 FILE_PATTERN = "measurements-*.parquet"
 LOOKUP_PATH = os.path.join(
@@ -62,13 +63,19 @@ def generate_chunk(partition_idx, chunksize, std, lookup_df, out_dir="."):
     df.to_parquet(filename, engine="pyarrow")
 
 
-def generate_data(size, out_dir, chunksize=CHUNK_SIZE):
-    """Write ``size`` rows of measurements to parquet files and return their directory."""
+@contextmanager
+def generate_data(size, out_dir, chunksize):
+    """Write ``size`` rows of measurements to parquet files and yield their directory.
+    """
     os.makedirs(out_dir, exist_ok=True)
+    remove_files(out_dir)
     lookup_df = load_lookup()
     for i in range(ceil(size / chunksize)):
         generate_chunk(i, chunksize, STD, lookup_df, out_dir)
-    return out_dir
+    try:
+        yield out_dir
+    finally:
+        remove_files(out_dir)
 
 
 def measurement_files(data):
@@ -155,6 +162,27 @@ def materialize_result_df(station_keys, mins, maxs, means):
     return result_df
 
 
+def ak_1trc(file_paths):
+    """Compute the per-station min/max/mean with arkouda.
+
+    Returns the result and the intermediates, so a caller can free the server-side arrays
+    outside of a timed region.
+    """
+    columns = ak.read(file_paths)
+    stations = columns["station"]
+    measures = columns["measure"]
+
+    order = ak.argsort(stations)
+    stations = stations[order]
+    measures = measures[order]
+
+    grouped = ak.GroupBy(stations, assume_sorted=True)
+    station_keys, mins = grouped.min(measures)
+    _, maxs = grouped.max(measures)
+    _, means = grouped.mean(measures)
+    return (station_keys, mins, maxs, means), (columns, stations, measures, order, grouped)
+
+
 def time_ak_1trc(trials, file_paths, totalbytes):
     """Time the arkouda implementation of the challenge."""
     print(">>> arkouda 1trc")
@@ -169,24 +197,12 @@ def time_ak_1trc(trials, file_paths, totalbytes):
     result = None
     for _ in range(trials):
         start = time.time()
-        columns = ak.read(file_paths)
-        stations = columns["station"]
-        measures = columns["measure"]
-
-        order = ak.argsort(stations)
-        stations = stations[order]
-        measures = measures[order]
-
-        grouped = ak.GroupBy(stations, assume_sorted=True)
-        station_keys, mins = grouped.min(measures)
-        _, maxs = grouped.max(measures)
-        _, means = grouped.mean(measures)
+        result, intermediates = ak_1trc(file_paths)
         end = time.time()
 
         timings.append(end - start)
-        result = (station_keys, mins, maxs, means)
         # Release the per-trial server arrays outside the timed region
-        del columns, stations, measures, order, grouped
+        del intermediates
 
     tavg = sum(timings) / trials
     print("arkouda Average time = {:.4f} sec".format(tavg))
@@ -195,6 +211,30 @@ def time_ak_1trc(trials, file_paths, totalbytes):
     # Pulling the results back to the client is not part of the measured time
     print(materialize_result_df(*result).head())
     return tavg
+
+
+def check_correctness(path):
+    """Run the challenge on a small generated dataset and compare against pandas."""
+    data_dir = os.path.join(path, "correctness")
+    # Two chunks so the multi-file read path is exercised
+    with generate_data(CORRECTNESS_SIZE, data_dir, chunksize=CORRECTNESS_SIZE // 2) as data:
+        file_paths = measurement_files(data)
+
+        result, _ = ak_1trc(file_paths)
+        ak_result = materialize_result_df(*result)
+
+        expected = (
+            pd.concat([pd.read_parquet(f) for f in file_paths])
+            .groupby("station")["measure"]
+            .agg(["min", "max", "mean"])
+            .sort_index()
+        )
+
+        assert list(ak_result.index) == list(expected.index), "station keys do not match pandas"
+        for stat in ("min", "max", "mean"):
+            assert np.allclose(
+                ak_result[("measure", stat)].to_numpy(), expected[stat].to_numpy()
+            ), "{} does not match pandas".format(stat)
 
 
 def create_parser():
@@ -218,6 +258,19 @@ def create_parser():
         default=os.path.join(get_default_temp_directory(), "1trc-test"),
         help="Target path for the generated dataset",
     )
+    parser.add_argument(
+        "-c",
+        "--chunk-size",
+        type=int,
+        default=1_000_000,
+        help="Number of rows to write to each generated parquet file",
+    )
+    parser.add_argument(
+        "--correctness-only",
+        default=False,
+        action="store_true",
+        help="Only check correctness, not performance.",
+    )
     # parser.add_argument("--dask-cores", type=int, default=32, help="Cores per PBS job")
     # parser.add_argument("--dask-memory", default="400GB", help="Memory per PBS job")
     # parser.add_argument("--dask-walltime", default="5-00:00:00", help="Walltime per PBS job")
@@ -238,30 +291,34 @@ if __name__ == "__main__":
     setattr(ak, "verbose", False)
     ak.connect(args.hostname, args.port)
 
-    # Use the supplied dataset if there is one, otherwise generate it
-    data = args.data if args.data else generate_data(args.size, args.path, args.chunk_size)
+    if args.correctness_only:
+        check_correctness(args.path)
+        sys.exit(0)
 
-    file_paths = measurement_files(data)
-    totalbytes = dataset_bytes(file_paths)
+    # Use the supplied dataset if there is one, otherwise generate one that is cleaned up after
+    dataset = (
+        nullcontext(args.data) if args.data else generate_data(args.size, args.path, args.chunk_size)
+    )
 
-    print("number of trials = ", args.trials)
-    print("number of rows = ", args.size)
+    with dataset as data:
+        file_paths = measurement_files(data)
+        totalbytes = dataset_bytes(file_paths)
 
-    # # Give dask the same number of jobs as the server has nodes so the two series line up
-    # num_nodes = ak.get_config()["numNodes"]
-    # dask_client, dask_cluster = start_dask_cluster(args, num_nodes)
-    # try:
-    #     dask_time = time_dask_1trc(args.trials, file_paths, totalbytes)
-    # finally:
-    #     dask_client.close()
-    #     dask_cluster.close()
+        print("number of trials = ", args.trials)
+        print("number of rows = ", args.size)
 
-    arkouda_time = time_ak_1trc(args.trials, file_paths, totalbytes)
+        # # Give dask the same number of jobs as the server has nodes so the two series line up
+        # num_nodes = ak.get_config()["numNodes"]
+        # dask_client, dask_cluster = start_dask_cluster(args, num_nodes)
+        # try:
+        #     dask_time = time_dask_1trc(args.trials, file_paths, totalbytes)
+        # finally:
+        #     dask_client.close()
+        #     dask_cluster.close()
 
-    # if dask_time and arkouda_time:
-    #     print("arkouda/dask ratio = {:.2f}x".format(arkouda_time / dask_time))
+        arkouda_time = time_ak_1trc(args.trials, file_paths, totalbytes)
 
-    if not args.data:
-        remove_files(args.path)
+        # if dask_time and arkouda_time:
+        #     print("arkouda/dask ratio = {:.2f}x".format(arkouda_time / dask_time))
 
     sys.exit(0)
