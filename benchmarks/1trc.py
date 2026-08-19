@@ -10,17 +10,17 @@ from math import ceil
 import numpy as np
 import pandas as pd
 
-import dask
-import dask.dataframe as dd
-from dask.distributed import Client
-from dask_jobqueue import PBSCluster
+# import dask
+# import dask.dataframe as dd
+# from dask.distributed import Client
+# from dask_jobqueue import PBSCluster
 
 import arkouda as ak
 
 from server_util.test.server_test_util import get_default_temp_directory
 
 
-CHUNK_SIZE = 10_000
+CHUNK_SIZE = 1_000_000
 STD = 10.0
 FILE_PATTERN = "measurements-*.parquet"
 LOOKUP_PATH = os.path.join(
@@ -79,7 +79,7 @@ def measurement_files(data):
 
 
 def dataset_bytes(files):
-    """On-disk size of the dataset, used as a common rate denominator for both engines."""
+    """On-disk size of the dataset, used as the rate denominator."""
     return sum(os.path.getsize(f) for f in files)
 
 
@@ -88,59 +88,59 @@ def remove_files(path):
         os.remove(f)
 
 
-def start_dask_cluster(args, num_jobs):
-    dask.config.set(
-        {
-            "distributed.scheduler.worker-ttl": "1h",
-            "distributed.comm.timeouts.connect": "120s",
-            "distributed.comm.timeouts.tcp": "120s",
-            "distributed.worker.memory.target": 0.6,
-            "distributed.worker.memory.spill": 0.7,
-            "distributed.worker.memory.pause": 0.85,
-            "distributed.worker.memory.terminate": False,
-            "temporary-directory": args.dask_scratch,
-        }
-    )
+# def start_dask_cluster(args, num_jobs):
+#     dask.config.set(
+#         {
+#             "distributed.scheduler.worker-ttl": "1h",
+#             "distributed.comm.timeouts.connect": "120s",
+#             "distributed.comm.timeouts.tcp": "120s",
+#             "distributed.worker.memory.target": 0.6,
+#             "distributed.worker.memory.spill": 0.7,
+#             "distributed.worker.memory.pause": 0.85,
+#             "distributed.worker.memory.terminate": False,
+#             "temporary-directory": args.dask_scratch,
+#         }
+#     )
+#
+#     cluster_args = {
+#         "cores": args.dask_cores,
+#         "memory": args.dask_memory,
+#         "walltime": args.dask_walltime,
+#         "local_directory": args.dask_scratch,
+#     }
+#     if args.dask_queue:
+#         cluster_args["queue"] = args.dask_queue
+#     if args.dask_account:
+#         cluster_args["account"] = args.dask_account
+#
+#     cluster = PBSCluster(**cluster_args)
+#     client = Client(cluster)
+#     print("scaling dask to {} PBS jobs".format(num_jobs))
+#     cluster.scale(jobs=num_jobs)
+#     client.wait_for_workers(n_workers=num_jobs)
+#     return client, cluster
 
-    cluster_args = {
-        "cores": args.dask_cores,
-        "memory": args.dask_memory,
-        "walltime": args.dask_walltime,
-        "local_directory": args.dask_scratch,
-    }
-    if args.dask_queue:
-        cluster_args["queue"] = args.dask_queue
-    if args.dask_account:
-        cluster_args["account"] = args.dask_account
 
-    cluster = PBSCluster(**cluster_args)
-    client = Client(cluster)
-    print("scaling dask to {} PBS jobs".format(num_jobs))
-    cluster.scale(jobs=num_jobs)
-    client.wait_for_workers(n_workers=num_jobs)
-    return client, cluster
-
-
-def time_dask_1trc(trials, file_paths, totalbytes):
-    """Time the reference dask implementation of the challenge."""
-    print(">>> dask 1trc")
-
-    timings = []
-    result = None
-    for _ in range(trials):
-        start = time.time()
-        df = dd.read_parquet(file_paths, dtype_backend="pyarrow")
-        # split_out=1 forces a tree reduction
-        result = df.groupby("station").agg(["min", "max", "mean"], split_out=1).compute()
-        result = result.sort_values("station")
-        end = time.time()
-        timings.append(end - start)
-
-    tavg = sum(timings) / trials
-    print("dask Average time = {:.4f} sec".format(tavg))
-    print("dask Average rate = {:.4f} GiB/sec".format(totalbytes / tavg / 2**30))
-    print(result.head())
-    return tavg
+# def time_dask_1trc(trials, file_paths, totalbytes):
+#     """Time the reference dask implementation of the challenge."""
+#     print(">>> dask 1trc")
+#
+#     timings = []
+#     result = None
+#     for _ in range(trials):
+#         start = time.time()
+#         df = dd.read_parquet(file_paths, dtype_backend="pyarrow")
+#         # split_out=1 forces a tree reduction
+#         result = df.groupby("station").agg(["min", "max", "mean"], split_out=1).compute()
+#         result = result.sort_values("station")
+#         end = time.time()
+#         timings.append(end - start)
+#
+#     tavg = sum(timings) / trials
+#     print("dask Average time = {:.4f} sec".format(tavg))
+#     print("dask Average rate = {:.4f} GiB/sec".format(totalbytes / tavg / 2**30))
+#     print(result.head())
+#     return tavg
 
 
 def materialize_result_df(station_keys, mins, maxs, means):
@@ -191,6 +191,7 @@ def time_ak_1trc(trials, file_paths, totalbytes):
     tavg = sum(timings) / trials
     print("arkouda Average time = {:.4f} sec".format(tavg))
     print("arkouda Average rate = {:.4f} GiB/sec".format(totalbytes / tavg / 2**30))
+
     # Pulling the results back to the client is not part of the measured time
     print(materialize_result_df(*result).head())
     return tavg
@@ -200,7 +201,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of the 1 trillion row challenge.")
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
-    parser.add_argument("-n", "--size", type=int, default=10**6, help="Number of rows to compute with")
+    parser.add_argument("-n", "--size", type=int, default=10**8, help="Number of rows to compute with")
     parser.add_argument(
         "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
     )
@@ -214,19 +215,19 @@ def create_parser():
     parser.add_argument(
         "-p",
         "--path",
-        default=os.path.join(get_default_temp_directory(), "ak-1trc-test"),
+        default=os.path.join(get_default_temp_directory(), "1trc-test"),
         help="Target path for the generated dataset",
     )
-    parser.add_argument("--dask-cores", type=int, default=32, help="Cores per PBS job")
-    parser.add_argument("--dask-memory", default="400GB", help="Memory per PBS job")
-    parser.add_argument("--dask-walltime", default="5-00:00:00", help="Walltime per PBS job")
-    parser.add_argument("--dask-queue", default="", help="PBS queue to submit to")
-    parser.add_argument("--dask-account", default="", help="PBS account to charge")
-    parser.add_argument(
-        "--dask-scratch",
-        default=os.path.join(get_default_temp_directory(), "dask-scratch"),
-        help="Worker scratch directory",
-    )
+    # parser.add_argument("--dask-cores", type=int, default=32, help="Cores per PBS job")
+    # parser.add_argument("--dask-memory", default="400GB", help="Memory per PBS job")
+    # parser.add_argument("--dask-walltime", default="5-00:00:00", help="Walltime per PBS job")
+    # parser.add_argument("--dask-queue", default="", help="PBS queue to submit to")
+    # parser.add_argument("--dask-account", default="", help="PBS account to charge")
+    # parser.add_argument(
+    #     "--dask-scratch",
+    #     default=os.path.join(get_default_temp_directory(), "dask-scratch"),
+    #     help="Worker scratch directory",
+    # )
     return parser
 
 
@@ -238,28 +239,27 @@ if __name__ == "__main__":
     ak.connect(args.hostname, args.port)
 
     # Use the supplied dataset if there is one, otherwise generate it
-    data = args.data if args.data else generate_data(args.size, args.path)
+    data = args.data if args.data else generate_data(args.size, args.path, args.chunk_size)
 
-    # Both engines read the same files, so resolve them and their size once
     file_paths = measurement_files(data)
     totalbytes = dataset_bytes(file_paths)
 
     print("number of trials = ", args.trials)
     print("number of rows = ", args.size)
 
-    # Give dask the same number of jobs as the server has nodes so the two series line up
-    num_nodes = ak.get_config()["numNodes"]
-    dask_client, dask_cluster = start_dask_cluster(args, num_nodes)
-    try:
-        dask_time = time_dask_1trc(args.trials, file_paths, totalbytes)
-    finally:
-        dask_client.close()
-        dask_cluster.close()
+    # # Give dask the same number of jobs as the server has nodes so the two series line up
+    # num_nodes = ak.get_config()["numNodes"]
+    # dask_client, dask_cluster = start_dask_cluster(args, num_nodes)
+    # try:
+    #     dask_time = time_dask_1trc(args.trials, file_paths, totalbytes)
+    # finally:
+    #     dask_client.close()
+    #     dask_cluster.close()
 
     arkouda_time = time_ak_1trc(args.trials, file_paths, totalbytes)
 
-    if dask_time and arkouda_time:
-        print("arkouda/dask ratio = {:.2f}x".format(arkouda_time / dask_time))
+    # if dask_time and arkouda_time:
+    #     print("arkouda/dask ratio = {:.2f}x".format(arkouda_time / dask_time))
 
     if not args.data:
         remove_files(args.path)

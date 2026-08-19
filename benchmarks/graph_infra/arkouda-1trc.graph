@@ -1,11 +1,11 @@
 perfkeys: arkouda Average rate =
-graphkeys: 1TRC GiB/s
+graphkeys: Arkouda (GiB/s)
 files: 1trc.dat
-graphtitle: 1TRC Arkouda Performance
+graphtitle: 1TRC Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: dask Average rate =
-graphkeys: 1TRC GiB/s
+perfkeys: arkouda Average time =
+graphkeys: Arkouda (sec)
 files: 1trc.dat
-graphtitle: 1TRC Dask Performance
-ylabel: Performance (GiB/s)
+graphtitle: 1TRC Time
+ylabel: Time (seconds)
