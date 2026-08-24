@@ -939,17 +939,16 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
     """
     from zmq import ssh
 
-    kwargs = {"addr": addr, "server": tunnel_server}
     keyfile = os.getenv("ARKOUDA_KEY_FILE")
     password = os.getenv("ARKOUDA_PASSWORD")
 
-    if keyfile:
-        kwargs["keyfile"] = keyfile
-    if password:
-        kwargs["password"] = password
-
     try:
-        return ssh.tunnel.open_tunnel(**kwargs)
+        return ssh.tunnel.open_tunnel(
+            addr=addr,
+            server=tunnel_server,
+            keyfile=keyfile,
+            password=password,
+        )
     except Exception as e:
         raise ConnectionError(e)
 
