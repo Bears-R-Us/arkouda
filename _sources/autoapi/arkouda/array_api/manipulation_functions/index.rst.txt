@@ -53,7 +53,7 @@ Module Contents
    Arkouda Array ((4,), int64)[0 5 10 15]
 
 
-.. py:function:: broadcast_to(x: arkouda.array_api.array_object.Array, /, shape: Tuple[int, Ellipsis]) -> arkouda.array_api.array_object.Array
+.. py:function:: broadcast_to(x: arkouda.array_api.array_object.Array, /, shape: Tuple[int, ...]) -> arkouda.array_api.array_object.Array
 
    Broadcast the array to the specified shape.
 
@@ -78,7 +78,7 @@ Module Contents
    See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
 
 
-.. py:function:: concat(arrays: Union[Tuple[arkouda.array_api.array_object.Array, Ellipsis], List[arkouda.array_api.array_object.Array]], /, *, axis: Optional[int] = 0) -> arkouda.array_api.array_object.Array
+.. py:function:: concat(arrays: Union[Tuple[arkouda.array_api.array_object.Array, ...], List[arkouda.array_api.array_object.Array]], /, *, axis: Optional[int] = 0) -> arkouda.array_api.array_object.Array
 
    Concatenate arrays along an axis.
 
@@ -111,7 +111,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: flip(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: flip(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> arkouda.array_api.array_object.Array
 
    Reverse an array's values along a particular axis or axes.
 
@@ -127,7 +127,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: moveaxis(x: arkouda.array_api.array_object.Array, source: Union[int, Tuple[int, Ellipsis]], destination: Union[int, Tuple[int, Ellipsis]], /) -> arkouda.array_api.array_object.Array
+.. py:function:: moveaxis(x: arkouda.array_api.array_object.Array, source: Union[int, Tuple[int, ...]], destination: Union[int, Tuple[int, ...]], /) -> arkouda.array_api.array_object.Array
 
    Move axes of an array to new positions.
 
@@ -147,7 +147,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: permute_dims(x: arkouda.array_api.array_object.Array, /, axes: Tuple[int, Ellipsis]) -> arkouda.array_api.array_object.Array
+.. py:function:: permute_dims(x: arkouda.array_api.array_object.Array, /, axes: Tuple[int, ...]) -> arkouda.array_api.array_object.Array
 
    Permute the dimensions of an array.
 
@@ -184,7 +184,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: reshape(x: arkouda.array_api.array_object.Array, /, shape: Tuple[int, Ellipsis], *, copy: Optional[bool] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: reshape(x: arkouda.array_api.array_object.Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None) -> arkouda.array_api.array_object.Array
 
    Reshape an array to a new shape.
 
@@ -202,7 +202,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: roll(x: arkouda.array_api.array_object.Array, /, shift: Union[int, Tuple[int, Ellipsis]], *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: roll(x: arkouda.array_api.array_object.Array, /, shift: Union[int, Tuple[int, ...]], *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> arkouda.array_api.array_object.Array
 
    Roll the values in an array by the specified shift(s) along the specified axis or axes.
    Elements that roll beyond the last position are re-introduced at the first position.
@@ -225,7 +225,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: squeeze(x: arkouda.array_api.array_object.Array, /, axis: Union[int, Tuple[int, Ellipsis]]) -> arkouda.array_api.array_object.Array
+.. py:function:: squeeze(x: arkouda.array_api.array_object.Array, /, axis: Union[int, Tuple[int, ...]]) -> arkouda.array_api.array_object.Array
 
    Remove degenerate (size one) dimensions from an array.
 
@@ -238,7 +238,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: stack(arrays: Union[Tuple[arkouda.array_api.array_object.Array, Ellipsis], List[arkouda.array_api.array_object.Array]], /, *, axis: int = 0) -> arkouda.array_api.array_object.Array
+.. py:function:: stack(arrays: Union[Tuple[arkouda.array_api.array_object.Array, ...], List[arkouda.array_api.array_object.Array]], /, *, axis: int = 0) -> arkouda.array_api.array_object.Array
 
    Stack arrays along a new axis.
 
@@ -258,7 +258,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: tile(x: arkouda.array_api.array_object.Array, repetitions: Tuple[int, Ellipsis], /) -> arkouda.array_api.array_object.Array
+.. py:function:: tile(x: arkouda.array_api.array_object.Array, repetitions: Tuple[int, ...], /) -> arkouda.array_api.array_object.Array
 
    Tile an array with the specified number of repetitions along each dimension.
 
@@ -274,7 +274,7 @@ Module Contents
    :rtype: Array
 
 
-.. py:function:: unstack(x: arkouda.array_api.array_object.Array, /, *, axis: int = 0) -> Tuple[arkouda.array_api.array_object.Array, Ellipsis]
+.. py:function:: unstack(x: arkouda.array_api.array_object.Array, /, *, axis: int = 0) -> Tuple[arkouda.array_api.array_object.Array, ...]
 
    Decompose an array along an axis into multiple arrays of the same shape.
 

@@ -125,7 +125,7 @@ Module Contents
    array([0 5 10 15])
 
 
-.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
+.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]
 
    Determine the broadcasted shape of two arrays given their shapes.
 
@@ -155,7 +155,7 @@ Module Contents
    (3, 4)
 
 
-.. py:function:: broadcast_shapes(*shapes: Tuple[int, Ellipsis]) -> Tuple[int, Ellipsis]
+.. py:function:: broadcast_shapes(*shapes: Tuple[int, ...]) -> Tuple[int, ...]
 
    Determine a broadcasted shape, given an arbitary number of shapes.
 

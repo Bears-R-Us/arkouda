@@ -761,7 +761,7 @@ Module Contents
       :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]]
 
 
-   .. py:method:: lookup(key: list[Any] | tuple[Any, Ellipsis]) -> arkouda.pandas.groupbyclass.groupable
+   .. py:method:: lookup(key: list[Any] | tuple[Any, ...]) -> arkouda.pandas.groupbyclass.groupable
 
       Perform element-wise lookup on the MultiIndex.
 

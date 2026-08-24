@@ -623,7 +623,7 @@ Module Contents
    array([0 1 1 0 1 0 0 1 1 0])
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Tuple[int, Ellipsis], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
+.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Tuple[int, ...], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
 
    The basic arkouda array class. This class contains only the
    attributes of the array; the data resides on the arkouda
@@ -675,7 +675,7 @@ Module Contents
    .. py:attribute:: OpEqOps
 
 
-   .. py:method:: all(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
+   .. py:method:: all(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff all elements of the array along the given axis evaluate to True.
 
@@ -711,7 +711,7 @@ Module Contents
 
 
 
-   .. py:method:: any(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
+   .. py:method:: any(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff any element of the array along the given axis evaluates to True.
 
@@ -1049,7 +1049,7 @@ Module Contents
 
 
 
-   .. py:method:: is_sorted(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
+   .. py:method:: is_sorted(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff the array (or given axis of the array) is monotonically non-decreasing.
 
@@ -1117,7 +1117,7 @@ Module Contents
 
 
 
-   .. py:method:: max(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: max(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return max of array elements along the given axis.
 
@@ -1161,7 +1161,7 @@ Module Contents
 
 
 
-   .. py:method:: mean(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: mean(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return the mean of the array.
 
@@ -1200,7 +1200,7 @@ Module Contents
 
 
 
-   .. py:method:: min(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: min(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return min of array elements along the given axis.
 
@@ -1287,7 +1287,7 @@ Module Contents
 
 
 
-   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return prod of array elements along the given axis.
 
@@ -1460,7 +1460,7 @@ Module Contents
 
 
 
-   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
+   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
 
       Return the standard deviation of values in the array. The standard
       deviation is implemented as the square root of the variance.
@@ -1520,7 +1520,7 @@ Module Contents
 
 
 
-   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return sum of array elements along the given axis.
 
@@ -1937,7 +1937,7 @@ Module Contents
 
 
 
-   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
+   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
 
       Return the variance of values in the array.
 

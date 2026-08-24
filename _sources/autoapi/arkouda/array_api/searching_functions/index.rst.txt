@@ -45,7 +45,7 @@ Module Contents
    :type keepdims: bool, optional
 
 
-.. py:function:: nonzero(x: arkouda.array_api.array_object.Array, /) -> Tuple[arkouda.array_api.array_object.Array, Ellipsis]
+.. py:function:: nonzero(x: arkouda.array_api.array_object.Array, /) -> Tuple[arkouda.array_api.array_object.Array, ...]
 
    Return a tuple of arrays containing the indices of the non-zero elements of the input array.
 

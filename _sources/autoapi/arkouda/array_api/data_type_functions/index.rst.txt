@@ -87,7 +87,7 @@ Module Contents
       :type:  int
 
 
-.. py:function:: isdtype(dtype: arkouda.array_api._typing.Dtype, kind: Union[arkouda.array_api._typing.Dtype, str, Tuple[Union[arkouda.array_api._typing.Dtype, str], Ellipsis]]) -> bool
+.. py:function:: isdtype(dtype: arkouda.array_api._typing.Dtype, kind: Union[arkouda.array_api._typing.Dtype, str, Tuple[Union[arkouda.array_api._typing.Dtype, str], ...]]) -> bool
 
    Return a boolean indicating whether a provided dtype is of a specified data type ``kind``.
 

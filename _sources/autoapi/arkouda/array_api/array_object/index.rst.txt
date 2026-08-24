@@ -121,7 +121,7 @@ Module Contents
 
 
    .. py:property:: shape
-      :type: Tuple[int, Ellipsis]
+      :type: Tuple[int, ...]
 
 
 
@@ -158,7 +158,7 @@ Module Contents
 
 
 
-   .. py:method:: transpose(axes: Optional[Tuple[int, Ellipsis]] = None)
+   .. py:method:: transpose(axes: Optional[Tuple[int, ...]] = None)
 
       Return a view of the array with the specified axes transposed.
 

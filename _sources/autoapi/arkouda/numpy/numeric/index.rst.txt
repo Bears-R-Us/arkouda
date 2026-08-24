@@ -1334,7 +1334,7 @@ Module Contents
    array([True True])
 
 
-.. py:function:: percentile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: percentile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
 
    Compute the q-th percentile of the data along the specified axis.
 
@@ -1439,7 +1439,7 @@ Module Contents
    multi-dim pdarrays are now implemented.
 
 
-.. py:function:: quantile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray, arkouda.numpy.pdarrayclass.pdarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: quantile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray, arkouda.numpy.pdarrayclass.pdarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
 
    Compute the q-th quantile of the data along the specified axis.
 
@@ -1730,7 +1730,7 @@ Module Contents
    array([-0.71629787... -0.35107264... 0.16514041... 0.60436777...])
 
 
-.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[arkouda.numpy.dtypes.int_scalars, ...]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Compute the transpose of a matrix.
 

@@ -1315,17 +1315,16 @@
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">zmq</span><span class="w"> </span><span class="kn">import</span> <span class="n">ssh</span>
 
-    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"addr"</span><span class="p">:</span> <span class="n">addr</span><span class="p">,</span> <span class="s2">"server"</span><span class="p">:</span> <span class="n">tunnel_server</span><span class="p">}</span>
     <span class="n">keyfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"ARKOUDA_KEY_FILE"</span><span class="p">)</span>
     <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"ARKOUDA_PASSWORD"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">keyfile</span><span class="p">:</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"keyfile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyfile</span>
-    <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"password"</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
-
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">ssh</span><span class="o">.</span><span class="n">tunnel</span><span class="o">.</span><span class="n">open_tunnel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ssh</span><span class="o">.</span><span class="n">tunnel</span><span class="o">.</span><span class="n">open_tunnel</span><span class="p">(</span>
+            <span class="n">addr</span><span class="o">=</span><span class="n">addr</span><span class="p">,</span>
+            <span class="n">server</span><span class="o">=</span><span class="n">tunnel_server</span><span class="p">,</span>
+            <span class="n">keyfile</span><span class="o">=</span><span class="n">keyfile</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 

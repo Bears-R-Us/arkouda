@@ -21,7 +21,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: all(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: all(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Check whether all elements of an array evaluate to True along a given axis.
 
@@ -33,7 +33,7 @@ Module Contents
    :type keepdims: bool, optional
 
 
-.. py:function:: any(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: any(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Check whether any elements of an array evaluate to True along a given axis.
 

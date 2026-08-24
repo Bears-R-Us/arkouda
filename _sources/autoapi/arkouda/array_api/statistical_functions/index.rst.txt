@@ -86,7 +86,7 @@ Module Contents
    Arkouda Array ((2, 5), float64)[[1.0 3.0 6.0 10.0 15.0] [6.0 13.0 21.0 30.0 40.0]]
 
 
-.. py:function:: max(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: max(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the maximum values of an array along a given axis or axes.
 
@@ -118,7 +118,7 @@ Module Contents
    Arkouda Array ((2,), float64)[4.0 9.0]
 
 
-.. py:function:: mean(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: mean(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the minimum values of an array along a given axis or axes.
 
@@ -153,7 +153,7 @@ Module Contents
 
 .. py:function:: mean_shim(x: arkouda.array_api.array_object.Array, axis=None, dtype=None, out=None, keepdims=False)
 
-.. py:function:: min(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: min(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the mean of an array along a given axis or axes.
 
@@ -185,7 +185,7 @@ Module Contents
    Arkouda Array ((2,), float64)[0.0 5.0]
 
 
-.. py:function:: prod(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: prod(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the product of an array along a given axis or axes.
 
@@ -219,7 +219,7 @@ Module Contents
    Arkouda Array ((2,), float64)[120.0 30240.0]
 
 
-.. py:function:: std(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, correction: Union[int, float] = 0.0, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: std(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, correction: Union[int, float] = 0.0, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the standard deviation of an array along a given axis or axes.
 
@@ -255,7 +255,7 @@ Module Contents
    Arkouda Array ((2,), float64)[1.41421 1.41421]
 
 
-.. py:function:: sum(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: sum(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the sum of an array along a given axis or axes.
 
@@ -289,7 +289,7 @@ Module Contents
    Arkouda Array ((2,), float64)[15.0 40.0]
 
 
-.. py:function:: var(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, correction: Union[int, float] = 0.0, keepdims: bool = False) -> arkouda.array_api.array_object.Array
+.. py:function:: var(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None, correction: Union[int, float] = 0.0, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
    Compute the variance of an array along a given axis or axes.
 

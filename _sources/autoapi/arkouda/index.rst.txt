@@ -7599,7 +7599,7 @@ Package Contents
 
 
    .. py:attribute:: unique_keys
-      :type:  Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, Tuple[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], Ellipsis]]
+      :type:  Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, Tuple[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], ...]]
 
 
    .. py:method:: unregister()
@@ -8664,7 +8664,7 @@ Package Contents
       :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]]
 
 
-   .. py:method:: lookup(key: list[Any] | tuple[Any, Ellipsis]) -> arkouda.pandas.groupbyclass.groupable
+   .. py:method:: lookup(key: list[Any] | tuple[Any, ...]) -> arkouda.pandas.groupbyclass.groupable
 
       Perform element-wise lookup on the MultiIndex.
 
@@ -14888,7 +14888,7 @@ Package Contents
    array([0 5 10 15])
 
 
-.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
+.. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]
 
    Determine the broadcasted shape of two arrays given their shapes.
 
@@ -14918,7 +14918,7 @@ Package Contents
    (3, 4)
 
 
-.. py:function:: broadcast_shapes(*shapes: Tuple[int, Ellipsis]) -> Tuple[int, Ellipsis]
+.. py:function:: broadcast_shapes(*shapes: Tuple[int, ...]) -> Tuple[int, ...]
 
    Determine a broadcasted shape, given an arbitary number of shapes.
 
@@ -14942,7 +14942,7 @@ Package Contents
    (4, 2, 3)
 
 
-.. py:function:: broadcast_to(x: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], shape: Union[int, Tuple[int, Ellipsis]]) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: broadcast_to(x: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], shape: Union[int, Tuple[int, ...]]) -> arkouda.numpy.pdarrayclass.pdarray
 
    Broadcast the array to the specified shape.
 
@@ -16988,9 +16988,9 @@ Package Contents
    instantiation.
 
 
-.. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
-                 flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
-                 flip(x: arkouda.pandas.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.pandas.categorical.Categorical
+.. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+                 flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...]]] = None) -> arkouda.numpy.strings.Strings
+                 flip(x: arkouda.pandas.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...]]] = None) -> arkouda.pandas.categorical.Categorical
 
    Reverse an array's values along a particular axis or axes.
 
@@ -17466,11 +17466,11 @@ Package Contents
    and converted to Arkouda ``Strings``.
 
 
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: arkouda.numpy.dtypes.str_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: arkouda.numpy.dtypes.numeric_and_bool_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Union[numpy.dtype[Any], arkouda.numpy._typing._typing.BuiltinNumericTypes, arkouda.numpy._typing._typing.ArkoudaNumericTypes, arkouda.numpy.dtypes.bigint, type[arkouda.numpy.dtypes.bigint]], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Literal['bigint', 'float64', 'int8', 'int64', 'uint8', 'uint64', 'bool', 'bool_'], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], fill_value: arkouda.numpy.dtypes.str_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], fill_value: arkouda.numpy.dtypes.numeric_and_bool_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Union[numpy.dtype[Any], arkouda.numpy._typing._typing.BuiltinNumericTypes, arkouda.numpy._typing._typing.ArkoudaNumericTypes, arkouda.numpy.dtypes.bigint, type[arkouda.numpy.dtypes.bigint]], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Literal['bigint', 'float64', 'int8', 'int64', 'uint8', 'uint64', 'bool', 'bool_'], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
@@ -20327,8 +20327,8 @@ Package Contents
    .. py:method:: copy_with(params)
 
 
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
-                 ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[arkouda.numpy._typing._typing.NumericDTypeTypes, type[arkouda.numpy.dtypes.bigint]] = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], dtype: Union[arkouda.numpy._typing._typing.NumericDTypeTypes, type[arkouda.numpy.dtypes.bigint]] = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -20422,7 +20422,7 @@ Package Contents
    array([0 1 1 0 1 0 0 1 1 0])
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Tuple[int, Ellipsis], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
+.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Tuple[int, ...], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
 
    The basic arkouda array class. This class contains only the
    attributes of the array; the data resides on the arkouda
@@ -20474,7 +20474,7 @@ Package Contents
    .. py:attribute:: OpEqOps
 
 
-   .. py:method:: all(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
+   .. py:method:: all(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff all elements of the array along the given axis evaluate to True.
 
@@ -20510,7 +20510,7 @@ Package Contents
 
 
 
-   .. py:method:: any(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
+   .. py:method:: any(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff any element of the array along the given axis evaluates to True.
 
@@ -20848,7 +20848,7 @@ Package Contents
 
 
 
-   .. py:method:: is_sorted(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
+   .. py:method:: is_sorted(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.bool_scalars, pdarray]
 
       Return True iff the array (or given axis of the array) is monotonically non-decreasing.
 
@@ -20916,7 +20916,7 @@ Package Contents
 
 
 
-   .. py:method:: max(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: max(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return max of array elements along the given axis.
 
@@ -20960,7 +20960,7 @@ Package Contents
 
 
 
-   .. py:method:: mean(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: mean(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return the mean of the array.
 
@@ -20999,7 +20999,7 @@ Package Contents
 
 
 
-   .. py:method:: min(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: min(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return min of array elements along the given axis.
 
@@ -21086,7 +21086,7 @@ Package Contents
 
 
 
-   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return prod of array elements along the given axis.
 
@@ -21259,7 +21259,7 @@ Package Contents
 
 
 
-   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
+   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
 
       Return the standard deviation of values in the array. The standard
       deviation is implemented as the square root of the variance.
@@ -21319,7 +21319,7 @@ Package Contents
 
 
 
-   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return sum of array elements along the given axis.
 
@@ -21736,7 +21736,7 @@ Package Contents
 
 
 
-   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
+   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
 
       Return the variance of values in the array.
 
@@ -21790,7 +21790,7 @@ Package Contents
 
 
 
-.. py:function:: percentile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: percentile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
 
    Compute the q-th percentile of the data along the specified axis.
 
@@ -22102,7 +22102,7 @@ Package Contents
    multi-dim pdarrays are now implemented.
 
 
-.. py:function:: quantile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray, arkouda.numpy.pdarrayclass.pdarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: quantile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray, arkouda.numpy.pdarrayclass.pdarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
 
    Compute the q-th quantile of the data along the specified axis.
 
@@ -22185,7 +22185,7 @@ Package Contents
    array([0.00000000... 119.939165... 239.878330... 359.817495...])
 
 
-.. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -23721,7 +23721,7 @@ Package Contents
    array([1 4 9 16])
 
 
-.. py:function:: squeeze(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], /, axis: Union[None, arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: squeeze(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], /, axis: Union[None, arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Remove degenerate (size one) dimensions from an array.
 
@@ -24302,7 +24302,7 @@ Package Contents
    array([-0.71629787... -0.35107264... 0.16514041... 0.60436777...])
 
 
-.. py:function:: tile(A: arkouda.numpy.pdarrayclass.pdarray, /, reps: Union[int, Tuple[int, Ellipsis]]) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: tile(A: arkouda.numpy.pdarrayclass.pdarray, /, reps: Union[int, Tuple[int, ...]]) -> arkouda.numpy.pdarrayclass.pdarray
 
    Construct an array by repeating A the number of times given by reps.
 
@@ -24559,7 +24559,7 @@ Package Contents
        the number of dimensions in the array or if the array is not a 32 or 64 bit numeric type
 
 
-.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[arkouda.numpy.dtypes.int_scalars, ...]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Compute the transpose of a matrix.
 
@@ -24982,7 +24982,7 @@ Package Contents
 
 
 
-.. py:function:: uniform(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: uniform(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...]], low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Generate a pdarray with uniformly distributed random float values
    in a specified range.
@@ -25486,8 +25486,8 @@ Package Contents
    :rtype: pdarray
 
 
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[arkouda.numpy._typing._typing.NumericDTypeTypes, type[arkouda.numpy.dtypes.bigint]] = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
-                 zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> Never
+.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], dtype: Union[arkouda.numpy._typing._typing.NumericDTypeTypes, type[arkouda.numpy.dtypes.bigint]] = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, ...], str], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> Never
 
    Create a pdarray filled with zeros.
 

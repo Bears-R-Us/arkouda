@@ -66,7 +66,7 @@ Module Contents
    :type copy: Optional[bool]
 
 
-.. py:function:: empty(shape: Union[int, Tuple[int, Ellipsis]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: empty(shape: Union[int, Tuple[int, ...]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
 
    Return a new array of given shape and type, without initializing entries.
 
@@ -99,7 +99,7 @@ Module Contents
    WARNING: This function is not yet implemented.
 
 
-.. py:function:: full(shape: Union[int, Tuple[int, Ellipsis]], fill_value: Union[int, bool, float], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+.. py:function:: full(shape: Union[int, Tuple[int, ...]], fill_value: Union[int, bool, float], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
 
    Return a new array of given shape and type, filled with `fill_value`.
 
@@ -121,7 +121,7 @@ Module Contents
    WARNING: This function is not yet implemented.
 
 
-.. py:function:: ones(shape: Union[int, Tuple[int, Ellipsis]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
+.. py:function:: ones(shape: Union[int, Tuple[int, ...]], *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api._typing.Array
 
    Return a new array with the specified shape and type, filled with ones.
 
@@ -144,7 +144,7 @@ Module Contents
    all other elements zero.
 
 
-.. py:function:: zeros(shape: Union[int, Tuple[int, Ellipsis]], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: zeros(shape: Union[int, Tuple[int, ...]], /, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
 
    Return a new array with the specified shape and type, filled with zeros.
 
