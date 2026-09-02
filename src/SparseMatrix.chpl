@@ -3,7 +3,13 @@ module SparseMatrix {
   public use SpsMatUtil;
   use ArkoudaSparseMatrixCompat;
   use BlockDist;
+  use CompressedSparseLayout;
   use CommAggregation;
+  use CustomCopyAggregation;
+  use PrivateDist;
+  use ChapelLocks;
+
+  config param aggregatedSparseMatrixCreation = true;
 
   // Quick and dirty, not permanent
   proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: Layout) throws {
@@ -411,10 +417,12 @@ module SparseMatrix {
             sparseMatMatMult(aBlk, bBlk, spsData);
           }
         }
-
         // Get my locale's local indices and create a sparse matrix
         // using them and the spsData computed above.
         //
+        // TODO: the 'make*SparseMat' functions create an array of size 'NNZ'.
+        // If we need to improve memory usage, could we use a SparseIndexBuffer
+        // instead?
         const locInds = A.domain.parentDom.localSubdomain();
         var cBlk = makeSparseMat(locInds, spsData);
 
@@ -424,6 +432,7 @@ module SparseMatrix {
         C.setLocalSubarray(cBlk);
       }
     }
+
     return C;
   }
 
@@ -470,7 +479,6 @@ module SparseMatrix {
   proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout,
                            type eltType) throws {
     import SymArrayDmap.makeSparseDomain;
-    var (SD, dense) = makeSparseDomain(shape, layout);
 
     const minRow = min reduce rows;
     const maxRow = max reduce rows;
@@ -497,9 +505,9 @@ module SparseMatrix {
         errorClass="InvalidArgumentError"
         );
 
+    var (SD, dense) = makeSparseDomain(shape, layout);
     var A: [SD] eltType;
     addElementsToSparseArray(A, SD, rows, cols, vals);
-
     return A;
   }
 
@@ -520,36 +528,124 @@ module SparseMatrix {
     }
   }
 
+  //
+  // We need a lock per locale to ensure that the flush() method of
+  // DestinationHandler is thread-safe. Wrapping a PrivateDist array in a
+  // class is the most expedient way to achieve this.
+  //
+  // This may result in an extra GET or two when accessing the 'data' field.
+  //
+  class LockHelper {
+    var data : [PrivateSpace] chpl_LocalSpinlock;
+  }
+
+  use ChplConfig;
+  config param bufSize = 1024;
+
+  class DestinationHandler {
+    var domVal;
+    var arrVal;
+    var lockObj;
+
+    proc init(domVal, arrVal, lockObj) {
+      this.domVal = domVal;
+      this.arrVal = arrVal;
+      this.lockObj = lockObj;
+    }
+
+    inline proc flush(ref rBuffer, const ref remBufferPtr, const ref myBufferIdx) {
+      ref lock = lockObj.data[here.id];
+      lock.lock();
+      defer lock.unlock();
+
+      const (_, locid) = this.domVal.dist.chpl__locToLocIdx(here);
+      var locDomVal = this.domVal.locDoms[locid]!.mySparseBlock._value;
+      var locIdxBuf = locDomVal.dsiCreateIndexBuffer(bufSize,false,false);
+      for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
+        assert(dstAddr == nil);
+        var (i,j,_) = srcVal;
+        locIdxBuf.add((i, j));
+      }
+      locIdxBuf.commit();
+
+      // We use a lock around the entire 'flush' call because another parallel
+      // 'flush' might be inserting indices, which will make the returned
+      // results from 'find' invalid.
+      //
+      // TODO:
+      // - try 'forall' loop here
+      // - can we create a version of bulkAdd that handles the values as well?
+      for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
+        assert(dstAddr == nil);
+        var (i,j,v) = srcVal;
+        var (_,loc) = locDomVal.find((i,j));
+        this.arrVal.locArr[locid]!.myElems._value.data[loc] = v;
+      }
+    }
+  }
+
+  class SourceHandler {
+    var domVal;
+    var arrVal;
+    var lockObj;
+    type elemType = (int,int,int);
+
+    proc init(D, A, locks) {
+      this.domVal = D._value;
+      this.arrVal = A._value;
+      this.lockObj = locks;
+    }
+
+    proc sourceCopy() {
+      return new unmanaged DestinationHandler(domVal,arrVal, lockObj);
+    }
+
+    proc getDestinationLocale(val: elemType) {
+      // Since elemType is a tuple of (i,j,v) then we only need (i,j)
+      var (i,j,_) = val;
+      return domVal.dist.dsiIndexToLocale((i,j));
+    }
+  }
 
   proc addElementsToSparseArray(ref A, ref SD, const ref rows, const ref cols,
                                 const ref vals) throws where
                                 !A.chpl_isNonDistributedArray() {
-    coforall (loc, locDom) in zip(getGrid(A),
-                                  SD._value.locDoms) {
-      on loc {
-        for _srcLocId in loc.id..#numLocales {
-          const srcLocId = _srcLocId % numLocales;
-          var rowChunk = rows[rows.localSubdomain(Locales[srcLocId])];
-          var colChunk = cols[rows.localSubdomain(Locales[srcLocId])];
-          var valChunk = vals[rows.localSubdomain(Locales[srcLocId])];
-          for (r,c,v) in zip(rowChunk, colChunk, valChunk) {
-            if locDom!.parentDom.contains(r,c) {
-              if locDom!.mySparseBlock.contains(r,c) then
-                throw getErrorWithContext(
-                  msg="Duplicate index (%i, %i) in sparse matrix".format(r, c),
-                  lineNumber=getLineNumber(),
-                  routineName=getRoutineName(),
-                  moduleName=getModuleName(),
-                  errorClass="InvalidArgumentError"
-                  );
+    
+    if !aggregatedSparseMatrixCreation {
+      coforall (loc, locDom) in zip(getGrid(A),
+                                    SD._value.locDoms) {
+        on loc {
+          for _srcLocId in loc.id..#numLocales {
+            const srcLocId = _srcLocId % numLocales;
+            var rowChunk = rows[rows.localSubdomain(Locales[srcLocId])];
+            var colChunk = cols[rows.localSubdomain(Locales[srcLocId])];
+            var valChunk = vals[rows.localSubdomain(Locales[srcLocId])];
+            for (r,c,v) in zip(rowChunk, colChunk, valChunk) {
+              if locDom!.parentDom.contains(r,c) {
+                if locDom!.mySparseBlock.contains(r,c) then
+                  throw getErrorWithContext(
+                    msg="Duplicate index (%i, %i) in sparse matrix".format(r, c),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="InvalidArgumentError"
+                    );
 
 
-              locDom!.mySparseBlock += (r,c);
-              A[r,c] = v;
+                locDom!.mySparseBlock += (r,c);
+                A[r,c] = v;
+              }
             }
           }
         }
       }
+    } else {
+      var locks = new unmanaged LockHelper();
+      defer delete locks;
+
+      forall (i,j,v) in zip(rows, cols, vals)
+        with (var agg = new CustomDstAggregator(new shared SourceHandler(SD, A, locks))) do
+          agg.copy((i,j,v));
     }
 
   }
@@ -624,16 +720,15 @@ module SparseMatrix {
 
       sort(inds);
 
-      for ij in inds do
-        CDom += ij;
+      CDom.bulkAdd(inds, true, true);
 
       var C: [CDom] int;
+      // TODO: can this be parallel?
       for ij in inds do
-        try! C[ij] += spsData[ij];  // TODO: Should this really throw?
+        try! C[ij] = spsData[ij];  // TODO: Should this really throw?
 
       return C;
     }
-
 
     // create a new sparse matrix from a collection of nonzero indices
     // (nnzs) and values (vals)

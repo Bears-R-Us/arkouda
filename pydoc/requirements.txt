@@ -41,4 +41,5 @@ pytest-json-report
 pytest-benchmark>=4.0.0
 mathjax
 pandas-stubs
+scipy-stubs
 types-python-dateutil

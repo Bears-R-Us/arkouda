@@ -159,3 +159,15 @@ graphkeys: Noop ops/s
 files: noop.dat
 graphtitle: Noop Performance
 ylabel: Performance (ops/s)
+
+perfkeys: Average CSR time =, Average CSC time =
+graphkeys: CSR time, CSC time
+files: sparse.dat, sparse.dat
+graphtitle: Sparse Matrix Creation Time
+ylabel: Time (Seconds)
+
+perfkeys: Average CSCxCSR time =
+graphkeys: CSCxCSR time
+files: sparse.dat
+graphtitle: Sparse Matrix Multiplication Time
+ylabel: Time (Seconds)

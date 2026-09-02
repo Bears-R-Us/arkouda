@@ -31,6 +31,7 @@ pytest-json-report
 pytest-benchmark
 mathjax
 pandas-stubs
+scipy-stubs
 types-python-dateutil
 blosc2>=2.3.0
 numexpr>=2.6.2

@@ -2,6 +2,7 @@ from typing import Sequence
 
 import numpy as np
 import pytest
+import scipy.sparse as sp
 
 import arkouda as ak
 
@@ -206,3 +207,44 @@ class TestSparse:
         assert np.all(vals == vals_)
         # Check the layout is correct
         assert mat.layout == layout
+
+    def test_to_scipy_sparse(self):
+        rows = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 8])
+        cols = ak.array([4, 5, 6, 1, 3, 4, 2, 3, 1, 2, 8, 1, 2, 6, 1, 6, 7, 8])
+        vals = ak.array(
+            [
+                3,
+                20,
+                30,
+                10,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120,
+                130,
+                140,
+                150,
+                160,
+                170,
+            ]
+        )
+
+        mat = create_sparse_matrix(10, rows, cols, vals, "CSR")
+        conv = mat.to_scipy_sparse()
+        info = (vals.to_ndarray(), (rows.to_ndarray(), cols.to_ndarray()))
+        expected = sp.csr_array(info, shape=(10, 10))
+
+        assert sp.issparse(conv)
+        assert conv.shape == expected.shape
+        assert conv.format == expected.format
+
+        conv_coo = conv.tocoo()
+        expected_coo = expected.tocoo()
+        assert np.array_equal(conv_coo.row, expected_coo.row)
+        assert np.array_equal(conv_coo.col, expected_coo.col)
+        assert np.array_equal(conv_coo.data, expected_coo.data)

@@ -57,6 +57,7 @@ dev = [
   "sphinx-design",
   "sphinx-autodoc-typehints",
   "pandas-stubs",
+  "scipy-stubs",
   "types-python-dateutil",
   "ipython",
   "pre-commit",

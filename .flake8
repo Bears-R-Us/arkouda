@@ -58,7 +58,7 @@ per-file-ignores =
     arkouda/pandas/join.py: DOC105,DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
     arkouda/pandas/match.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC502,DOC503
     arkouda/pandas/matcher.py: DOC101,DOC103,DOC501,DOC503,DOC603
-    arkouda/scipy/sparrayclass.py: DOC101,DOC103,DOC107,DOC503
+    arkouda/scipy/sparrayclass.py: DOC101,DOC103,DOC107,DOC203,DOC503
     arkouda/pandas/series.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC201,DOC501,DOC502,DOC503,DOC601,DOC603
     arkouda/plotting.py: DOC105,DOC203,DOC503,DOC501
     arkouda/scipy/_stats_py.py: DOC105,DOC106,DOC107,DOC203,DOC501,DOC503

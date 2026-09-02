@@ -46,7 +46,8 @@ module SparseMatrixMsg {
     proc sparseMatrixtoPdarray(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
                                type SparseSymEntry_etype, param SparseSymEntry_matLayout: Layout
     ): MsgTuple throws {
-        const e = st[msgArgs["matrix"]]: borrowed SparseSymEntry(SparseSymEntry_etype, 2, SparseSymEntry_matLayout);
+        type castTo = borrowed SparseSymEntry(SparseSymEntry_etype, 2, SparseSymEntry_matLayout);
+        const e = st[msgArgs["matrix"]]: castTo;
 
         const size = e.nnz;
         var rows = makeDistArray(size, int),
@@ -86,6 +87,7 @@ module SparseMatrixMsg {
               shape = msgArgs["shape"].toScalarTuple(int, 2); // Hardcode 2D for now
 
         const aV = sparseMatFromArrays(rows.a, cols.a, vals.a, shape, SparseSymEntry_matLayout, SparseSymEntry_etype);
+
         return st.insert(new shared SparseSymEntry(aV, SparseSymEntry_matLayout));
     }
 

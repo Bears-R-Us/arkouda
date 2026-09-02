@@ -97,8 +97,8 @@ module MultiTypeSymEntry
         }
 
         /**
-         * Formats and returns data in this entry up to the specified threshold. 
-         * Arrays of size less than threshold will be printed in their entirety. 
+         * Formats and returns data in this entry up to the specified threshold.
+         * Arrays of size less than threshold will be printed in their entirety.
          * Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
          *
          * :arg thresh: threshold for data to return
@@ -123,7 +123,7 @@ module MultiTypeSymEntry
     }
 
     /* Casts a GenSymEntry to the specified type and returns it.
-       
+
        :arg gse: generic sym entry
        :type gse: borrowed GenSymEntry
 
@@ -134,11 +134,11 @@ module MultiTypeSymEntry
         return gse.toSymEntry(etype, dimensions);
     }
 
-    /* 
+    /*
         This is a dummy class to avoid having to talk about specific
-        instantiations of SymEntry. 
+        instantiations of SymEntry.
         GenSymEntries can contain multiple SymEntries, but they represent a singular object.
-        For example, SegArray contains the offsets and values array, but only the values are 
+        For example, SegArray contains the offsets and values array, but only the values are
         considered data.
     */
     class GenSymEntry:AbstractSymEntry
@@ -189,9 +189,9 @@ module MultiTypeSymEntry
             }
         }
 
-        /* 
-          Formats and returns data in this entry up to the specified threshold. 
-          Arrays of size less than threshold will be printed in their entirety. 
+        /*
+          Formats and returns data in this entry up to the specified threshold.
+          Arrays of size less than threshold will be printed in their entirety.
           Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
 
             :arg thresh: threshold for data to return
@@ -319,8 +319,8 @@ module MultiTypeSymEntry
         }
 
         /*
-        Formats and returns data in this entry up to the specified threshold. 
-        Arrays of size less than threshold will be printed in their entirety. 
+        Formats and returns data in this entry up to the specified threshold.
+        Arrays of size less than threshold will be printed in their entirety.
         Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
 
             :arg thresh: threshold for data to return
@@ -456,7 +456,7 @@ module MultiTypeSymEntry
      * Factory method for creating a typed SymEntry and checking mem limits
      * :arg len: the number of elements to allocate
      * :type len: int
-     * 
+     *
      * :arg t: the element type
      * :type t: type
     */
@@ -498,8 +498,8 @@ module MultiTypeSymEntry
         }
 
         /**
-         * Formats and returns data in this entry up to the specified threshold. 
-         * Arrays of size less than threshold will be printed in their entirety. 
+         * Formats and returns data in this entry up to the specified threshold.
+         * Arrays of size less than threshold will be printed in their entirety.
          * Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
          *
          * :arg thresh: threshold for data to return
@@ -737,7 +737,6 @@ module MultiTypeSymEntry
           genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "deinit SparseSymEntry");
         }
     }
-
 
     class GeneratorSymEntry:AbstractSymEntry {
         type etype;

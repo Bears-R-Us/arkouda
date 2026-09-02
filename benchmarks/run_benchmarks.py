@@ -53,6 +53,7 @@ BENCHMARKS = [
     "str-gather",
     "str-in1d",
     "substring_search",
+    "sparse",
     "split",
     "sort-cases",
     "multiIO",

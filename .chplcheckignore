@@ -15,6 +15,7 @@ CommDiagnosticsMsg.chpl
 compat
 ConcatenateMsg.chpl
 CSVMsg.chpl
+CustomCopyAggregation.chpl
 DataFrameIndexingMsg.chpl
 deprecated
 DynamicSort.chpl
