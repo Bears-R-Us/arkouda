@@ -104,8 +104,8 @@ or
    .. method:: proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
       *
-      * Formats and returns data in this entry up to the specified threshold. 
-      * Arrays of size less than threshold will be printed in their entirety. 
+      * Formats and returns data in this entry up to the specified threshold.
+      * Arrays of size less than threshold will be printed in their entirety.
       * Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
       *
       * :arg thresh: threshold for data to return
@@ -136,11 +136,11 @@ or
 
 .. class:: GenSymEntry : AbstractSymEntry
 
-    
+   
    This is a dummy class to avoid having to talk about specific
-   instantiations of SymEntry. 
+   instantiations of SymEntry.
    GenSymEntries can contain multiple SymEntries, but they represent a singular object.
-   For example, SegArray contains the offsets and values array, but only the values are 
+   For example, SegArray contains the offsets and values array, but only the values are
    considered data.
    
 
@@ -174,9 +174,9 @@ or
 
    .. method:: override proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
-       
-      Formats and returns data in this entry up to the specified threshold. 
-      Arrays of size less than threshold will be printed in their entirety. 
+      
+      Formats and returns data in this entry up to the specified threshold.
+      Arrays of size less than threshold will be printed in their entirety.
       Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
       
         :arg thresh: threshold for data to return
@@ -273,8 +273,8 @@ or
    .. method:: override proc entry__str__(thresh: int = 6, prefix: string = "[", suffix: string = "]", baseFormat: string = "%\?"): string throws
 
       
-      Formats and returns data in this entry up to the specified threshold. 
-      Arrays of size less than threshold will be printed in their entirety. 
+      Formats and returns data in this entry up to the specified threshold.
+      Arrays of size less than threshold will be printed in their entirety.
       Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
       
           :arg thresh: threshold for data to return
@@ -318,7 +318,7 @@ or
    * Factory method for creating a typed SymEntry and checking mem limits
    * :arg len: the number of elements to allocate
    * :type len: int
-   * 
+   *
    * :arg t: the element type
    * :type t: type
    
@@ -340,8 +340,8 @@ or
    .. method:: override proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
       *
-      * Formats and returns data in this entry up to the specified threshold. 
-      * Arrays of size less than threshold will be printed in their entirety. 
+      * Formats and returns data in this entry up to the specified threshold.
+      * Arrays of size less than threshold will be printed in their entirety.
       * Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
       *
       * :arg thresh: threshold for data to return

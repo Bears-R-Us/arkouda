@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html">CustomCopyAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/DynamicSort.html">DynamicSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/FileIO.html">FileIO</a></li>
@@ -189,6 +190,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.addPayload">addPayload() (Message.MessageArgs method)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.aggregatedSparseMatrixCreation">aggregatedSparseMatrixCreation (in module SparseMatrix)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.aggType">aggType (BigIntegerAggregation.DstAggregatorBigint attribute)</a>
 
       <ul>
@@ -259,6 +262,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.arraySegString">arraySegString() (in module GenSymIO)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.DestinationHandler.arrVal">arrVal (SparseMatrix.DestinationHandler attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.arrVal">(SparseMatrix.SourceHandler attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#module-AryUtil">AryUtil (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/arkouda_server.html#arkouda_server.asLogger">asLogger (in module arkouda_server)</a>
@@ -351,10 +360,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.broadcastShape">broadcastShape() (in module AryUtil)</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.broadcastShape">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.broadcastShape">[2]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.BSLASH">BSLASH (in module ServerConfig)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.bufferIdxAlloc">bufferIdxAlloc() (in module CommAggregation)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.DstAggregatorBigint.bufferIdxs">bufferIdxs (BigIntegerAggregation.DstAggregatorBigint attribute)</a>
@@ -377,6 +386,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcAggregator.bufferSize">(CommAggregation.SrcAggregator attribute)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.bufSize">bufSize (in module SparseMatrix)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.buildReadAllMsgJson">buildReadAllMsgJson() (in module GenSymIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SegStringSymEntry.bytesEntry">bytesEntry (MultiTypeSymEntry.SegStringSymEntry attribute)</a>
@@ -489,12 +500,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.concat">concat() (in module SegmentedString)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.concatArrays">concatArrays() (in module AryUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ConfigurationError">ConfigurationError (class in ServerErrors)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel.configureChannel">configureChannel() (ExternalIntegration.HttpChannel method)</a>
 
       <ul>
@@ -535,6 +546,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcAggregator.copy">(CommAggregation.SrcAggregator method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcUnorderedAggregator.copy">(CommAggregation.SrcUnorderedAggregator method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.copy">(CustomCopyAggregation.CustomDstAggregator method)</a>, <a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.copy">[1]</a>
 </li>
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable">CounterTable (class in MetricsMsg)</a>
@@ -593,6 +606,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.currentTime">currentTime() (in module ServerConfig)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.custom">custom (CustomCopyAggregation.CustomDstAggregator attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#module-CustomCopyAggregation">CustomCopyAggregation (module)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator">CustomDstAggregator (record in CustomCopyAggregation)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -600,7 +619,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.data">data (CommAggregation.remoteBuffer attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.LockHelper.data">(SparseMatrix.LockHelper attribute)</a>
 </li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.DataFrameRegEntry">DataFrameRegEntry (class in MultiTypeRegEntry)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.datarepr">datarepr() (MultiTypeSymbolTable.SymTab method)</a>
@@ -636,6 +659,8 @@
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcUnorderedAggregator.deinit">(CommAggregation.SrcUnorderedAggregator method)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.deinit">(CustomCopyAggregation.remoteHandler method)</a>
+</li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SparseSymEntry.deinit">(MultiTypeSymEntry.SparseSymEntry method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.deinit">(MultiTypeSymEntry.SymEntry method)</a>
@@ -659,10 +684,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.Deployment">Deployment (enum in ServerConfig)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.deployment">deployment (in module ServerConfig)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.deregisterFromExternalSystem">deregisterFromExternalSystem() (in module ExternalIntegration)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.deregisterFromKubernetes">deregisterFromKubernetes() (in module ExternalIntegration)</a>
@@ -670,6 +695,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.deserialize">deserialize() (in module Message)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.bigint.deserializeFrom">deserializeFrom() (BigIntegerAggregation.bigint method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.DestinationHandler">DestinationHandler (class in SparseMatrix)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SparseSymEntry.dimensions">dimensions (MultiTypeSymEntry.SparseSymEntry attribute)</a>
 
@@ -687,6 +714,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.domOnAxis">domOnAxis() (in module AryUtil)</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.domOnAxis">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.domOnAxis">[2]</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.DestinationHandler.domVal">domVal (SparseMatrix.DestinationHandler attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.domVal">(SparseMatrix.SourceHandler attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.dROUNDS">dROUNDS (in module SipHash)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html#BigIntegerAggregation.SrcAggregatorBigint.dstAddrs">dstAddrs (BigIntegerAggregation.SrcAggregatorBigint attribute)</a>
@@ -747,6 +780,10 @@
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcAggregator.elemType">(CommAggregation.SrcAggregator attribute)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcUnorderedAggregator.elemType">(CommAggregation.SrcUnorderedAggregator attribute)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.elemType">(CustomCopyAggregation.CustomDstAggregator attribute)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.elemType">(SparseMatrix.SourceHandler attribute)</a>
 </li>
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.merge.eltType">eltType (SpsMatUtil.merge attribute)</a>
@@ -866,6 +903,10 @@
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcUnorderedAggregator.flush">(CommAggregation.SrcUnorderedAggregator method)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.flush">(CustomCopyAggregation.CustomDstAggregator method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.DestinationHandler.flush">(SparseMatrix.DestinationHandler method)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -937,9 +978,11 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.GET">GET() (CommAggregation.remoteBuffer method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.get">get() (Message.MessageArgs method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.get">get() (CustomCopyAggregation.remoteHandler method)</a>
 
       <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.get">(Message.MessageArgs method)</a>
+</li>
         <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.get">(MetricsMsg.CounterTable method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.get">(MetricsMsg.MeasurementTable method)</a>
@@ -989,6 +1032,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/ge-24/ArkoudaSparseMatrixCompat.html#ArkoudaSparseMatrixCompat.getDenseDom">getDenseDom() (in module ArkoudaSparseMatrixCompat)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.getDestinationLocale">getDestinationLocale() (SparseMatrix.SourceHandler method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">getDigit() (in module AryUtil)</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[4]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getDType">getDType() (Message.ParameterObj method)</a>
@@ -1019,10 +1064,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">getGenericTypedArrayEntry() (in module MultiTypeSymbolTable)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">[1]</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.getGrid">getGrid() (in module SparseMatrix)</a>, <a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.getGrid">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.getGrid">getGrid() (in module SparseMatrix)</a>, <a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.getGrid">[1]</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getIntValue">getIntValue() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.getKubernetesDeregisterParameters">getKubernetesDeregisterParameters() (in module ExternalIntegration)</a>
@@ -1228,6 +1273,10 @@
       <ul>
         <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.orderer.init">(AryUtil.orderer method)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.init">(CustomCopyAggregation.CustomDstAggregator method)</a>, <a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.CustomDstAggregator.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.init">(CustomCopyAggregation.remoteHandler method)</a>, <a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.init">[1]</a>
+</li>
         <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.FileChannel.init">(ExternalIntegration.FileChannel method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel.init">(ExternalIntegration.HttpChannel method)</a>
@@ -1327,6 +1376,10 @@
         <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.UnsupportedOSError.init">(ServerErrors.UnsupportedOSError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.UnsupportedOSError.init">[1]</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError.init">(ServerErrors.WriteModeError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.DestinationHandler.init">(SparseMatrix.DestinationHandler method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.init">(SparseMatrix.SourceHandler method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1478,7 +1531,11 @@
       <li><a href="modules/__w/arkouda/arkouda/src/Registry.html#Registry.RegTab.list_registry">list_registry() (Registry.RegTab method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.loc">loc (CommAggregation.remoteBuffer attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.loc">(CustomCopyAggregation.remoteHandler attribute)</a>
 </li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus.locale_hostname">locale_hostname (MemoryMgmt.LocaleMemoryStatus attribute)</a>
 
       <ul>
@@ -1493,20 +1550,30 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo">LocaleInfo (class in MetricsMsg)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.localeMemAvailable">localeMemAvailable() (in module MemoryMgmt)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus">LocaleMemoryStatus (record in MemoryMgmt)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric">LocaleMetric (class in MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.locales">locales (MetricsMsg.ServerInfo attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.localFree">localFree() (CommAggregation.remoteBuffer method)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.localHandler">localHandler (CustomCopyAggregation.remoteHandler attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.localIter">localIter() (CommAggregation.remoteBuffer iterator)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.LockHelper">LockHelper (class in SparseMatrix)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.DestinationHandler.lockObj">lockObj (SparseMatrix.DestinationHandler attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.lockObj">(SparseMatrix.SourceHandler attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.LogChannel">LogChannel (enum in Logging)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.logChannel">logChannel (in module ServerConfig)</a>
@@ -1785,6 +1852,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.orderer">orderer (record in AryUtil)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.original">original (CustomCopyAggregation.remoteHandler attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.OutOfBoundsError">OutOfBoundsError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.OutputHandler">OutputHandler (class in Logging)</a>
@@ -1988,6 +2057,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/Registry.html#Registry.RegTab">RegTab (class in Registry)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer">remoteBuffer (record in CommAggregation)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler">remoteHandler (record in CustomCopyAggregation)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.removeAxis">removeAxis() (in module AryUtil)</a>
 </li>
@@ -2213,10 +2284,10 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.ArkoudaServerDaemon.shutdownDaemon">shutdownDaemon (ServerDaemon.ArkoudaServerDaemon attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#module-SipHash">SipHash (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.siphash">siphash() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash128">sipHash128() (in module SipHash)</a>, <a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash128">[1]</a>
@@ -2257,6 +2328,10 @@
         <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.ServerStatusDaemon.socket">(ServerDaemon.ServerStatusDaemon attribute)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler.sourceCopy">sourceCopy() (SparseMatrix.SourceHandler method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.SourceHandler">SourceHandler (class in SparseMatrix)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.sparseMatDat">sparseMatDat (record in SpsMatUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.sparseMatFromArrays">sparseMatFromArrays() (in module SparseMatrix)</a>
@@ -2366,7 +2441,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.lowLevelLocalizingSlice.t">t (AryUtil.lowLevelLocalizingSlice attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/CustomCopyAggregation.html#CustomCopyAggregation.remoteHandler.t">(CustomCopyAggregation.remoteHandler attribute)</a>
 </li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.tab">tab (MultiTypeSymbolTable.SymTab attribute)</a>
 
       <ul>

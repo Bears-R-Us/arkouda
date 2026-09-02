@@ -1,0 +1,80 @@
+.. default-domain:: chpl
+
+.. module:: CustomCopyAggregation
+
+CustomCopyAggregation
+=====================
+**Usage**
+
+.. code-block:: chapel
+
+   use CustomCopyAggregation;
+
+
+or
+
+.. code-block:: chapel
+
+   import CustomCopyAggregation;
+
+.. record:: remoteHandler
+
+   .. attribute:: type t
+
+   .. attribute:: var original: _to_nilable(t)
+
+   .. attribute:: var localHandler: _to_nilable(_to_unmanaged(original!.sourceCopy().type))
+
+   .. attribute:: var loc: int
+
+   .. method:: proc init(type t)
+
+   .. method:: proc init(type t, ref original, loc)
+
+   .. method:: proc deinit()
+
+   .. method:: proc ref get() ref
+
+.. record:: CustomDstAggregator
+
+   
+   Aggregates ``copy(ref dst, src)``. Optimized for when src is local.
+   Not parallel safe and is expected to be created on a per-task basis.
+   High memory usage since there are per-destination buffers.
+   
+
+   .. attribute:: type elemType
+
+   .. attribute:: param custom = false
+
+   .. method:: proc init(type elemType)
+
+   .. method:: proc init(ref handler)
+
+   .. method:: proc ref copy(ref dst: elemType, const in srcVal: elemType)
+
+      
+      Sets ``dst = srcVal`` in a way that aggregates such updates
+      to improve communication efficiency assuming that ``dst`` is remote
+      and ``srcVal`` is local.
+      
+
+   .. method:: proc ref copy(const in srcVal: elemType)
+
+      
+      Copy method for custom aggregator.
+      
+
+   .. method:: proc ref flush(freeBuffers = false)
+
+      
+      Flushes the aggregator & completes the updates queued up from the
+      :proc:`DstAggregator.copy` calls.
+      
+      :arg freeBuffers: if ``true``, deallocates buffers used by this
+                        aggregator. If ``false``, the buffers will remain
+                        allocated after this ``flush`` (to support further
+                        :proc:`DstAggregator.copy` calls) and deallocated
+                        when the aggregator variable is deinitialized.
+      
+

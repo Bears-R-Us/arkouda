@@ -105,3 +105,19 @@ Module Contents
    .. py:method:: to_pdarray() -> List[pdarray]
 
 
+   .. py:method:: to_scipy_sparse()
+
+      Convert the Arkouda sparse array to an equivalent SciPy sparse array.
+
+      :returns: A SciPy sparse array with the same shape, values, and logical layout.
+      :rtype: scipy.sparse.sparray
+
+      .. rubric:: Notes
+
+      SciPy sparse array classes require SciPy versions that provide
+      ``coo_array``, ``csr_array``, and ``csc_array``. If those are not
+      available, this method falls back to the corresponding sparse matrix
+      classes.
+
+
+

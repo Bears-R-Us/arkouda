@@ -25,6 +25,8 @@ or
 
    SparseMatrix/*
 
+.. data:: config param aggregatedSparseMatrixCreation = true
+
 .. function:: proc fillSparseMatrix(ref spsMat, const A: [?D] ?eltType, param l: Layout) throws
 
 .. function:: proc getGrid(const ref spsMat) where spsMat.chpl_isNonDistributedArray()
@@ -65,6 +67,40 @@ or
 .. function:: proc sparseMatFromArrays(rows, cols, vals, shape: 2*(int), param layout, type eltType) throws
 
 .. function:: proc addElementsToSparseArray(ref A, ref SD, const ref rows, const ref cols, const ref vals) throws where A.chpl_isNonDistributedArray()
+
+.. class:: LockHelper
+
+   .. attribute:: var data: [PrivateSpace] chpl_LocalSpinlock
+
+.. data:: config param bufSize = 1024
+
+.. class:: DestinationHandler
+
+   .. attribute:: var domVal
+
+   .. attribute:: var arrVal
+
+   .. attribute:: var lockObj
+
+   .. method:: proc init(domVal, arrVal, lockObj)
+
+   .. method:: proc flush(ref rBuffer, const ref remBufferPtr, const ref myBufferIdx)
+
+.. class:: SourceHandler
+
+   .. attribute:: var domVal
+
+   .. attribute:: var arrVal
+
+   .. attribute:: var lockObj
+
+   .. attribute:: type elemType = (int, int, int)
+
+   .. method:: proc init(D, A, locks)
+
+   .. method:: proc sourceCopy()
+
+   .. method:: proc getDestinationLocale(val: elemType)
 
 .. function:: proc addElementsToSparseArray(ref A, ref SD, const ref rows, const ref cols, const ref vals) throws where !A.chpl_isNonDistributedArray()
 

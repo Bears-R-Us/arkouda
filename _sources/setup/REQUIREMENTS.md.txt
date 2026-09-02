@@ -62,6 +62,7 @@ The dependencies listed here are only required if you will be doing development 
 - `pytest-benchmark>=4.0.0`
 - `mathjax`
 - `pandas-stubs`
+- `scipy-stubs`
 - `types-python-dateutil`
 
 ### Installing/Updating Python Dependencies

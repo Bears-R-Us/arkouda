@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CustomCopyAggregation.html">CustomCopyAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DynamicSort.html">DynamicSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
@@ -133,6 +134,11 @@
 <li class="toctree-l1"><a class="reference internal" href="SparseMatrix/SpsMatUtil.html">SpsMatUtil</a></li>
 </ul>
 </div>
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="SparseMatrix.aggregatedSparseMatrixCreation">
+<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">aggregatedSparseMatrixCreation</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">true</span></em><a class="headerlink" href="#SparseMatrix.aggregatedSparseMatrixCreation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SparseMatrix.fillSparseMatrix">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillSparseMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">spsMat</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">l:</span> <span class="pre">Layout</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SparseMatrix.fillSparseMatrix" title="Link to this definition"></a></dt>
@@ -224,6 +230,91 @@ from the sparse matrix in row-major order.</p>
 <dt class="sig sig-object chpl" id="SparseMatrix.addElementsToSparseArray">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addElementsToSparseArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">A</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">SD</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">rows</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">cols</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">vals</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">A.chpl_isNonDistributedArray()</span></em><a class="headerlink" href="#SparseMatrix.addElementsToSparseArray" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="SparseMatrix.LockHelper">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">LockHelper</span></span><a class="headerlink" href="#SparseMatrix.LockHelper" title="Link to this definition"></a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.LockHelper.data">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">data</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[PrivateSpace]</span> <span class="pre">chpl_LocalSpinlock</span></em><a class="headerlink" href="#SparseMatrix.LockHelper.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="SparseMatrix.bufSize">
+<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">bufSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">1024</span></em><a class="headerlink" href="#SparseMatrix.bufSize" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DestinationHandler</span></span><a class="headerlink" href="#SparseMatrix.DestinationHandler" title="Link to this definition"></a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler.domVal">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">domVal</span></span><a class="headerlink" href="#SparseMatrix.DestinationHandler.domVal" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler.arrVal">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">arrVal</span></span><a class="headerlink" href="#SparseMatrix.DestinationHandler.arrVal" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler.lockObj">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lockObj</span></span><a class="headerlink" href="#SparseMatrix.DestinationHandler.lockObj" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">domVal</span></em>, <em class="sig-param"><span class="pre">arrVal</span></em>, <em class="sig-param"><span class="pre">lockObj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.DestinationHandler.init" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler.flush">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">rBuffer</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">remBufferPtr</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">myBufferIdx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.DestinationHandler.flush" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SourceHandler</span></span><a class="headerlink" href="#SparseMatrix.SourceHandler" title="Link to this definition"></a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.domVal">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">domVal</span></span><a class="headerlink" href="#SparseMatrix.SourceHandler.domVal" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.arrVal">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">arrVal</span></span><a class="headerlink" href="#SparseMatrix.SourceHandler.arrVal" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.lockObj">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lockObj</span></span><a class="headerlink" href="#SparseMatrix.SourceHandler.lockObj" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.elemType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">(int,</span> <span class="pre">int,</span> <span class="pre">int)</span></em><a class="headerlink" href="#SparseMatrix.SourceHandler.elemType" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">locks</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.SourceHandler.init" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.sourceCopy">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sourceCopy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.SourceHandler.sourceCopy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SparseMatrix.SourceHandler.getDestinationLocale">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDestinationLocale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.SourceHandler.getDestinationLocale" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">

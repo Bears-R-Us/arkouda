@@ -539,6 +539,25 @@ instances directly.</p>
 <span class="sig-name descname"><span class="pre">to_pdarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../index.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/scipy/sparrayclass.html#sparray.to_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.scipy.sparrayclass.sparray.to_pdarray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.scipy.sparrayclass.sparray.to_scipy_sparse">
+<span class="sig-name descname"><span class="pre">to_scipy_sparse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/scipy/sparrayclass.html#sparray.to_scipy_sparse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.scipy.sparrayclass.sparray.to_scipy_sparse" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the Arkouda sparse array to an equivalent SciPy sparse array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A SciPy sparse array with the same shape, values, and logical layout.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>scipy.sparse.sparray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>SciPy sparse array classes require SciPy versions that provide
+<code class="docutils literal notranslate"><span class="pre">coo_array</span></code>, <code class="docutils literal notranslate"><span class="pre">csr_array</span></code>, and <code class="docutils literal notranslate"><span class="pre">csc_array</span></code>. If those are not
+available, this method falls back to the corresponding sparse matrix
+classes.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -615,6 +634,7 @@ instances directly.</p>
 <li><a class="reference internal" href="#arkouda.scipy.sparrayclass.sparray.itemsize"><code class="docutils literal notranslate"><span class="pre">sparray.itemsize</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.scipy.sparrayclass.sparray.fill_vals"><code class="docutils literal notranslate"><span class="pre">sparray.fill_vals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.scipy.sparrayclass.sparray.to_pdarray"><code class="docutils literal notranslate"><span class="pre">sparray.to_pdarray()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.scipy.sparrayclass.sparray.to_scipy_sparse"><code class="docutils literal notranslate"><span class="pre">sparray.to_scipy_sparse()</span></code></a></li>
 </ul>
 </li>
 </ul>
