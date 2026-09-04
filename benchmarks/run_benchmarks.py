@@ -27,7 +27,6 @@ sys.path.insert(0, os.path.abspath(util_dir))
 logging.basicConfig(level=logging.INFO)
 
 BENCHMARKS = [
-    "1trc",
     "stream",
     "argsort",
     "coargsort",
@@ -65,6 +64,7 @@ BENCHMARKS = [
     "bigint_bitwise_binops",
     "bigint_groupby",
     "bigint_array_transfer",
+    "1trc",
 ]
 
 if os.getenv("ARKOUDA_SERVER_PARQUET_SUPPORT"):
