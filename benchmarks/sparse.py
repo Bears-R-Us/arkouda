@@ -28,7 +28,9 @@ def compare_scipy(left, right, rtol=1e-9, atol=0.0, equal_nan=False):
     return True
 
 
-def time_ak_sparse(N, trials, dtype, seed):
+def time_ak_sparse(N_per_locale, trials, dtype, seed):
+    N = N_per_locale * cfg["numNodes"]
+
     print(">>> arkouda {} sparse".format(dtype))
     cfg = ak.get_config()
     print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
@@ -66,7 +68,8 @@ def time_ak_sparse(N, trials, dtype, seed):
     print("Average CSCxCSR time = {:.4f} seconds".format(np.mean(multiplication_times)))
 
 
-def time_np_sparse(N, trials, dtype, seed):
+def time_np_sparse(N_per_locale, trials, dtype, seed):
+    N = N_per_locale * cfg["numNodes"]
     print(">>> numpy {} sparse".format(dtype))
     print("N = {:,}".format(N))
 
@@ -145,7 +148,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Benchmark sparse matrix creation and multiplication.")
     parser.add_argument("hostname", type=str, help="Name of the Arkouda server")
     parser.add_argument("port", type=int, help="Port of the Arkouda server")
-    parser.add_argument("-n", "--size", type=int, default=(10**6), help="Size of the sparse matrices")
+    parser.add_argument("-n", "--size", type=int, default=62500, help="Size of the sparse matrices")
     parser.add_argument("-t", "--trials", type=int, default=3, help="Number of trials for benchmarking")
     parser.add_argument(
         "-d", "--dtype", default="int64", help="Dtype of array ({})".format(", ".join(TYPES))
