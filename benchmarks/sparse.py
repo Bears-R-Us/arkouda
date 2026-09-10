@@ -29,10 +29,10 @@ def compare_scipy(left, right, rtol=1e-9, atol=0.0, equal_nan=False):
 
 
 def time_ak_sparse(N_per_locale, trials, dtype, seed):
+    cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
 
     print(">>> arkouda {} sparse".format(dtype))
-    cfg = ak.get_config()
     print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
 
     nnz = N * 10
@@ -69,7 +69,9 @@ def time_ak_sparse(N_per_locale, trials, dtype, seed):
 
 
 def time_np_sparse(N_per_locale, trials, dtype, seed):
+    cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
+
     print(">>> numpy {} sparse".format(dtype))
     print("N = {:,}".format(N))
 
