@@ -119,7 +119,7 @@ module EfuncMsg
        
     @arkouda.registerCommand(name="abs")
     proc ak_abs (const ref pda : [?d] ?t) : [d] t throws
-        where (t==int || t==real || t==bigint) // TODO maybe: allow uint also
+        where (t==int || t==real || t==bigint) // 
     {
         if t == bigint {
             const zero: bigint = 0:bigint;
@@ -326,13 +326,24 @@ module EfuncMsg
     }
 
     // sgn is a special case.  It is the only thing that returns int(8).
+    // and it should return nans when given nans.
+
 
     @arkouda.registerCommand(name="sgn")
     proc ak_sgn (pda : [?d] ?t) : [d] t throws
         where (t==int || t==real)
     {
-        return (sgn(pda));
+        var res = makeDistArray(d, t);
+        if t == real {
+            forall i in d do
+                res[i] = if isNan(pda[i]) then pda[i] else sgn(pda[i]);
+            return res;
+        } else {
+            return sgn(pda);
+        }
     }
+
+
 
     // Hashes are more of a challenge to unhook from the old interface, but they
     // have been pulled out into their own functions.
