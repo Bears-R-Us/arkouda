@@ -680,8 +680,8 @@ class Series:
             if isinstance(obj, pdarray):
                 return obj
             if isinstance(obj, Index):
-                # Arkouda Index wrapper: underlying pdarray is on .index
-                return obj.index
+                # Arkouda Index wrapper: underlying pdarray is on .values
+                return obj.values
             if isinstance(obj, Series):
                 # Arkouda Series wrapper: underlying pdarray is on .values
                 values = obj.values
