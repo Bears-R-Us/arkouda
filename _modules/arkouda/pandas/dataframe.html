@@ -507,7 +507,7 @@
 
 
 <div class="viewcode-block" id="DataFrameGroupBy">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataFrameGroupBy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A DataFrame that has been grouped by a subset of columns.</span>
@@ -631,128 +631,128 @@
                 <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DataFrameGroupBy.sum">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.sum">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"sum"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.count">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.count">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"count"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.prod">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.prod">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.prod">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"prod"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.var">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.var">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.var">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"var"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.std">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.std">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.std">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"std"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.mean">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.mean">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"mean"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.median">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.median">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.median">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"median"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.min">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.min">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.max">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.max">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"max"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.argmin">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.argmin">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.argmin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"argmin"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.argmax">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.argmax">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"argmax"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.nunique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.nunique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.nunique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">nunique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"nunique"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.any">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.any">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"any"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.all">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.all">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
     <span class="c1"># Keywords: cannot do `def or(self, ...)` / `def and(self, ...)`</span>
 <div class="viewcode-block" id="DataFrameGroupBy.or_">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.or_">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.or_">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">or_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"or"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.and_">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.and_">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.and_">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">and_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"and"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.xor">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.xor">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.xor">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"xor"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.first">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.first">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.first">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"first"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.mode">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.mode">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.mode">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"mode"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.unique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.unique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.unique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">"unique"</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.size">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.size">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute the size of each value as the total number of rows, including NaN values.</span>
@@ -795,7 +795,7 @@
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.head">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.head">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.head">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -851,7 +851,7 @@
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.tail">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.tail">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.tail">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -907,7 +907,7 @@
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.sample">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.sample">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a random sample from each group.</span>
@@ -1080,7 +1080,7 @@
             <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">index_labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="n">value_label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrameGroupBy.diff">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.diff">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.diff">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a difference aggregate for the given column.</span>
@@ -1120,7 +1120,7 @@
 
 
 <div class="viewcode-block" id="DataFrameGroupBy.broadcast">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.broadcast">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy.broadcast">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fill each group’s segment with a constant value.</span>
@@ -1180,7 +1180,7 @@
 
 
 <div class="viewcode-block" id="DiffAggregate">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiffAggregate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A column in a GroupBy that has been differenced.</span>
@@ -1218,122 +1218,122 @@
         <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">opname</span><span class="p">))</span>
 
 <div class="viewcode-block" id="DiffAggregate.sum">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.sum">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"sum"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.count">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.count">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"count"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.prod">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.prod">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.prod">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"prod"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.var">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.var">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.var">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"var"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.std">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.std">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.std">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"std"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.mean">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.mean">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"mean"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.median">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.median">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.median">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"median"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.min">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.min">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"min"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.max">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.max">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"max"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.argmin">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.argmin">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.argmin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"argmin"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.argmax">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.argmax">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"argmax"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.nunique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.nunique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.nunique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">nunique</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"nunique"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.any">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.any">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"any"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.all">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.all">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"all"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.xor">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.xor">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.xor">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">xor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"xor"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.first">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.first">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.first">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"first"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.mode">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.mode">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.mode">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"mode"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.unique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.unique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.unique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"unique"</span><span class="p">)</span></div>
 
 
     <span class="c1"># Python keyword-safe definitions</span>
 <div class="viewcode-block" id="DiffAggregate.or_">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.or_">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.or_">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">or_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"or"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DiffAggregate.and_">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.and_">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DiffAggregate.and_">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">and_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">"and"</span><span class="p">)</span></div>
 </div>
@@ -1350,7 +1350,7 @@
 
 
 <div class="viewcode-block" id="DataFrame">
-<a class="viewcode-back" href="../../../usage/dataframe.html#arkouda.DataFrame">[docs]</a>
+<a class="viewcode-back" href="../../../usage/dataframe.html#arkouda.pandas.dataframe.DataFrame">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A DataFrame structure based on Arkouda arrays.</span>
@@ -1956,7 +1956,7 @@
         <span class="k">return</span> <span class="n">new_df</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">retain_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">]</span>
 
 <div class="viewcode-block" id="DataFrame.transfer">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.transfer">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.transfer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Send a DataFrame to a different Arkouda server.</span>
@@ -2060,7 +2060,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span>
 
 <div class="viewcode-block" id="DataFrame.from_pandas">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.from_pandas">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.from_pandas">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_pandas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pd_df</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -2139,7 +2139,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_index</span><span class="p">(</span><span class="n">idx_to_keep</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.drop">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.drop">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.drop">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">drop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2217,7 +2217,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.drop_duplicates">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.drop_duplicates">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.drop_duplicates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">drop_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s2">"first"</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Drop duplcated rows and returns resulting DataFrame.</span>
@@ -2479,7 +2479,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.reset_index">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.reset_index">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.reset_index">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -2598,7 +2598,7 @@
         <span class="k">return</span> <span class="s2">"DataFrame(["</span> <span class="o">+</span> <span class="n">keystr</span> <span class="o">+</span> <span class="s2">"], </span><span class="si">{:,}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">)</span> <span class="o">+</span> <span class="n">rows</span> <span class="o">+</span> <span class="s2">", "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")"</span>
 
 <div class="viewcode-block" id="DataFrame.update_nrows">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.update_nrows">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.update_nrows">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_nrows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Compute the number of rows on the arkouda server and updates the size parameter."""</span>
         <span class="n">sizes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -2720,7 +2720,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DataFrame.rename">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.rename">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.rename">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rename</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2820,7 +2820,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.append">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.append">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Concatenate data from 'other' onto the end of this DataFrame, in place.</span>
@@ -2912,7 +2912,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.concat">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.concat">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.concat">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Essentially an append, but different formatting."""</span>
@@ -2945,7 +2945,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.head">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.head">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.head">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the first `n` rows.</span>
@@ -3003,7 +3003,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.tail">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.tail">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.tail">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the last `n` rows.</span>
@@ -3064,7 +3064,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.sample">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.sample">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a random sample of ``n`` rows.</span>
@@ -3202,7 +3202,7 @@
         <span class="k">return</span> <span class="n">gb</span>
 
 <div class="viewcode-block" id="DataFrame.memory_usage">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.memory_usage">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.memory_usage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"B"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the memory usage of each column.</span>
@@ -3289,7 +3289,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.memory_usage_info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.memory_usage_info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.memory_usage_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"GB"</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a formatted string representation of the size of this DataFrame.</span>
@@ -3323,7 +3323,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_pandas">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datalimit</span><span class="o">=</span><span class="n">maxTransferBytes</span><span class="p">,</span> <span class="n">retain_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Send this DataFrame to a pandas DataFrame.</span>
@@ -3428,7 +3428,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_markdown">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.to_markdown">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.to_markdown">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wt"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">"grid"</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Print the DataFrame in a Markdown-friendly format.</span>
@@ -3503,7 +3503,7 @@
         <span class="k">return</span> <span class="n">data</span>
 
 <div class="viewcode-block" id="DataFrame.to_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"single"</span><span class="p">,</span> <span class="s2">"distribute"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"distribute"</span>
     <span class="p">):</span>
@@ -3651,7 +3651,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Overwrite the dataset with the name provided with this dataframe.</span>
@@ -3718,7 +3718,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.to_parquet">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">,</span>
@@ -3798,7 +3798,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.to_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3876,7 +3876,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.read_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.read_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.read_csv">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">","</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
@@ -3946,7 +3946,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.load">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.load">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.load">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">"INFER"</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -4008,7 +4008,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.argsort">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.argsort">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.argsort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the permutation that sorts the dataframe by `key`.</span>
@@ -4076,7 +4076,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.coargsort">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.coargsort">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.coargsort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the permutation that sorts the dataframe by `keys`.</span>
@@ -4132,7 +4132,7 @@
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataFrame.sort_index">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.sort_index">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.sort_index">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sort the DataFrame by indexed columns.</span>
@@ -4172,7 +4172,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.sort_values">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.sort_values">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.sort_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sort the DataFrame by one or more columns.</span>
@@ -4232,7 +4232,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.apply_permutation">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.apply_permutation">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.apply_permutation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_permutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply a permutation to an entire DataFrame.</span>
@@ -4284,7 +4284,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.filter_by_range">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.filter_by_range">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.filter_by_range">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_by_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Filter rows by the size of groups defined on one or more columns.</span>
@@ -4356,7 +4356,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.copy">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.copy">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Make a copy of this object's data.</span>
@@ -4423,7 +4423,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.groupby">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.groupby">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.groupby">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">groupby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group the dataframe by a column or a list of columns.</span>
@@ -4489,7 +4489,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.isin">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.isin">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.isin">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -4615,7 +4615,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.count">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.count">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">numeric_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Count non-NA cells for each column or row.</span>
@@ -4729,7 +4729,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.corr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.corr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.corr">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return new DataFrame with pairwise correlation of columns.</span>
@@ -4793,7 +4793,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.merge">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.merge">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.merge">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4915,7 +4915,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.isna">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.isna">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.isna">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -4971,7 +4971,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.notna">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.notna">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.notna">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">notna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -5021,7 +5021,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.any">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.any">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.any">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -5116,7 +5116,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.all">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.all">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.all">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Series</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -5212,7 +5212,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.dropna">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.dropna">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.dropna">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dropna</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5349,7 +5349,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.register">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.register">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.register">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -5469,7 +5469,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.unregister">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.unregister">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Unregister this DataFrame object in the arkouda server.</span>
@@ -5520,7 +5520,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.is_registered">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return True if the object is contained in the registry.</span>
@@ -5605,7 +5605,7 @@
             <span class="k">return</span> <span class="n">col_parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">col_type</span>
 
 <div class="viewcode-block" id="DataFrame.from_return_msg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -5658,7 +5658,7 @@
 
 
 <div class="viewcode-block" id="DataFrame.assign">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.assign">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.assign">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Assign new columns to a DataFrame.</span>
@@ -5739,7 +5739,7 @@
 
 
 <div class="viewcode-block" id="intx">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.intx">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.intx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">intx</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Find all the rows that are in both dataframes.</span>
@@ -5797,7 +5797,7 @@
 
 
 <div class="viewcode-block" id="intersect">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.intersect">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.intersect">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">intersect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Find the intersection of two arkouda arrays.</span>
@@ -5940,7 +5940,7 @@
 
 
 <div class="viewcode-block" id="invert_permutation">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.invert_permutation">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.invert_permutation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">invert_permutation</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Find the inverse of a permutation array.</span>
@@ -6347,7 +6347,7 @@
 
 
 <div class="viewcode-block" id="merge">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.merge">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.merge">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span>
     <span class="n">left</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span>

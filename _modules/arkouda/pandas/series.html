@@ -1075,8 +1075,8 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">obj</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
-                <span class="c1"># Arkouda Index wrapper: underlying pdarray is on .index</span>
-                <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span>
+                <span class="c1"># Arkouda Index wrapper: underlying pdarray is on .values</span>
+                <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
                 <span class="c1"># Arkouda Series wrapper: underlying pdarray is on .values</span>
                 <span class="n">values</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span>

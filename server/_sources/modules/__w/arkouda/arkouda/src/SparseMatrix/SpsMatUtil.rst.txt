@@ -29,7 +29,9 @@ or
 
 .. record:: sparseMatDat
 
-   .. method:: proc ref add(idx: 2*(int), val: int)
+   .. attribute:: type eltType
+
+   .. method:: proc ref add(idx: 2*(int), val: eltType)
 
 .. function:: proc emptySparseDomLike(Mat)
 

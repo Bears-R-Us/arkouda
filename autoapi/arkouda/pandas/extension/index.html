@@ -1548,7 +1548,7 @@ For that (server-side DataFrame structure), use <a class="reference internal" hr
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaDataFrameAccessor.to_ak_legacy">
 <span class="sig-name descname"><span class="pre">to_ak_legacy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dataframe_accessor.html#ArkoudaDataFrameAccessor.to_ak_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaDataFrameAccessor.to_ak_legacy" title="Link to this definition">¶</a></dt>
-<dd><p>Convert this pandas DataFrame into the legacy <a class="reference internal" href="../../index.html#arkouda.DataFrame" title="arkouda.DataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.DataFrame</span></code></a>.</p>
+<dd><p>Convert this pandas DataFrame into the legacy <code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.DataFrame</span></code>.</p>
 <p>This method performs a <em>materializing</em> conversion of a pandas DataFrame
 into the legacy Arkouda DataFrame structure. Every column is converted
 to Arkouda server-side data:</p>
@@ -3209,7 +3209,7 @@ Arkouda server-side arrays.</p>
 <dd><p>Return an Arkouda GroupBy object for this Series, without materializing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy">GroupBy</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Returns TypeError if Series is not arkouda backed.</p>
