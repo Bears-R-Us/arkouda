@@ -374,7 +374,7 @@ module SparseMatrix {
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
   proc sparseMatMatMult(A, B) {
-    var spsData: sparseMatDat;
+    var spsData: sparseMatDat(A.eltType);
 
     sparseMatMatMult(A, B, spsData);
 
@@ -387,7 +387,7 @@ module SparseMatrix {
   // the multiplication is the first/only step.
   //
   proc sparseMatMatMult(A, B, ref spsData) {
-    forall ac_br in A.cols() with (merge reduce spsData) do
+    forall ac_br in A.cols() with (merge(sparseMatDat(A.eltType)) reduce spsData) do
       for (ar, a) in A.rowsAndVals(ac_br) do
         for (bc, b) in B.colsAndVals(ac_br) do
           spsData.add((ar, bc), a * b);
@@ -396,12 +396,12 @@ module SparseMatrix {
   proc sparseMatMatMult(A, B) where (!A.chpl_isNonDistributedArray() &&
                                      !B.chpl_isNonDistributedArray()) {
     var CD = emptySparseDomLike(B);  // For now, hard-code C to use CSR, like B
-    var C: [CD] int;
+    var C: [CD] A.eltType;
 
     ref targLocs = A.targetLocales();
     coforall (locRow, locCol) in targLocs.domain {
       on targLocs[locRow, locCol] {
-        var spsData: sparseMatDat;
+        var spsData: sparseMatDat(A.eltType);
 
         for srcloc in targLocs.dim(0) {
           // Make a local copy of the remote blocks of A and B; on my branch
@@ -585,12 +585,14 @@ module SparseMatrix {
   }
 
   class SourceHandler {
+    type dtype;
     var domVal;
     var arrVal;
     var lockObj;
-    type elemType = (int,int,int);
+    type elemType = (int,int,dtype);
 
     proc init(D, A, locks) {
+      this.dtype = A.eltType;
       this.domVal = D._value;
       this.arrVal = A._value;
       this.lockObj = locks;
@@ -669,9 +671,10 @@ module SparseMatrix {
                           else new randomStream(real, seed);
 
     record sparseMatDat {
-      forwarding var m: map(2*int, int);
+      type eltType;
+      forwarding var m: map(2*int, eltType);
 
-      proc ref add(idx: 2*int, val: int) {
+      proc ref add(idx: 2*int, val: eltType) {
         if val != 0 {
           if m.contains(idx) {
             m[idx] += val;
@@ -722,7 +725,7 @@ module SparseMatrix {
 
       CDom.bulkAdd(inds, true, true);
 
-      var C: [CDom] int;
+      var C: [CDom] spsData.eltType;
       // TODO: can this be parallel?
       for ij in inds do
         try! C[ij] = spsData[ij];  // TODO: Should this really throw?
@@ -738,7 +741,7 @@ module SparseMatrix {
       for ij in nnzs do
         CDom += ij;
 
-      var C: [CDom] int;
+      var C: [CDom] vals.eltType;
       for (ij, c) in zip(nnzs, vals) do
         C[ij] += c;
       return C;

@@ -12,7 +12,7 @@
             ]
         },
         "SparseSymEntry": {
-            "etype": ["int"],
+            "etype": ["int", "real"],
             "dimensions": [2],
             "matLayout": {
                 "__enum__": "SparseMatrix.Layout",

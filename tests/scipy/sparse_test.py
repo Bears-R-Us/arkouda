@@ -41,7 +41,8 @@ class TestSparse:
         assert np.all(vals_csc == fill_vals_csc.to_ndarray())
         assert np.all(vals_csr == fill_vals_csr.to_ndarray())
 
-    def test_matmatmult(self):
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.float64])
+    def test_matmatmult(self, dtype):
         # Create a reference for matrix multiplication in python:
         def matmatmult(
             rowsA: Sequence[int],
@@ -102,10 +103,12 @@ class TestSparse:
 
             return list(result_rows), list(result_cols), list(result_vals)
 
-        matA = random_sparse_matrix(10, 1, "CSC")  # Make it fully dense to make testing easy
-        matB = random_sparse_matrix(10, 1, "CSR")  # Make it fully dense to make testing easy
-        fill_vals_a = ak.randint(0, 10, matA.nnz)
-        fill_vals_b = ak.randint(0, 10, matB.nnz)
+        # Make it fully dense to make testing easy
+        matA = random_sparse_matrix(10, 1, "CSC", dtype=dtype)
+        matB = random_sparse_matrix(10, 1, "CSR", dtype=dtype)
+
+        fill_vals_a = ak.randint(0, 10, matA.nnz, dtype=dtype)
+        fill_vals_b = ak.randint(0, 10, matB.nnz, dtype=dtype)
         matA.fill_vals(fill_vals_a)
         matB.fill_vals(fill_vals_b)
         rowsA, colsA, valsA = (arr.to_ndarray() for arr in matA.to_pdarray())
@@ -120,7 +123,11 @@ class TestSparse:
         # Check the result is correct
         assert np.all(result_rows == ans_rows)
         assert np.all(result_cols == ans_cols)
-        assert np.all(result_vals == ans_vals)
+        assert result.dtype == dtype
+        if dtype == ak.float64:
+            np.testing.assert_allclose(result_vals, ans_vals)
+        else:
+            assert np.all(result_vals == ans_vals)
 
     def test_creation_csc(self):
         # Ensure that a sparse matrix can be created from three pdarrays
@@ -206,6 +213,30 @@ class TestSparse:
         assert np.all(cols == cols_)
         assert np.all(vals == vals_)
         # Check the layout is correct
+        assert mat.layout == layout
+
+    @pytest.mark.parametrize("layout", ["CSR", "CSC"])
+    def test_creation_float(self, layout):
+        ordered = ak.array([1, 2, 2, 3])
+        other = ak.array([1, 1, 3, 2])
+        vals = ak.array([1.5, -2.25, 3.0, 4.75])
+
+        # we expect the dominant dimension to be sorted
+        rows, cols = None, None
+        if layout == "CSR":
+            rows = ordered
+            cols = other
+        else:
+            rows = other
+            cols = ordered
+
+        mat = create_sparse_matrix(4, rows, cols, vals, layout)
+        rows_, cols_, vals_ = (arr.to_ndarray() for arr in mat.to_pdarray())
+
+        assert mat.dtype == vals.dtype
+        assert np.array_equal(rows_, rows.to_ndarray())
+        assert np.array_equal(cols_, cols.to_ndarray())
+        assert np.array_equal(vals_, vals.to_ndarray())
         assert mat.layout == layout
 
     def test_to_scipy_sparse(self):
