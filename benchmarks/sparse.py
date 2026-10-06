@@ -8,7 +8,7 @@ from scipy.sparse import coo_array, csr_matrix, find
 from arkouda.scipy.sparsematrix import create_sparse_matrix, sparse_matrix_matrix_mult
 
 # TODO: Add support for 'float64'
-TYPES = ("int64","float64")
+TYPES = ("int64", "float64")
 
 
 def compare_scipy(left, right, rtol=1e-9, atol=0.0, equal_nan=False):

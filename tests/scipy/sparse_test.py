@@ -103,8 +103,10 @@ class TestSparse:
 
             return list(result_rows), list(result_cols), list(result_vals)
 
-        matA = random_sparse_matrix(10, 1, "CSC", dtype=dtype)  # Make it fully dense to make testing easy
-        matB = random_sparse_matrix(10, 1, "CSR", dtype=dtype)  # Make it fully dense to make testing easy
+        # Make it fully dense to make testing easy
+        matA = random_sparse_matrix(10, 1, "CSC", dtype=dtype)
+        matB = random_sparse_matrix(10, 1, "CSR", dtype=dtype)
+
         fill_vals_a = ak.randint(0, 10, matA.nnz, dtype=dtype)
         fill_vals_b = ak.randint(0, 10, matB.nnz, dtype=dtype)
         matA.fill_vals(fill_vals_a)
