@@ -405,9 +405,18 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set Python version to 3.14
+    - name: Clone the parquet tests
+      uses: actions/checkout@v4
+      with:
+        repository: apache/parquet-testing
+        ref: 4cf674fc589309ba8651ad676f3fb557582d9cab
+        path: parquet-testing
+    - name: Set the parquet testing path
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
+        echo "ARKOUDA_PARQUET_TEST_DATA_DIR=$(pwd)/parquet-testing/data" >> $GITHUB_ENV
+    - name: Set Python version to 3.13
+      run: |
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -425,9 +434,19 @@ jobs:
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
     - name: Build/Install Arkouda
       run: |
-        make
+        cat > UsedModules.cfg <<'EOF'
+        SequenceMsg
+        ParquetMsg
+        CastMsg
+        SegmentedMsg
+        EOF
+        ARKOUDA_CONFIG_FILE=UsedModules.cfg make
         python3 -m pip install .[dev]
+        python3 -m pip uninstall pyarrow -y
+        python3 -m pip install pyarrow==19.0.1
     - name: Arkouda unit tests
+      env:
+        ARKOUDA_PYTEST_OPTIONS: "-v tests/pandas/parquet_edge_test.py"
       run: |
         make test-python size=100
 
