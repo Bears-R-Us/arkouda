@@ -6,14 +6,15 @@ _Our release process is continually evolving._
 When a general consensus forms around cutting a new release a developer should follow these general steps.
 
 ## Step-by-step instructions
-- Gain consensus from the core development team and confirm the current HEAD of the `master`|`main` branch builds and passes all tests on the continuous integration workflow (we use Github's built in Actions Workflows for this).
+- Gain consensus from the core development team and confirm the current HEAD of the `main` branch builds and passes all tests on the continuous integration workflow (we use Github's built in Actions Workflows for this).
+- Since pulling together the release notes tends to be the long pole in the tent and the name of the release is based on the date, start by drafting the release notes (see next section), ideally sorting changes into categories, and roughly by importance.  Get this reviewed by someone who's pretty familiar with the changes..
 - Navigate to the `releases` page in the Arkouda project ([Direct Link](https://github.com/Bears-R-Us/arkouda/releases)).  You can navigate to it from the `Code` tab of the Arkouda project and locating the `Releases` section on the right and side of the page.
 - Click the `Draft a new release` button which will bring you to a new page.
 - From the `Tag: Select tag` drop-down, select `Create new tag` and in the text input box add the new version number.  This tag will be _auto-created_ on the final step when we _Publish_ the release.
   - As of this writing our versioning scheme is date based following the pattern `v<YYYY>.<MM>.<DD>`.  Example:  `v2022.01.31`.  Please note we zero-pad the month & day as necessary to ensure lexicographic sorting, and we are using a dot `.` as the delimiter.
   - Should it be necessary to tag more than one release on the same day (hey, mistakes happen it's ok), we use a dash and incrementing whole number, i.e. `v2022.01.31-1`, `v2022.01.31-2`, etc.
 - Add a `Release Title` in the appropriate text box. We use the tag name.
-- In the larger `Describe the release` text box you should add the release notes.  Ideally they should be split into categories describing the types of changes. NOTE: We will go into more detail on how to generate the release notes in the next section.
+- In the larger `Describe the release` text box you should add the release notes.
 - When everything has been completed, you can optionally click the `Save draft` button at the bottom so someone else can review the release notes etc. Or go straight to the next step.
 - Once everything is ready click the green `Publish release` button.
 - Post a link and share the news with the community.
