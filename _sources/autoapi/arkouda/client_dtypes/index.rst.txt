@@ -204,8 +204,6 @@ Module Contents
 
 
    .. py:attribute:: values
-      :value: None
-
 
 
    .. py:attribute:: width
@@ -416,8 +414,6 @@ Module Contents
 
 
    .. py:attribute:: values
-      :value: None
-
 
 
 .. py:function:: bit_vectorizer(width=64, reverse=False)
