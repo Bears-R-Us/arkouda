@@ -13,7 +13,7 @@ When a general consensus forms around cutting a new release a developer should f
 - From the `Tag: Select tag` drop-down, select `Create new tag` and in the text input box add the new version number.  This tag will be _auto-created_ on the final step when we _Publish_ the release.
   - As of this writing our versioning scheme is date based following the pattern `v<YYYY>.<MM>.<DD>`.  Example:  `v2022.01.31`.  Please note we zero-pad the month & day as necessary to ensure lexicographic sorting, and we are using a dot `.` as the delimiter.
   - Should it be necessary to tag more than one release on the same day (hey, mistakes happen it's ok), we use a dash and incrementing whole number, i.e. `v2022.01.31-1`, `v2022.01.31-2`, etc.
-- Add a `Release Title` in the appropriate text box. We use the tag name.
+- Add a `Release Title` in the appropriate text box. We use "Arkouda" plus the tag name (e.g., `Arkouda v2026.01.31`))
 - In the larger `Describe the release` text box you should add the release notes.
 - When everything has been completed, you can optionally click the `Save draft` button at the bottom so someone else can review the release notes etc. Or go straight to the next step.
 - Once everything is ready click the green `Publish release` button.
