@@ -1593,7 +1593,7 @@ class TestArkoudaArrayMap:
         )
 
     def test_map_changes_dtype(self):
-        """Mapping to strings should produce a string-like dtype similar to pandas."""
+        """Mapping to strings should produce an Arkouda-backed string array."""
         data = np.array([1, 2, 3], dtype="int64")
 
         def f(x):
@@ -1604,11 +1604,42 @@ class TestArkoudaArrayMap:
 
         expected = pd.array(data).map(f)
 
-        result_arr = np.asarray(result)
-        expected_arr = np.asarray(expected)
+        np.testing.assert_array_equal(
+            np.asarray(result, dtype=object),
+            np.asarray(expected, dtype=object),
+        )
 
-        assert result_arr.dtype == expected_arr.dtype
-        np.testing.assert_array_equal(result_arr, expected_arr)
+    def test_map_bool_result_is_arkouda_backed(self):
+        data = np.array([1, 2, 3], dtype="int64")
+        ak_arr = ArkoudaArray(ak.array(data))
+
+        result = ak_arr.map(lambda x: x > 1)
+
+        np.testing.assert_array_equal(np.asarray(result), np.array([False, True, True]))
+
+    def test_map_empty_retains_type(self):
+        ak_arr = ArkoudaArray(ak.array([], dtype=ak.int64))
+
+        result = ak_arr.map(lambda x: x)
+
+        assert len(result) == 0
+        assert result._data.dtype == ak.int64
+
+    def test_series_map_retains_arkouda_backend(self):
+        ser = pd.Series(ArkoudaArray(ak.array([1, 2, 3], dtype=ak.int64)))
+
+        result = ser.map(lambda x: x + 1)
+
+        assert result.tolist() == [2, 3, 4]
+
+    def test_cast_pointwise_result_falls_back_for_strings_with_na(self):
+        ak_arr = ArkoudaArray(ak.array([1, 2, 3], dtype=ak.int64))
+
+        result = ak_arr._cast_pointwise_result(np.array(["a", None, "c"], dtype=object))
+
+        assert not isinstance(result, ArkoudaArray)
+        assert not isinstance(result, ArkoudaStringArray)
+        assert pd.isna(result[1])
 
     # ------------------------------------------------------------------
     # String and Categorical Arkouda EAs
@@ -1637,8 +1668,8 @@ class TestArkoudaArrayMap:
         expected = pd.array(values).map(mapping)
 
         np.testing.assert_array_equal(
-            np.asarray(result),
-            np.asarray(expected),
+            np.asarray(result, dtype=object),
+            np.asarray(expected, dtype=object),
         )
 
     def test_map_dict_categorical_not_supported_yet(self):
