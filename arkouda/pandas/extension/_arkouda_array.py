@@ -420,6 +420,45 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         self._data[key] = value
 
+    def _where(self, mask, other):
+        """
+        Analogue of ``np.where(mask, self, other)``.
+
+        Called by pandas (e.g. ``Index.where``, ``Series.where`` and the join-key
+        fill in ``merge``). Positions where ``mask`` is True keep their value from
+        ``self``; positions where it is False are taken from ``other``.
+
+        Parameters
+        ----------
+        mask : numpy.ndarray
+            Boolean mask with the same length as the array.
+        other : scalar or array-like
+            Replacement value(s). Array-likes must be the same length as ``self``.
+
+        Returns
+        -------
+        ArkoudaArray
+            A new array; ``self`` is not modified.
+        """
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
+        result = self.copy()
+        replace = ~np.asarray(mask, dtype=bool)
+        if not replace.any():
+            return result
+
+        if isinstance(other, pdarray):
+            other = type(self)(other)
+        elif isinstance(other, (list, tuple)):
+            other = type(self)(ak_array(other))
+
+        if isinstance(other, (ExtensionArray, np.ndarray)):
+            result[replace] = other[replace]
+        else:
+            result[replace] = other
+        return result
+
     # -------------------------------------------------------------------------
     # pandas comparison protocol hook
     # -------------------------------------------------------------------------
