@@ -1547,7 +1547,8 @@ class TestArkoudaArrayMap:
     # overriding _cast_pointwise_result in ArkoudaArray.
     @pytest.mark.xfail(
         Version(pd.__version__) >= Version("3.1.0"),
-        reason="pandas >= 3.1.0 casts map results back to int64, turning NaN into a platform-dependent sentinel value",
+        reason="pandas >= 3.1.0 casts map results back to int64, "
+        "turning NaN into a platform-dependent sentinel value",
     )
     def test_map_dict_with_missing_keys(self):
         """

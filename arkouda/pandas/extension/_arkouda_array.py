@@ -420,7 +420,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         self._data[key] = value
 
-    def _where(self, mask, other):
+    def _where(self, mask: ndarray, other: pdarray | ndarray | ArkoudaArray) -> ArkoudaArray:
         """
         Analogue of ``np.where(mask, self, other)``.
 
@@ -430,9 +430,9 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         Parameters
         ----------
-        mask : numpy.ndarray
+        mask : ndarray
             Boolean mask with the same length as the array.
-        other : scalar or array-like
+        other : pdarray | ndarray | ArkoudaArray
             Replacement value(s). Array-likes must be the same length as ``self``.
 
         Returns
