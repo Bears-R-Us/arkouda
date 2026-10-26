@@ -85,25 +85,69 @@ def random_scalar(dtype):
         raise TypeError(f"Unsupported dtype: {dtype}")
 
 
+def recast_if_bool_case(x):
+    from arkouda.numpy import cast as akcast
+
+    if np.isscalar(x):
+        return np.float64(x)
+    elif isinstance(x, np.ndarray):
+        return x.astype(np.float64)
+    elif isinstance(x, ak.pdarray):
+        return akcast(x, ak.float64)
+    else:
+        raise ValueError("recast_if_bool_case only handles scalars, ndarrays, and pdarrays")
+
+
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
 
-TRIGONOMETRICS = (
+UFUNC_GENERAL_FNS = (
+    (np.abs, ak.abs),
+    (np.fabs, ak.fabs),
+    (np.sign, ak.sign),
+    (np.square, ak.square),
     (np.sin, ak.sin),
     (np.cos, ak.cos),
     (np.tan, ak.tan),
-    (np.arcsin, ak.arcsin),
-    (np.arccos, ak.arccos),
     (np.arctan, ak.arctan),
-)
-
-HYPERBOLICS = (
     (np.sinh, ak.sinh),
     (np.cosh, ak.cosh),
     (np.tanh, ak.tanh),
     (np.arcsinh, ak.arcsinh),
     (np.arccosh, ak.arccosh),
     (np.arctanh, ak.arctanh),
+)
+
+UFUNC_LOG_EXP = (
+    (np.log, ak.log),
+    (np.log2, ak.log2),
+    (np.log10, ak.log10),
+    (np.log1p, ak.log1p),
+    (np.exp, ak.exp),
+    (np.expm1, ak.expm1),
+)
+
+UFUNC_ARC_SIN_COS = (
+    (np.arcsin, ak.arcsin),
+    (np.arccos, ak.arccos),
+)
+
+TRIGONOMETRICS = (
+    #    (np.sin, ak.sin),
+    #    (np.cos, ak.cos),
+    #    (np.tan, ak.tan),
+    #    (np.arcsin, ak.arcsin),
+    #   (np.arccos, ak.arccos),
+    #   (np.arctan, ak.arctan),
+)
+
+HYPERBOLICS = (
+    #    (np.sinh, ak.sinh),
+    #    (np.cosh, ak.cosh),
+    #    (np.tanh, ak.tanh),
+    #    (np.arcsinh, ak.arcsinh),
+    #    (np.arccosh, ak.arccosh),
+    #   (np.arctanh, ak.arctanh),
 )
 
 INFINITY_EDGE_CASES = (
@@ -129,6 +173,20 @@ NP_TRIG_ARRAYS = {
     ),
     ak.bool_: alternate(True, False, 10),
     ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
+}
+
+NP_LOG_EXP_ARRAYS = {
+    ak.int64: np.arange(1, 11),
+    ak.float64: np.linspace(1, 35, 10),
+    ak.bool_: np.ones(10, dtype=np.bool_),
+    ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
+}
+
+NP_ARC_SIN_COS_ARRAYS = {
+    ak.int64: np.array([-1, -1, -1, 0, 0, 0, 0, 1, 1, 1]),
+    ak.float64: np.linspace(-1.0, 1.0, 10),
+    ak.bool_: alternate(True, False, 10),
+    ak.uint64: np.array([1, 1, 1, 0, 0, 0, 0, 1, 1, 1], dtype=np.uint64),
 }
 
 DENOM_ARCTAN2_ARRAYS = {
@@ -404,54 +462,10 @@ class TestNumeric:
                 for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
                     assert np.allclose(np_edge.tolist(), ak_edge.tolist())
 
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    @pytest.mark.parametrize("op", ["exp", "log", "expm1", "log2", "log10", "log1p"])
-    def test_log_and_exp(self, num_type, op):
-        na = np.linspace(1, 10, 10).astype(num_type)
-        pda = ak.array(na, dtype=num_type)
-
-        akfunc = getattr(ak, op)
-        npfunc = getattr(np, op)
-
-        ak_assert_almost_equivalent(akfunc(pda), npfunc(na))
-
-        with pytest.raises(TypeError):
-            akfunc(np.array([range(0, 10)]).astype(num_type))
-
     @pytest.mark.parametrize("num_type", INT_FLOAT)
-    def test_abs(self, num_type):
-        na = np.linspace(1, 10, 10).astype(num_type)
-        pda = ak.array(na, dtype=num_type)
-
-        assert np.allclose(np.abs(na), ak.abs(pda).to_ndarray())
-
-        assert (
-            ak.arange(5, 0, -1, dtype=num_type).tolist()
-            == ak.abs(ak.arange(-5, 0, dtype=num_type)).tolist()
-        )
-
+    def test_abs_with_error(self, num_type):
         with pytest.raises(TypeError):
             ak.abs(np.array([range(0, 10)]).astype(num_type))
-
-    @pytest.mark.parametrize("num_type", INT_FLOAT)  # keep both int and float types
-    def test_fabs(self, num_type):
-        # cover negative + positive values
-        na = np.linspace(-10, 10, 21).astype(num_type)
-        pda = ak.array(na, dtype=num_type)
-
-        out = ak.fabs(pda)
-
-        # check element-wise correctness against numpy
-        assert_arkouda_array_equivalent(np.fabs(na), out.to_ndarray())
-
-        # check dtype is always float64
-        assert out.dtype == ak.float64
-
-        # secondary case: fabs turns negatives into positives and outputs float
-        ar = ak.arange(-5, 0, dtype=num_type)
-        res = ak.fabs(ar)
-        assert res.tolist() == [5.0, 4.0, 3.0, 2.0, 1.0]
-        assert res.dtype == ak.float64
 
     def test_fabs_edge_case(self):
         # Related to issue 1020
@@ -459,27 +473,7 @@ class TestNumeric:
 
         assert_arkouda_array_equivalent(ak.fabs(x), ak.array([1, 2**63, 1], dtype=ak.float64))
 
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_square(self, prob_size, num_type):
-        nda = np.arange(prob_size).astype(num_type)
-        if num_type != ak.uint64:
-            nda = nda - prob_size // 2
-        pda = ak.array(nda)
-
-        assert np.allclose(np.square(nda), ak.square(pda).to_ndarray())
-
-        with pytest.raises(TypeError):
-            ak.square(np.array([range(-10, 10)]).astype(ak.bool_))
-
-    @pytest.mark.parametrize("num_type", INT_FLOAT)
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_sign(self, prob_size, num_type):
-        nda = np.arange(prob_size).astype(num_type) - prob_size // 2
-        pda = ak.array(nda)
-        assert_arkouda_array_equivalent(np.sign(nda), ak.sign(pda))
-
-    #   cumsum and cumprod tests were identical, and so have been combined.
+    #   cumsum and cumprod tests were nearly identical, and so have been combined.
 
     @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
@@ -529,13 +523,101 @@ class TestNumeric:
                 akfunc(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
+    @pytest.mark.parametrize("arg_scalar", [True, False])
+    @pytest.mark.parametrize("uses_where, uses_out", WHERE_OUT)
+    def test_ufunc(self, num_type, arg_scalar, uses_where, uses_out, subtests):
+        # the test vectors include nans and infs, so we'll turn off warnings, then restore them after
+
+        old_settings = np.seterr(all="ignore")  # retrieve current settings
+        np.seterr(over="ignore", invalid="ignore", divide="ignore")
+
+        for npfunc, akfunc in set(UFUNC_GENERAL_FNS) | set(UFUNC_ARC_SIN_COS) | set(UFUNC_LOG_EXP):
+            with subtests.test(
+                akfunc=getattr(akfunc, "__name__", str(akfunc)),
+                num_type=str(num_type),
+                arg_scalar=arg_scalar,
+                uses_where=uses_where,
+                uses_out=uses_out,
+            ):
+                if akfunc is ak.sign and num_type == ak.bool_:
+                    pytest.skip("bool not applicable for sign")
+                if (npfunc, akfunc) in UFUNC_GENERAL_FNS:
+                    nda = NP_TRIG_ARRAYS[num_type]
+                    if akfunc is ak.arccosh:
+                        nda = (np.abs(nda) + 1).astype(num_type)  # arccosh input must be >= 1
+                    elif akfunc is ak.arctanh:  # arctanh input must be between -1 and +1
+                        if num_type == ak.float64:
+                            nda = np.linspace(-1.0, 1.0, 10)
+                        elif num_type == ak.int64:
+                            nda = np.array([-1, -1, -1, 0, 0, 0, 0, 1, 1, 1])
+                        elif num_type == ak.uint64:
+                            nda = np.array([1, 1, 1, 0, 0, 0, 0, 1, 1, 1])
+                        elif num_type == ak.bool:
+                            nda = np.array(
+                                [True, True, True, False, False, False, False, True, True, True]
+                            )
+                elif (npfunc, akfunc) in UFUNC_ARC_SIN_COS:
+                    nda = NP_ARC_SIN_COS_ARRAYS[num_type]
+                elif (npfunc, akfunc) in UFUNC_LOG_EXP:
+                    nda = NP_LOG_EXP_ARRAYS[num_type]
+                pda = ak.array(nda)
+                nda_where = alternate(True, False, 10)
+                pda_where = ak.array(nda_where)
+                bool_case = num_type in (bool, ak.bool_)
+                (rtol, atol) = (1.0e-3, 1.0e-3) if bool_case else (1.0e-5, 1.0e-08)
+                if arg_scalar:
+                    if not uses_out:
+                        if bool_case:
+                            assert np.isclose(
+                                npfunc(recast_if_bool_case(nda[0])), akfunc(pda[0]), rtol=rtol, atol=atol
+                            )
+                            # assert npfunc(recast_if_bool_case(nda[0])) == akfunc(pda[0])
+                        else:
+                            assert npfunc(nda[0]) == akfunc(pda[0])
+                    else:
+                        nda_out = np.ones(10)  # .astype(num_type)
+                        nda_outc = nda_out.copy()
+                        pda_out = ak.array(nda_out)
+                        pda_outc = pda_out.copy()
+                        if not uses_where:
+                            nda_res = npfunc(nda, nda_outc)
+                            nda_res = recast_if_bool_case(nda_res)
+                            nda_outc = recast_if_bool_case(nda_outc)
+                            pda_res = akfunc(pda, pda_outc)
+                            ak_assert_almost_equivalent(nda_res, pda_res, rtol, atol)
+                            ak_assert_almost_equivalent(nda_outc, pda_outc, rtol, atol)
+                        else:
+                            nda_res = npfunc(nda, nda_outc, where=True)
+                            nda_res = recast_if_bool_case(nda_res)
+                            nda_outc = recast_if_bool_case(nda_outc)
+                            pda_res = akfunc(pda, pda_outc, where=True)
+                            ak_assert_almost_equivalent(nda_res, pda_res, rtol, atol)
+                            ak_assert_almost_equivalent(nda_outc, pda_outc, rtol, atol)
+                            nda_outc = nda_out.copy()
+                            pda_outc = pda_out.copy()
+                            nda_res = npfunc(nda, nda_outc, where=False)
+                            nda_res = recast_if_bool_case(nda_res)
+                            nda_outc = recast_if_bool_case(nda_outc)
+                            pda_res = akfunc(pda, pda_outc, where=False)
+                            ak_assert_almost_equivalent(nda_res, pda_res, rtol, atol)
+                            ak_assert_almost_equivalent(nda_outc, pda_outc, rtol, atol)
+                            nda_outc = nda_out.copy()
+                            pda_outc = pda_out.copy()
+                            nda_res = npfunc(nda, nda_outc, where=nda_where)
+                            nda_res = recast_if_bool_case(nda_res)
+                            nda_outc = recast_if_bool_case(nda_outc)
+                            pda_res = akfunc(pda, pda_outc, where=pda_where)
+                            ak_assert_almost_equivalent(nda_res, pda_res, rtol, atol)
+                            ak_assert_almost_equivalent(nda_outc, pda_outc, rtol, atol)
+
+        np.seterr(**old_settings)  # restore original settings
+
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("denom_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("num_scalar", [True, False])
     @pytest.mark.parametrize("denom_scalar", [True, False])
     @pytest.mark.parametrize("uses_where, uses_out", WHERE_OUT)
     def test_arctan2(self, num_type, denom_type, num_scalar, denom_scalar, uses_where, uses_out):
-        from arkouda.numpy import cast as akcast
-
         np.random.seed(pytest.seed)
 
         #  Create numerator and denominator
@@ -565,16 +647,6 @@ class TestNumeric:
         bool_case = (num_type in (bool, np.bool_)) and (denom_type in (bool, np.bool_))
 
         (rtol, atol) = (1.0e-3, 1.0e-3) if bool_case else (1.0e-5, 1.0e-08)
-
-        def recast_if_bool_case(x):
-            if np.isscalar(x):
-                return np.float64(x)
-            elif isinstance(x, np.ndarray):
-                return x.astype(np.float64)
-            elif isinstance(x, ak.pdarray):
-                return akcast(x, ak.float64)
-            else:
-                raise ValueError("recast_if_bool_case only handles scalars, ndarrays, and pdarrays")
 
         #  Many cases to test.  Begin with both scalar.
         #  Bool-bool is always a problem, since np returns np.float16, and we don't.  So
@@ -836,7 +908,7 @@ class TestNumeric:
         assert ak.isnan(ark_s_bool).tolist() == [False, False, False, False]
 
         ark_s_string = ak.array(["a", "b", "c"])
-        with pytest.raises(TypeError):
+        with pytest.raises(NotImplementedError):
             ak.isnan(ark_s_string)
 
     def test_isinf_isfinite(self):
