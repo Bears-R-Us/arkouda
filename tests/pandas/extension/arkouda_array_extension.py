@@ -1038,6 +1038,52 @@ class TestArkoudaArraySetitem:
         np.testing.assert_array_equal(arr.to_ndarray(), np.array([0, 1, 9, 9, 9, 5]))
 
 
+class TestArkoudaArrayWhere:
+    def test_where_scalar_other(self):
+        arr = ArkoudaArray(ak.array([1, 2, 3, 4]))
+        mask = np.array([True, False, True, False])
+
+        result = arr._where(mask, 0)
+
+        assert isinstance(result, ArkoudaArray)
+        assert result.to_ndarray().tolist() == [1, 0, 3, 0]
+        # the original is not modified
+        assert arr.to_ndarray().tolist() == [1, 2, 3, 4]
+
+    @pytest.mark.parametrize(
+        "make_other",
+        [
+            lambda: ArkoudaArray(ak.array([10, 20, 30, 40])),
+            lambda: ak.array([10, 20, 30, 40]),
+            lambda: np.array([10, 20, 30, 40]),
+            lambda: [10, 20, 30, 40],
+        ],
+    )
+    def test_where_array_like_other(self, make_other):
+        arr = ArkoudaArray(ak.array([1, 2, 3, 4]))
+        mask = np.array([True, False, True, False])
+
+        result = arr._where(mask, make_other())
+
+        assert result.to_ndarray().tolist() == [1, 20, 3, 40]
+
+    def test_where_all_true_returns_copy(self):
+        arr = ArkoudaArray(ak.array([1, 2, 3]))
+
+        result = arr._where(np.ones(3, dtype=bool), 99)
+
+        assert result.to_ndarray().tolist() == [1, 2, 3]
+        assert result is not arr
+
+    def test_index_where_with_arkouda_array(self):
+        idx = pd.Index(ArkoudaArray(ak.array([1, 2, 3])))
+        other = ArkoudaArray(ak.array([7, 8, 9]))
+
+        result = idx.where(np.array([True, False, True]), other)
+
+        assert np.asarray(result).tolist() == [1, 8, 3]
+
+
 class TestArkoudaArrayGetitem:
     def _make_array(self):
         # Small, simple fixture for all tests
