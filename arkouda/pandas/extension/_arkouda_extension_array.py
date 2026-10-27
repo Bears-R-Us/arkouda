@@ -52,8 +52,11 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Tuple, Type
 import numpy as np
 
 from numpy.typing import NDArray
+from pandas._libs import lib
 from pandas.api.extensions import ExtensionArray
 from pandas.core.dtypes.base import ExtensionDtype
+from pandas.core.dtypes.cast import construct_1d_object_array_from_listlike
+from pandas.core.dtypes.missing import isna
 from typing_extensions import Self
 
 from arkouda.numpy.dtypes import all_scalars
@@ -595,6 +598,59 @@ class ArkoudaExtensionArray(ExtensionArray):
     def _from_factorized(cls, values, original):
         # Build EA back from factorized NumPy values
         return cls._from_sequence(values)
+
+    def _cast_pointwise_result(self, values) -> Union[ExtensionArray, np.ndarray]:
+        """
+        Wrap the result of a pointwise operation (e.g. ``map``) in an Arkouda-backed
+        array when the inferred values can be represented server-side.
+
+        pandas calls this hook from ``ExtensionArray.map`` and ``Series.map`` so
+        that the Arkouda backend is retained instead of falling back to a NumPy
+        or pandas-native array.
+
+        Parameters
+        ----------
+        values : sequence
+            Pointwise results, typically an object-dtype NumPy array.
+
+        Returns
+        -------
+        ExtensionArray or numpy.ndarray
+            :class:`ArkoudaArray` for numeric/boolean results and
+            :class:`ArkoudaStringArray` for all-string results. Results that
+            Arkouda cannot represent (e.g. strings with missing values, mixed
+            types) fall back to pandas' default type inference.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> arr = ArkoudaArray(ak.array([1, 2, 3]))
+        >>> arr.map(lambda x: x * 10)
+        ArkoudaArray([10 20 30])
+        >>> arr.map(lambda x: f"v{x}")
+        ArkoudaStringArray(['v1', 'v2', 'v3'])
+        """
+        if not (isinstance(values, np.ndarray) and values.dtype == object):
+            values = construct_1d_object_array_from_listlike(values)
+
+        if len(values) == 0:
+            return self.take(np.array([], dtype=np.intp))
+
+        inferred = lib.maybe_convert_objects(values)
+
+        representable = inferred.dtype.kind in "biuf" or (
+            inferred.dtype == object
+            and not isna(inferred).any()
+            and lib.is_string_array(inferred, skipna=False)
+        )
+        if representable:
+            try:
+                return ArkoudaExtensionArray._from_sequence(inferred)
+            except (ValueError, TypeError):
+                pass
+
+        return lib.maybe_convert_objects(values, convert_non_numeric=True)
 
     def to_numpy(self, dtype=None, copy=False, na_value=None):
         """
