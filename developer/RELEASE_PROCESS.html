@@ -386,27 +386,27 @@ When a general consensus forms around cutting a new release a developer should f
 <section id="step-by-step-instructions">
 <h2>Step-by-step instructions<a class="headerlink" href="#step-by-step-instructions" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Gain consensus from the core development team and confirm the current HEAD of the <code class="docutils literal notranslate"><span class="pre">master</span></code>|<code class="docutils literal notranslate"><span class="pre">main</span></code> branch builds and passes all tests on the continuous integration workflow (we use Github’s built in Actions Workflows for this).</p></li>
+<li><p>Gain consensus from the core development team and confirm the current HEAD of the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch builds and passes all tests on the continuous integration workflow (we use Github’s built in Actions Workflows for this).</p></li>
+<li><p>Since pulling together the release notes tends to be the long pole in the tent and the name of the release is based on the date, start by drafting the release notes (see next section), ideally sorting changes into categories, and roughly by importance.  Get this reviewed by someone who’s pretty familiar with the changes..</p></li>
 <li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">releases</span></code> page in the Arkouda project (<a class="reference external" href="https://github.com/Bears-R-Us/arkouda/releases">Direct Link</a>).  You can navigate to it from the <code class="docutils literal notranslate"><span class="pre">Code</span></code> tab of the Arkouda project and locating the <code class="docutils literal notranslate"><span class="pre">Releases</span></code> section on the right and side of the page.</p></li>
 <li><p>Click the <code class="docutils literal notranslate"><span class="pre">Draft</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">release</span></code> button which will bring you to a new page.</p></li>
-<li><p>Select the <code class="docutils literal notranslate"><span class="pre">Choose</span> <span class="pre">a</span> <span class="pre">tag</span></code> drop down button and in the text input box add the new version number.  This tag will be <em>auto-created</em> on the final step when we <em>Publish</em> the release.</p>
+<li><p>From the <code class="docutils literal notranslate"><span class="pre">Tag:</span> <span class="pre">Select</span> <span class="pre">tag</span></code> drop-down, select <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">new</span> <span class="pre">tag</span></code> and in the text input box add the new version number.  This tag will be <em>auto-created</em> on the final step when we <em>Publish</em> the release.</p>
 <ul>
 <li><p>As of this writing our versioning scheme is date based following the pattern <code class="docutils literal notranslate"><span class="pre">v&lt;YYYY&gt;.&lt;MM&gt;.&lt;DD&gt;</span></code>.  Example:  <code class="docutils literal notranslate"><span class="pre">v2022.01.31</span></code>.  Please note we zero-pad the month &amp; day as necessary to ensure lexicographic sorting, and we are using a dot <code class="docutils literal notranslate"><span class="pre">.</span></code> as the delimiter.</p></li>
 <li><p>Should it be necessary to tag more than one release on the same day (hey, mistakes happen it’s ok), we use a dash and incrementing whole number, i.e. <code class="docutils literal notranslate"><span class="pre">v2022.01.31-1</span></code>, <code class="docutils literal notranslate"><span class="pre">v2022.01.31-2</span></code>, etc.</p></li>
 </ul>
 </li>
-<li><p>After inputting the new tag string, you can click the button underneath the text input box <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">Create</span> <span class="pre">new</span> <span class="pre">tag:&lt;your</span> <span class="pre">tag&gt;</span> <span class="pre">on</span> <span class="pre">publish</span></code>. You will see an informational note appear under the tag section with the text: <em>“Excellent! This tag will be created from the target when you publish this release.”</em></p></li>
-<li><p>Add a <code class="docutils literal notranslate"><span class="pre">Release</span> <span class="pre">Title</span></code> in the appropriate text box. We use the tag name.</p></li>
-<li><p>In the larger <code class="docutils literal notranslate"><span class="pre">Describe</span> <span class="pre">the</span> <span class="pre">release</span></code> text box you should add the release notes.  Ideally they should be split into the following. NOTE: We will go into more detail on how to generate the release notes in the next section.</p>
-<ul>
-<li><p>Major changes</p></li>
-<li><p>Minor changes</p></li>
-<li><p>Auto-generated release notes</p></li>
-</ul>
-</li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">Release</span> <span class="pre">Title</span></code> in the appropriate text box. We use “Arkouda” plus the tag name (e.g., <code class="docutils literal notranslate"><span class="pre">Arkouda</span> <span class="pre">v2026.01.31</span></code>))</p></li>
+<li><p>In the larger <code class="docutils literal notranslate"><span class="pre">Describe</span> <span class="pre">the</span> <span class="pre">release</span></code> text box you should add the release notes.</p></li>
 <li><p>When everything has been completed, you can optionally click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">draft</span></code> button at the bottom so someone else can review the release notes etc. Or go straight to the next step.</p></li>
 <li><p>Once everything is ready click the green <code class="docutils literal notranslate"><span class="pre">Publish</span> <span class="pre">release</span></code> button.</p></li>
 <li><p>Post a link and share the news with the community.</p></li>
+<li><p>Update the Spack Arkouda formula to support the new release</p>
+<ul>
+<li><p>it lives here: <a class="reference external" href="https://github.com/spack/spack-packages/tree/develop/repos/spack_repo/builtin/packages/arkouda">https://github.com/spack/spack-packages/tree/develop/repos/spack_repo/builtin/packages/arkouda</a></p></li>
+<li><p>and here’s a sample PR that updates it: <a class="reference external" href="https://github.com/spack/spack-packages/pull/6700">https://github.com/spack/spack-packages/pull/6700</a></p></li>
+</ul>
+</li>
 </ul>
 </section>
 <section id="generating-release-notes">
@@ -416,12 +416,12 @@ When a general consensus forms around cutting a new release a developer should f
 <h3>Diff the git logs<a class="headerlink" href="#diff-the-git-logs" title="Link to this heading">¶</a></h3>
 <p>We are going to assume you have named the Bears-R-Us remote <code class="docutils literal notranslate"><span class="pre">upstream</span></code> in the following git commands. If you named it something else, replace it as necessary.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">upstream</span> <span class="pre">--tags</span></code> to make sure you have the previous tab from upstream.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-l</span></code> to list the tags; you should see the most recent tab in this list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">upstream</span> <span class="pre">--tags</span></code> to make sure you have the previous tags from upstream.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-l</span></code> to list the tags; you should see the most recent tag in this list.</p></li>
 <li><p>Use one of the following commands to get an idea of the commit history by comparing the last tag with the current state of the <code class="docutils literal notranslate"><span class="pre">upstream</span></code> remote.  We use git’s ellipse operator <code class="docutils literal notranslate"><span class="pre">..</span></code></p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">&lt;prev-tag&gt;..upstream/master</span></code> ; for example <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">v2022.01.20..upstream/master</span></code></p></li>
-<li><p>Use the <code class="docutils literal notranslate"><span class="pre">--online</span></code> option to make the output more concise: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">--oneline</span> <span class="pre">v2022.01.20..upstream/master</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">&lt;prev-tag&gt;..upstream/main</span></code> ; for example <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">v2022.01.20..upstream/main</span></code></p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">--oneline</span></code> option to make the output more concise: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">--oneline</span> <span class="pre">v2022.01.20..upstream/main</span></code></p></li>
 </ul>
 </li>
 <li><p>Alternatively you can use the graphical <code class="docutils literal notranslate"><span class="pre">gitk</span></code> utility to view the history.</p></li>
