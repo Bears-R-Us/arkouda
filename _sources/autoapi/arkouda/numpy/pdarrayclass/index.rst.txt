@@ -991,7 +991,7 @@ Module Contents
 
       Return a copy of the array collapsed into one dimension.
 
-      :rtype: A copy of the input array, flattened to one dimension.
+      :returns: A copy of the input array, flattened to one dimension.
 
       .. rubric:: Examples
 

@@ -458,7 +458,7 @@ Module Contents
    :param ip2: Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
    :type ip2: pdarray (int64), Optional
 
-   :rtype: pdarray of bools indicating which indexes are IPv4.
+   :returns: pdarray of bools indicating which indexes are IPv4.
 
    .. seealso:: :py:obj:`ak.is_ipv6`
 
@@ -472,7 +472,7 @@ Module Contents
    :param ip2: Low Bits of IPv6
    :type ip2: pdarray (int64), Optional
 
-   :rtype: pdarray of bools indicating which indexes are IPv6.
+   :returns: pdarray of bools indicating which indexes are IPv6.
 
    .. seealso:: :py:obj:`ak.is_ipv4`
 

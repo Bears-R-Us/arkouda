@@ -184,6 +184,10 @@ Package Contents
 
       An instance of ExtensionDtype.
 
+      This property returns the dtype object associated with this
+      ExtensionArray. The dtype describes the type of data stored
+      in the array.
+
       .. seealso::
 
          :py:obj:`api.extensions.ExtensionDtype`
@@ -271,6 +275,9 @@ Package Contents
    .. py:property:: nbytes
 
       The number of bytes needed to store this object in memory.
+
+      If computing this is expensive, implementations may return an
+      approximate lower bound on the number of bytes needed.
 
       .. seealso::
 
@@ -597,6 +604,10 @@ Package Contents
    .. py:property:: dtype
 
       An instance of ExtensionDtype.
+
+      This property returns the dtype object associated with this
+      ExtensionArray. The dtype describes the type of data stored
+      in the array.
 
       .. seealso::
 
@@ -1139,6 +1150,8 @@ Package Contents
 
    .. method:: copy
 
+   .. method:: count
+
    .. method:: dropna
 
    .. method:: duplicated
@@ -1167,6 +1180,8 @@ Package Contents
 
    .. method:: shift
 
+   .. method:: sort
+
    .. method:: take
 
    .. method:: tolist
@@ -1190,6 +1205,10 @@ Package Contents
    .. method:: _from_sequence_of_strings
 
    .. method:: _hash_pandas_object
+
+   .. method:: _is_monotonic_decreasing
+
+   .. method:: _is_monotonic_increasing
 
    .. method:: _pad_or_backfill
 
@@ -1228,7 +1247,7 @@ Package Contents
    * interpolate
 
    A default repr displaying the type, (truncated) data, length,
-   and dtype is provided. It can be customized or replaced by
+   and dtype is provided. It can be customized or replaced
    by overriding:
 
    * __repr__ : A default repr for the ExtensionArray.
@@ -1493,6 +1512,9 @@ Package Contents
 
       Return boolean ndarray denoting duplicate values.
 
+      This method identifies duplicate values in the array. The `keep`
+      parameter controls which occurrences are marked as duplicates.
+
       :param keep:
                    - ``first`` : Mark duplicates as ``True`` except for the first occurrence.
                    - ``last`` : Mark duplicates as ``True`` except for the last occurrence.
@@ -1581,6 +1603,9 @@ Package Contents
 
 
       Fill NaN values using an interpolation method.
+
+      This method fills missing values in the array by interpolating
+      between existing values using the specified interpolation technique.
 
       :param method: Interpolation technique to use. One of:
                      * 'linear': Ignore the index and treat the values as equally spaced.
@@ -2831,6 +2856,10 @@ Package Contents
 
       An instance of ExtensionDtype.
 
+      This property returns the dtype object associated with this
+      ExtensionArray. The dtype describes the type of data stored
+      in the array.
+
       .. seealso::
 
          :py:obj:`api.extensions.ExtensionDtype`
@@ -2873,6 +2902,9 @@ Package Contents
 
       A 1-D array indicating if each value is missing.
 
+      This method returns a boolean array where ``True`` indicates that
+      the corresponding value is missing (NA/NaN).
+
       :returns: In most cases, this should return a NumPy ndarray. For
                 exceptional cases like ``SparseArray``, where returning
                 an ndarray would be expensive, an ExtensionArray may be
@@ -2894,7 +2926,8 @@ Package Contents
       * ``na_values._is_boolean`` should be True
       * ``na_values`` should implement :func:`ExtensionArray._reduce`
       * ``na_values`` should implement :func:`ExtensionArray._accumulate`
-      * ``na_values.any`` and ``na_values.all`` should be implemented
+      * ``na_values.any``, ``na_values.all``, ``na_values.sum``, and
+        ``na_values.__invert__`` should be implemented
 
       .. rubric:: Examples
 
@@ -2907,6 +2940,9 @@ Package Contents
    .. py:method:: item(*args, **kwargs)
 
       Return the array element at the specified position as a Python scalar.
+
+      Analogous to :meth:`numpy.ndarray.item`, this converts a single
+      element to a native Python object.
 
       :param index: Position of the element. If not provided, the array must contain
                     exactly one element.
@@ -2964,6 +3000,38 @@ Package Contents
 
    .. py:method:: round(*args, **kwargs)
 
+      Round each value in the array to the given number of decimals.
+
+      :param decimals: Number of decimal places to round to. If decimals is negative,
+                       it specifies the number of positions to the left of the decimal
+                       point.
+      :type decimals: int, default 0
+
+      :returns: Rounded values of the ExtensionArray.
+      :rtype: ExtensionArray
+
+      .. seealso::
+
+         :py:obj:`DataFrame.round`
+             Round values of a DataFrame.
+
+         :py:obj:`Series.round`
+             Round values of a Series.
+
+      .. rubric:: Notes
+
+      This is a non-performant default implementation.  Subclasses are
+      encouraged to override it to avoid the elementwise loop.
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1.234, 5.678, pd.NA], dtype="Float64")
+      >>> arr.round(1)
+      <FloatingArray>
+      [1.2, 5.7, <NA>]
+      Length: 3, dtype: Float64
+
+
 
    .. py:method:: setfield(*args, **kwargs)
 
@@ -2972,6 +3040,38 @@ Package Contents
 
 
    .. py:method:: sort(*args, **kwargs)
+
+      Sort the array in-place.
+
+      Reorders the elements of the array using :meth:`argsort` and writes the
+      sorted result back through ``self[:]``. Subclasses backed by immutable
+      storage may override this method to raise ``NotImplementedError``.
+
+      :param ascending: Whether to sort in ascending order.
+      :type ascending: bool, default True
+      :param kind: Sorting algorithm.
+      :type kind: {'quicksort', 'mergesort', 'heapsort', 'stable'}, default 'quicksort'
+      :param na_position: If 'first', put NaN values at the beginning.
+                          If 'last', put NaN values at the end.
+      :type na_position: {'first', 'last'}, default 'last'
+
+      :returns: This method mutates the array in place and does not return a value.
+      :rtype: None
+
+      .. seealso::
+
+         :py:obj:`ExtensionArray.argsort`
+             Return the indices that would sort this array.
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([3, 1, 2, 5, 4])
+      >>> arr.sort()
+      >>> arr
+      <IntegerArray>
+      [1, 2, 3, 4, 5]
+      Length: 5, dtype: Int64
+
 
 
    .. py:method:: std(*args, **kwargs)
