@@ -200,7 +200,22 @@ def pytest_addoption(parser):
     )
 
 
+def _check_pytest_pin_still_needed():
+    from importlib.metadata import version
+
+    from packaging.version import Version
+
+    installed = version("pytest-benchmark")
+    if Version(installed) > Version("5.3.0"):
+        raise pytest.UsageError(
+            f"pytest-benchmark {installed} includes the fix for "
+            "https://github.com/ionelmc/pytest-benchmark/issues/321. Remove the 'pytest<9.2' "
+            "pins tagged with that URL (git grep pytest-benchmark/issues/321) and this check."
+        )
+
+
 def pytest_configure(config):
+    _check_pytest_pin_still_needed()
     pytest.host = config.getoption("host")
     pytest.port = config.getoption("port")
     pytest.nl = config.getoption("nl")
