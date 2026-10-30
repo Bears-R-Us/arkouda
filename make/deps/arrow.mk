@@ -2,7 +2,8 @@ ARROW_VER := 25.0.1
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
 ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
 ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
-ARROW_DEP_DIR :=  $(DEP_BUILD_DIR)/arrow_dependencies
+ARROW_DEP_DIR :=  $(DEP_BUILD_DIR)/arrow_dependencies-$(ARROW_VER)
+ARROW_EXPORTS := arrow_exports-$(ARROW_VER).sh
 ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
 ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
 
@@ -31,9 +32,9 @@ arrow-download-source:
 
     # if the arrow dependency directory is empty of tar.gz, download the dependencies
     ifeq (,$(wildcard $(ARROW_DEP_DIR)/*.tar.gz))
-		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+		rm -fr $(DEP_BUILD_DIR)/$(ARROW_EXPORTS)
 		mkdir -p $(ARROW_DEP_DIR)
-		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
+		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/$(ARROW_EXPORTS)
     endif
 
 	rm -fr $(ARROW_BUILD_DIR)
@@ -47,7 +48,7 @@ install-arrow: arrow-download-source
 	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
 	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
 
-	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+	cd $(DEP_BUILD_DIR) && . ./$(ARROW_EXPORTS) && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && make -j$(NUM_CORES)
 
 	cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
 
@@ -56,6 +57,6 @@ install-arrow: arrow-download-source
 arrow-clean:
 	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
 	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*
-	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
-	rm -fr $(ARROW_DEP_DIR)
+	rm -fr $(DEP_BUILD_DIR)/arrow_exports*.sh
+	rm -fr $(DEP_BUILD_DIR)/arrow_dependencies*
 
