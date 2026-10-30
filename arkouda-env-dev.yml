@@ -12,7 +12,7 @@ dependencies:
   - versioneer
   - matplotlib>=3.3.2
   - h5py>=3.7.0
-  - hdf5>=1.12.2
+  - hdf5==1.14.6
   - pip
   - types-tabulate
   - pytables>=3.10.0
@@ -21,7 +21,7 @@ dependencies:
   - libidn2
   - jupyter
   - scipy
-  - pytest>=6.0
+  - pytest>=6.0,<9.2  # https://github.com/ionelmc/pytest-benchmark/issues/321
   - pytest-env
   - cloudpickle
   - doctest

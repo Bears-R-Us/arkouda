@@ -35,7 +35,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pexpect",
-  "pytest>=6.0",
+  "pytest>=6.0,<9.2",  # https://github.com/ionelmc/pytest-benchmark/issues/321
   "pytest-env",
   "pytest-timeout",
   "pytest-html",
