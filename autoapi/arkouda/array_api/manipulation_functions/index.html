@@ -385,46 +385,46 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.broadcast_arrays" title="arkouda.array_api.manipulation_functions.broadcast_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_arrays</span></code></a>(...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.broadcast_arrays" title="arkouda.array_api.manipulation_functions.broadcast_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_arrays</span></code></a>(*arrays) → List[arkouda.array_api.array_object.Array]</p></td>
 <td><p>Broadcast arrays to a common shape.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.broadcast_to" title="arkouda.array_api.manipulation_functions.broadcast_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_to</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.broadcast_to" title="arkouda.array_api.manipulation_functions.broadcast_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_to</span></code></a>(x, /, shape) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Broadcast the array to the specified shape.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.concat" title="arkouda.array_api.manipulation_functions.concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.concat" title="arkouda.array_api.manipulation_functions.concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat</span></code></a>(arrays, /, *[, axis]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Concatenate arrays along an axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.expand_dims" title="arkouda.array_api.manipulation_functions.expand_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_dims</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.expand_dims" title="arkouda.array_api.manipulation_functions.expand_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_dims</span></code></a>(x, /, *, axis) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Create a new array with an additional dimension inserted at the specified axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.flip" title="arkouda.array_api.manipulation_functions.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.flip" title="arkouda.array_api.manipulation_functions.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip</span></code></a>(x, /, *[, axis]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Reverse an array's values along a particular axis or axes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.moveaxis" title="arkouda.array_api.manipulation_functions.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moveaxis</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.moveaxis" title="arkouda.array_api.manipulation_functions.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moveaxis</span></code></a>(x, source, destination, /) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Move axes of an array to new positions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.permute_dims" title="arkouda.array_api.manipulation_functions.permute_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permute_dims</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.permute_dims" title="arkouda.array_api.manipulation_functions.permute_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permute_dims</span></code></a>(x, /, axes) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Permute the dimensions of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.repeat" title="arkouda.array_api.manipulation_functions.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.repeat" title="arkouda.array_api.manipulation_functions.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(x, repeats, /, *[, axis]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Repeat elements of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.reshape" title="arkouda.array_api.manipulation_functions.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.reshape" title="arkouda.array_api.manipulation_functions.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code></a>(x, /, shape, *[, copy]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Reshape an array to a new shape.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.roll" title="arkouda.array_api.manipulation_functions.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">roll</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.roll" title="arkouda.array_api.manipulation_functions.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">roll</span></code></a>(x, /, shift, *[, axis]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Roll the values in an array by the specified shift(s) along the specified axis or axes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.squeeze" title="arkouda.array_api.manipulation_functions.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.squeeze" title="arkouda.array_api.manipulation_functions.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(x, /, axis) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Remove degenerate (size one) dimensions from an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.stack" title="arkouda.array_api.manipulation_functions.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.stack" title="arkouda.array_api.manipulation_functions.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code></a>(arrays, /, *[, axis]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Stack arrays along a new axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.tile" title="arkouda.array_api.manipulation_functions.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.tile" title="arkouda.array_api.manipulation_functions.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(x, repetitions, /) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Tile an array with the specified number of repetitions along each dimension.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.unstack" title="arkouda.array_api.manipulation_functions.unstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unstack</span></code></a>(→ Tuple[arkouda.array_api.array_object.Array, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.manipulation_functions.unstack" title="arkouda.array_api.manipulation_functions.unstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unstack</span></code></a>(x, /, *[, axis]) → Tuple[arkouda.array_api.array_object.Array, ...]</p></td>
 <td><p>Decompose an array along an axis into multiple arrays of the same shape.</p></td>
 </tr>
 </tbody>

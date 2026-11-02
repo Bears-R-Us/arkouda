@@ -385,52 +385,52 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.arange" title="arkouda.array_api.creation_functions.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arange</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.arange" title="arkouda.array_api.creation_functions.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arange</span></code></a>(start, /[, stop, step, dtype, device]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Return a 1D of array of evenly spaced values within the half-open interval [start, stop).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.asarray" title="arkouda.array_api.creation_functions.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.asarray" title="arkouda.array_api.creation_functions.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray</span></code></a>(obj, /, *[, dtype, device, copy]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Create a new Array from one of:</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.empty" title="arkouda.array_api.creation_functions.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.empty" title="arkouda.array_api.creation_functions.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty</span></code></a>(shape, *[, dtype, device]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Return a new array of given shape and type, without initializing entries.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.empty_like" title="arkouda.array_api.creation_functions.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_like</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.empty_like" title="arkouda.array_api.creation_functions.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_like</span></code></a>(x, /, *[, dtype, device]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Return a new array whose shape and dtype match the input array, without initializing entries.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.eye" title="arkouda.array_api.creation_functions.eye"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eye</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.eye" title="arkouda.array_api.creation_functions.eye"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eye</span></code></a>(N[, M, k, dtype, device]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Return a 2D array with ones on the diagonal and zeros elsewhere.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.from_dlpack" title="arkouda.array_api.creation_functions.from_dlpack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dlpack</span></code></a>(→ arkouda.array_api._typing.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.from_dlpack" title="arkouda.array_api.creation_functions.from_dlpack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dlpack</span></code></a>(x, /) → arkouda.array_api._typing.Array</p></td>
 <td><p>Construct an Array from a DLPack tensor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.full" title="arkouda.array_api.creation_functions.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(→ arkouda.array_api._typing.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.full" title="arkouda.array_api.creation_functions.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(shape, fill_value, *[, dtype, device]) → arkouda.array_api._typing.Array</p></td>
 <td><p>Return a new array of given shape and type, filled with <cite>fill_value</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.full_like" title="arkouda.array_api.creation_functions.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_like</span></code></a>(→ arkouda.array_api._typing.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.full_like" title="arkouda.array_api.creation_functions.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_like</span></code></a>(x, /, fill_value, *[, dtype, device]) → arkouda.array_api._typing.Array</p></td>
 <td><p>Return a new array whose shape and dtype match the input array, filled with <cite>fill_value</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.linspace" title="arkouda.array_api.creation_functions.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.linspace" title="arkouda.array_api.creation_functions.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(start, stop, /, num, *[, dtype, device, endpoint]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>An Array API compliant wrapper for <a class="reference internal" href="../../index.html#arkouda.linspace" title="arkouda.linspace"><code class="xref py py-func docutils literal notranslate"><span class="pre">arkouda.linspace()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.meshgrid" title="arkouda.array_api.creation_functions.meshgrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meshgrid</span></code></a>(→ List[arkouda.array_api._typing.Array])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.meshgrid" title="arkouda.array_api.creation_functions.meshgrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meshgrid</span></code></a>(*arrays[, indexing]) → List[arkouda.array_api._typing.Array]</p></td>
 <td><p>Return coordinate matrices from coordinate vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.ones" title="arkouda.array_api.creation_functions.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.array_api._typing.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.ones" title="arkouda.array_api.creation_functions.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(shape, *[, dtype, device]) → arkouda.array_api._typing.Array</p></td>
 <td><p>Return a new array with the specified shape and type, filled with ones.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.ones_like" title="arkouda.array_api.creation_functions.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.array_api._typing.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.ones_like" title="arkouda.array_api.creation_functions.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(x, /, *[, dtype, device]) → arkouda.array_api._typing.Array</p></td>
 <td><p>Return a new array whose shape and dtype match the input array, filled with ones.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.tril" title="arkouda.array_api.creation_functions.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.tril" title="arkouda.array_api.creation_functions.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(x, /, *[, k]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Return a copy of <cite>x</cite> with elements above the k-th diagonal zeroed.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.triu" title="arkouda.array_api.creation_functions.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.triu" title="arkouda.array_api.creation_functions.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(x, /, *[, k]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Create a new array with the values from <cite>x</cite> above the <cite>k</cite>-th diagonal, and</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.zeros" title="arkouda.array_api.creation_functions.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.array_api.array_object.Array)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.zeros" title="arkouda.array_api.creation_functions.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(shape, /, *[, dtype, device]) → arkouda.array_api.array_object.Array</p></td>
 <td><p>Return a new array with the specified shape and type, filled with zeros.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.zeros_like" title="arkouda.array_api.creation_functions.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.array_api._typing.Array)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.array_api.creation_functions.zeros_like" title="arkouda.array_api.creation_functions.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(x, /, *[, dtype, device]) → arkouda.array_api._typing.Array</p></td>
 <td><p>Return a new array whose shape and dtype match the input array, filled with zeros.</p></td>
 </tr>
 </tbody>

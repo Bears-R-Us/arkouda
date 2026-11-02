@@ -435,19 +435,19 @@ user identity, and secure client-side metadata used in communicating with the Ar
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.security.generate_token" title="arkouda.core.security.generate_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_token</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.security.generate_token" title="arkouda.core.security.generate_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_token</span></code></a>([length]) → str</p></td>
 <td><p>Use the secrets.token_hex() method to generate a hexidecimal token.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.security.generate_username_token_json" title="arkouda.core.security.generate_username_token_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_username_token_json</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.security.generate_username_token_json" title="arkouda.core.security.generate_username_token_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_username_token_json</span></code></a>(token) → str</p></td>
 <td><p>Generate a JSON object encapsulating the user's username and token.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.security.get_arkouda_client_directory" title="arkouda.core.security.get_arkouda_client_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_arkouda_client_directory</span></code></a>(→ pathlib.Path)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.security.get_arkouda_client_directory" title="arkouda.core.security.get_arkouda_client_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_arkouda_client_directory</span></code></a>() → pathlib.Path</p></td>
 <td><p>Find a path to the current user's .arkouda directory.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.security.get_home_directory" title="arkouda.core.security.get_home_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_home_directory</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.security.get_home_directory" title="arkouda.core.security.get_home_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_home_directory</span></code></a>() → str</p></td>
 <td><p>Find a path to the current user's home directory in a platform-independent manner.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.security.get_username" title="arkouda.core.security.get_username"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_username</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.security.get_username" title="arkouda.core.security.get_username"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_username</span></code></a>() → str</p></td>
 <td><p>Retrieve the current user's username for the host system in a platform-independent manner.</p></td>
 </tr>
 </tbody>

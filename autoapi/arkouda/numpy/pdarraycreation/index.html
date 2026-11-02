@@ -397,46 +397,46 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full" title="arkouda.numpy.pdarraycreation.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(…)</p></td>
 <td><p>Create a pdarray filled with fill_value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full_like" title="arkouda.numpy.pdarraycreation.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_like</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full_like" title="arkouda.numpy.pdarraycreation.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_like</span></code></a>(pda, fill_value) → Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]</p></td>
 <td><p>Create a pdarray filled with fill_value of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.linspace" title="arkouda.numpy.pdarraycreation.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.linspace" title="arkouda.numpy.pdarraycreation.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(start, stop[, num, endpoint, dtype, axis]) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Return evenly spaced numbers over a specified interval.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.logspace" title="arkouda.numpy.pdarraycreation.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.logspace" title="arkouda.numpy.pdarraycreation.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(start, stop[, num, base, endpoint, dtype, axis]) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Create a pdarray of numbers evenly spaced on a log scale.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones" title="arkouda.numpy.pdarraycreation.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(…)</p></td>
 <td><p>Create a pdarray filled with ones.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones_like" title="arkouda.numpy.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones_like" title="arkouda.numpy.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(pda) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Create a one-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.promote_to_common_dtype" title="arkouda.numpy.pdarraycreation.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.promote_to_common_dtype" title="arkouda.numpy.pdarraycreation.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(arrays) → Tuple[Any, List[arkouda.numpy.pdarrayclass.pdarray]]</p></td>
 <td><p>Promote a list of pdarrays to a common dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.randint" title="arkouda.numpy.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.randint" title="arkouda.numpy.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(low, high[, size, dtype, seed]) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Generate a pdarray of randomized int, float, or bool values in a</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_lognormal" title="arkouda.numpy.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_lognormal" title="arkouda.numpy.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(logmean, logstd, size[, ...]) → arkouda.numpy.strings.Strings</p></td>
 <td><p>Generate random strings with log-normally distributed lengths and</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_uniform" title="arkouda.numpy.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_uniform" title="arkouda.numpy.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(minlen, maxlen, size[, ...]) → arkouda.numpy.strings.Strings</p></td>
 <td><p>Generate random strings with lengths uniformly distributed between</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.scalar_array" title="arkouda.numpy.pdarraycreation.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.scalar_array" title="arkouda.numpy.pdarraycreation.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(value[, dtype]) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Create a pdarray from a single scalar value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.standard_normal" title="arkouda.numpy.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.standard_normal" title="arkouda.numpy.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(size[, seed]) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.uniform" title="arkouda.numpy.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.uniform" title="arkouda.numpy.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(size[, low, high, seed]) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros" title="arkouda.numpy.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(…)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros_like" title="arkouda.numpy.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros_like" title="arkouda.numpy.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(pda) → arkouda.numpy.pdarrayclass.pdarray</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>

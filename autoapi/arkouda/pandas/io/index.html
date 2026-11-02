@@ -460,46 +460,46 @@ also support compatibility with standard pandas file formats for interoperabilit
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.export" title="arkouda.pandas.io.export"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export</span></code></a>(read_path[, dataset_name, write_file, ...])</p></td>
 <td><p>Export data from arkouda to pandas.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_columns" title="arkouda.pandas.io.get_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_columns</span></code></a>(→ List[str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_columns" title="arkouda.pandas.io.get_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_columns</span></code></a>(filenames[, col_delim, allow_errors]) → List[str]</p></td>
 <td><p>Get a list of column names from CSV file(s).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_datasets" title="arkouda.pandas.io.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(→ List[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_datasets" title="arkouda.pandas.io.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(filenames[, allow_errors, column_delim, ...]) → List[str]</p></td>
 <td><p>Get the names of the datasets in the provide files.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_filetype" title="arkouda.pandas.io.get_filetype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filetype</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_filetype" title="arkouda.pandas.io.get_filetype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filetype</span></code></a>(filenames) → str</p></td>
 <td><p>Get the type of a file accessible to the server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_null_indices" title="arkouda.pandas.io.get_null_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_null_indices</span></code></a>(...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.get_null_indices" title="arkouda.pandas.io.get_null_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_null_indices</span></code></a>(filenames[, datasets]) → Union[arkouda.numpy.pdarrayclass.pdarray, Mapping[str, arkouda.numpy.pdarrayclass.pdarray]]</p></td>
 <td><p>Get null indices of a string column in a Parquet file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.import_data" title="arkouda.pandas.io.import_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_data</span></code></a>(read_path[, write_file, return_obj, index])</p></td>
 <td><p>Import data from a file saved by Pandas (HDF5/Parquet).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.load" title="arkouda.pandas.io.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.load" title="arkouda.pandas.io.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path_prefix[, file_format, dataset, ...]) → Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]</p></td>
 <td><p>Load objects previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.load_all" title="arkouda.pandas.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(→ Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.load_all" title="arkouda.pandas.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(path_prefix[, file_format, column_delim, ...]) → Mapping[str, arkouda.numpy.pdarrayclass.pdarray | arkouda.numpy.strings.Strings | arkouda.numpy.segarray.SegArray | arkouda.pandas.categorical.Categorical | arkouda.pandas.dataframe.DataFrame | arkouda.client_dtypes.IPv4 | arkouda.numpy.timeclass.Datetime | arkouda.numpy.timeclass.Timedelta | arkouda.pandas.index.Index]</p></td>
 <td><p>Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.load_checkpoint" title="arkouda.pandas.io.load_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_checkpoint</span></code></a>(name[, path])</p></td>
 <td><p>Load server's state.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.ls" title="arkouda.pandas.io.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(→ List[str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.ls" title="arkouda.pandas.io.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(filename[, col_delim, read_nested]) → List[str]</p></td>
 <td><p>List the contents of an HDF5 or Parquet file on the Arkouda server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.ls_csv" title="arkouda.pandas.io.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(→ List[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.ls_csv" title="arkouda.pandas.io.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(filename[, col_delim]) → List[str]</p></td>
 <td><p>List the datasets within a file when a CSV does not have a header.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.read" title="arkouda.pandas.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.read" title="arkouda.pandas.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(filenames[, datasets, iterative, strictTypes, ...]) → Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]</p></td>
 <td><p>Read datasets from files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_csv" title="arkouda.pandas.io.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_csv" title="arkouda.pandas.io.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(filenames[, datasets, column_delim, allow_errors]) → Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]</p></td>
 <td><p>Read CSV file(s) into Arkouda objects.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_hdf" title="arkouda.pandas.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_hdf" title="arkouda.pandas.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(filenames[, datasets, iterative, ...]) → Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]</p></td>
 <td><p>Read Arkouda objects from HDF5 files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_parquet" title="arkouda.pandas.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_parquet" title="arkouda.pandas.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(filenames[, datasets, iterative, ...]) → Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]</p></td>
 <td><p>Read Arkouda objects from Parquet files.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.read_tagged_data" title="arkouda.pandas.io.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
@@ -526,10 +526,10 @@ also support compatibility with standard pandas file formats for interoperabilit
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.to_csv" title="arkouda.pandas.io.to_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_csv</span></code></a>(columns, prefix_path[, names, col_delim, overwrite])</p></td>
 <td><p>Write Arkouda object(s) to CSV file(s).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.to_hdf" title="arkouda.pandas.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.to_hdf" title="arkouda.pandas.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>(columns, prefix_path[, names, mode, file_type]) → None</p></td>
 <td><p>Save multiple named pdarrays to HDF5 files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.to_parquet" title="arkouda.pandas.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.io.to_parquet" title="arkouda.pandas.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(columns, prefix_path[, names, mode, ...]) → None</p></td>
 <td><p>Save multiple named arrays to Parquet files.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.io.to_zarr" title="arkouda.pandas.io.to_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code></a>(store_path, arr, chunk_shape)</p></td>

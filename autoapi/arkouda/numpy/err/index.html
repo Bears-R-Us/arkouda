@@ -440,19 +440,19 @@ one of the following modes:</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.err.errstate" title="arkouda.numpy.err.errstate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">errstate</span></code></a>(→ Iterator[None])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.err.errstate" title="arkouda.numpy.err.errstate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">errstate</span></code></a>(*[, divide, over, under, invalid, call]) → Iterator[None]</p></td>
 <td><p>Context manager to temporarily set floating-point error handling.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.err.geterr" title="arkouda.numpy.err.geterr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geterr</span></code></a>(→ Dict[str, _ErrorMode])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.err.geterr" title="arkouda.numpy.err.geterr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geterr</span></code></a>() → Dict[str, _ErrorMode]</p></td>
 <td><p>Get the current Arkouda floating-point error handling settings.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.err.geterrcall" title="arkouda.numpy.err.geterrcall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geterrcall</span></code></a>(→ Optional[Callable[[str, str], None]])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.err.geterrcall" title="arkouda.numpy.err.geterrcall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geterrcall</span></code></a>() → Optional[Callable[[str, str], None]]</p></td>
 <td><p>Get the current callable used when error mode is 'call'.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.err.seterr" title="arkouda.numpy.err.seterr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterr</span></code></a>(→ Dict[str, _ErrorMode])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.err.seterr" title="arkouda.numpy.err.seterr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterr</span></code></a>(**kwargs) → Dict[str, _ErrorMode]</p></td>
 <td><p>Set how Arkouda handles floating-point errors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.err.seterrcall" title="arkouda.numpy.err.seterrcall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterrcall</span></code></a>(→ Optional[Callable[[str, str], None]])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.err.seterrcall" title="arkouda.numpy.err.seterrcall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterrcall</span></code></a>(func) → Optional[Callable[[str, str], None]]</p></td>
 <td><p>Set the callable invoked when an error category is set to 'call'.</p></td>
 </tr>
 </tbody>

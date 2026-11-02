@@ -451,43 +451,43 @@ message formats.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.connect" title="arkouda.core.client.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.connect" title="arkouda.core.client.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a>([server, port, timeout, access_token, ...]) → None</p></td>
 <td><p>Connect to a running Arkouda server.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.disconnect" title="arkouda.core.client.disconnect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.disconnect" title="arkouda.core.client.disconnect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code></a>() → None</p></td>
 <td><p>Disconnect the client from the Arkouda server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.generate_history" title="arkouda.core.client.generate_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_history</span></code></a>(→ List[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.generate_history" title="arkouda.core.client.generate_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_history</span></code></a>([num_commands, command_filter]) → List[str]</p></td>
 <td><p>Generate a list of commands executed in the shell/notebook.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_config" title="arkouda.core.client.get_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config</span></code></a>(→ Mapping[str, Union[str, int, float]])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_config" title="arkouda.core.client.get_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config</span></code></a>() → Mapping[str, Union[str, int, float]]</p></td>
 <td><p>Get runtime information about the server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.get_max_array_rank" title="arkouda.core.client.get_max_array_rank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_max_array_rank</span></code></a>(→ int)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.get_max_array_rank" title="arkouda.core.client.get_max_array_rank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_max_array_rank</span></code></a>() → int</p></td>
 <td><p>Get the maximum pdarray rank the server was compiled to support.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_mem_avail" title="arkouda.core.client.get_mem_avail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_avail</span></code></a>(→ int)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_mem_avail" title="arkouda.core.client.get_mem_avail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_avail</span></code></a>([unit, as_percent]) → int</p></td>
 <td><p>Compute the amount of memory available to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.get_mem_status" title="arkouda.core.client.get_mem_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_status</span></code></a>(→ List[Mapping[str, Union[str, int, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.get_mem_status" title="arkouda.core.client.get_mem_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_status</span></code></a>() → List[Mapping[str, Union[str, int, float]]]</p></td>
 <td><p>Retrieve the memory status for each locale.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_mem_used" title="arkouda.core.client.get_mem_used"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_used</span></code></a>(→ int)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_mem_used" title="arkouda.core.client.get_mem_used"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_used</span></code></a>([unit, as_percent]) → int</p></td>
 <td><p>Compute the amount of memory used by objects in the server's symbol table.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.get_registration_config" title="arkouda.core.client.get_registration_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_registration_config</span></code></a>()</p></td>
 <td><p>Get the registration settings the server was built with.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_server_commands" title="arkouda.core.client.get_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_commands</span></code></a>(→ Mapping[str, str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.get_server_commands" title="arkouda.core.client.get_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_commands</span></code></a>() → Mapping[str, str]</p></td>
 <td><p>Return a dictionary of available server commands and their functions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.print_server_commands" title="arkouda.core.client.print_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_server_commands</span></code></a>()</p></td>
 <td><p>Print the list of available server commands.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.ruok" title="arkouda.core.client.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.client.ruok" title="arkouda.core.client.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>() → str</p></td>
 <td><p>Quick health check that does not require error handling.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.shutdown" title="arkouda.core.client.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.client.shutdown" title="arkouda.core.client.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>() → None</p></td>
 <td><p>Send a shutdown message and disconnect.</p></td>
 </tr>
 </tbody>
