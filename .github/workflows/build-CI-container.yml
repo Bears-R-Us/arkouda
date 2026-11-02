@@ -41,7 +41,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: ${{ inputs.DOCKERFILE }}
           push: false
@@ -51,7 +51,7 @@ jobs:
             CHPL_VERSION=${{ inputs.CHPL_VERSION }}
       - name: Push Docker Image if on main
         if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: ${{ inputs.DOCKERFILE }}
           push: true
