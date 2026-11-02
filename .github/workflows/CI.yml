@@ -77,7 +77,7 @@ jobs:
         run: ruff format --check --diff
 
   mypy:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.10.0:latest
       credentials:
@@ -115,7 +115,7 @@ jobs:
           make docstr-coverage
 
   flake8:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.10.0:latest
       credentials:
