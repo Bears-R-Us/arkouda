@@ -128,7 +128,7 @@ jobs:
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1
     - name: Install Dependencies
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -169,7 +169,7 @@ jobs:
       run: |
         python3 --version
     - name: Install dependencies
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -233,7 +233,7 @@ jobs:
       run: |
         python3 --version
     - name: Make install-arrow
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -242,7 +242,7 @@ jobs:
         command: |
           make install-arrow DEP_BUILD_DIR=/dep/build
     - name: Make install-zmq
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -251,7 +251,7 @@ jobs:
         command: |
           make install-zmq DEP_BUILD_DIR=/dep/build
     - name: Make install-iconv
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -260,7 +260,7 @@ jobs:
         command: |
           make install-iconv DEP_BUILD_DIR=/dep/build
     - name: Make install-idn2
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -269,7 +269,7 @@ jobs:
         command: |
           make install-idn2 DEP_BUILD_DIR=/dep/build
     - name: Make install-blosc
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -278,7 +278,7 @@ jobs:
         command: |
           make install-blosc DEP_BUILD_DIR=/dep/build
     - name: Make install-hdf5
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -288,7 +288,7 @@ jobs:
           make install-hdf5 DEP_BUILD_DIR=/dep/build
     # disabled for now, since it doesn't seem to work or be on the critical path
     # - name: Make install-pytables
-    #   uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+    #   uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
     #   with:
     #     timeout_seconds: 1200  # or use timeout_minutes
     #     max_attempts: 2
@@ -318,7 +318,7 @@ jobs:
       run: |
         python3 --version
     - name: Make install-arrow-quick
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -327,7 +327,7 @@ jobs:
         command: |
           make install-arrow-quick
     - name: Make install-arrow
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -337,7 +337,7 @@ jobs:
             apt-get remove -y apache-arrow-apt-source
             make install-arrow DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-zmq
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -346,7 +346,7 @@ jobs:
         command: |
           make install-zmq  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-iconv
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -355,7 +355,7 @@ jobs:
         command: |
           make install-iconv  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-idn2
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -364,7 +364,7 @@ jobs:
         command: |
           make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-blosc
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -373,7 +373,7 @@ jobs:
         command: |
           make install-blosc  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-hdf5
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -383,7 +383,7 @@ jobs:
           make install-hdf5  DEP_BUILD_DIR=$DEP_BUILD_DIR
     # disabled for now, since it doesn't seem to work or be on the critical path
     # - name: Make install-pytables
-    #   uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+    #   uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
     #   with:
     #     timeout_seconds: 1200  # or use timeout_minutes
     #     max_attempts: 2
@@ -412,7 +412,7 @@ jobs:
       run: |
         chpl --version
     - name: Install dependencies
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -460,7 +460,7 @@ jobs:
       run: |
         chpl --version
     - name: Install dependencies
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -510,7 +510,7 @@ jobs:
 #      run: |
 #        chpl --version
 #    - name: Install dependencies
-#      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+#      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
 #      with:
 #        timeout_seconds: 1200  # or use timeout_minutes
 #        max_attempts: 2
@@ -587,7 +587,7 @@ jobs:
       run: |
         chpl --version
     - name: Install dependencies
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
@@ -636,7 +636,7 @@ jobs:
       run: |
         chpl --version
     - name: Install dependencies
-      uses: nick-fields/retry@14672906e672a08bd6eeb15720e9ed3ce869cdd4 # v2
+      uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
       with:
         timeout_seconds: 1200  # or use timeout_minutes
         max_attempts: 2
