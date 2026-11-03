@@ -162,6 +162,13 @@ def test_unary_alignment(
     base_bool,
     where_mask,
 ) -> None:
+    # Suppress np warnings (divide by zero, invalid data, etc) for these tests.
+    # We include invalid data to ensure that numpy and arkouda process it identically,
+    # but it's not helpful having it clutter the output.
+
+    old_settings = np.seterr(all="ignore")  # retrieve current settings
+    np.seterr(over="ignore", invalid="ignore", divide="ignore")
+
     # Map dtype kinds to fixtures
     datasets = {
         "i": base_int,
@@ -173,33 +180,55 @@ def test_unary_alignment(
     for kind in kinds:
         x = datasets[kind]
 
+        # the general data in datasets[kind] may need adjustment depending on the function being tested.
+
         if name == "abs" and kind == "u":
             pytest.xfail(
                 "Arkouda server does not support abs<uint64,1>; NumPy abs(uint) is identity. Issue #5247"
             )
 
-        if name == "isfinite" and kind in {"i", "u", "b"}:
+        elif name == "isfinite" and kind in {"i", "u", "b"}:
             pytest.xfail(
                 "ak.isfinite fails on non-float dtypes (NumPy returns all True for int/uint/bool); "
                 "backend dispatch/casting bug: isfinite<1> cannot cast runtime types.  Issue #5248."
             )
 
-        if name == "isinf" and kind in {"i", "u", "b"}:
+        elif name == "isinf" and kind in {"i", "u", "b"}:
             pytest.xfail(
                 "ak.isinf errors on non-float dtypes (NumPy returns all False for int/uint/bool); "
                 "backend dispatch/casting bug: isinf<1> cannot cast runtime types. Issue #5249."
             )
 
-        if name == "square" and kind == "b":
-            pytest.xfail(
-                "ak.square does not support bool dtype "
-                "(NumPy supports np.square on bool via 0/1 semantics). "
-                "Client dtype gate in _general_helper/_datatype_check. Issue #5250."
-            )
+        # The functions below have been rewritten to process "where" and "out" identically to numpy.
+        # It is expected that as additional functions are rewritten, they will move from the above
+        # test to this one.
+        # Numpy functions have a way of returning unusual dtypes if the input is bool (sometimes
+        # int8, sometimes int16).  Since arkouda doesn't handle such types, we convert bool
+        # input to int64 below, so the tests will pass.
 
-        # NumPy reference
-        if use_where and name in {
+        elif use_where and name in {
+            "ceil",
+            "floor",
+            "trunc",
             "square",
+        }:
+            np_where = where_mask
+            np_out = np.ones_like(x if kind != "b" else x.astype(np.int64))  # handle the bool case
+            np_res = np_func(x, np_out, where=np_where)  # this behavior differs from _apply_numpy_where
+            ak_where = _ak_where_param(np_where)
+            ak_x = ak.array(x)
+            ak_out = ak.array(np_out)
+            ak_res = ak_func(ak_x, ak_out, where=ak_where)
+
+        elif use_where and name in {
+            "log",
+            "log2",
+            "log10",
+            "log1p",
+            "exp",
+            "expm1",
+            "sign",
+            "fabs",
             "sin",
             "cos",
             "tan",
@@ -213,30 +242,17 @@ def test_unary_alignment(
             "arccosh",
             "arctanh",
         }:
-            where = where_mask
-            np_res = _apply_numpy_where(x.astype(np.float64) if name == "fabs" else x, where, np_func)
-            ak_x = ak.array(x)
-            ak_where = _ak_where_param(where)
-            ak_res = ak_func(ak_x, where=ak_where)
-        else:
-            np_res = np_func(x.astype(np.float64) if name == "fabs" else x)
-            ak_res = ak_func(ak.array(x))
-
-        # The functions below have been rewritten to process "where" and "out" identically to numpy.
-        # It is expected that as additional functions are rewritten, they will move from the above
-        # test to this one.
-        if use_where and name in {
-            "ceil",
-            "floor",
-            "trunc",
-        }:
             np_where = where_mask
-            np_out = np.ones_like(x)
+            np_out = np.ones_like(x, dtype=ak.float64)  # these functions always output float
             np_res = np_func(x, np_out, where=np_where)  # this behavior differs from _apply_numpy_where
             ak_where = _ak_where_param(np_where)
             ak_x = ak.array(x)
             ak_out = ak.array(np_out)
             ak_res = ak_func(ak_x, ak_out, where=ak_where)
+
+        else:
+            np_res = np_func(x.astype(np.float64) if name == "fabs" else x)
+            ak_res = ak_func(ak.array(x))
 
         # Some functions always yield float in arkouda (fabs); accept that.
         ak_np = _to_np(ak_res)
@@ -250,6 +266,8 @@ def test_unary_alignment(
             np.testing.assert_array_equal(ak_np, np_res)
         else:
             np.testing.assert_allclose(ak_np, np_res, rtol=RTOL, atol=ATOL, equal_nan=True)
+
+    np.seterr(**old_settings)  # restore original settings
 
 
 def test_rad2deg_deg2rad_alignment(base_float, where_mask) -> None:
