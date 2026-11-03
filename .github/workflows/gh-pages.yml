@@ -25,7 +25,7 @@ jobs:
         password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v7.0.1
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Set Python version to 3.13
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
@@ -46,7 +46,7 @@ jobs:
         apt-get install -y rsync
     - name: publish-docs
       if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
-      uses: JamesIves/github-pages-deploy-action@v4
+      uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4
       with:
         branch: gh-pages # This is the branch we'll deploy to
         folder: docs # The folder we want to deploy, it becomes the root src of the branch
