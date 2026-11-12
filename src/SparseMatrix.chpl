@@ -551,7 +551,6 @@ module SparseMatrix {
   }
 
   use ChplConfig;
-  config param bufSize = 1024;
 
   class DestinationHandler {
     var domVal;
@@ -571,7 +570,7 @@ module SparseMatrix {
 
       const (_, locid) = this.domVal.dist.chpl__locToLocIdx(here);
       var locDomVal = this.domVal.locDoms[locid]!.mySparseBlock._value;
-      var locIdxBuf = locDomVal.dsiCreateIndexBuffer(bufSize,false,false);
+      var locIdxBuf = locDomVal.dsiCreateIndexBuffer(rBuffer.size,false,true);
       for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
         assert(dstAddr == nil);
         var (i,j,_) = srcVal;
@@ -586,11 +585,12 @@ module SparseMatrix {
       // TODO:
       // - try 'forall' loop here
       // - can we create a version of bulkAdd that handles the values as well?
+      ref elems = this.arrVal.locArr[locid]!.myElems._value.data;
       for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
         assert(dstAddr == nil);
         var (i,j,v) = srcVal;
         var (_,loc) = locDomVal.find((i,j));
-        this.arrVal.locArr[locid]!.myElems._value.data[loc] = v;
+        elems[loc] = v;
       }
     }
   }
@@ -763,7 +763,7 @@ module SparseMatrix {
       return C;
     }
 
-    proc makeSparseMat(parentDom, spsData: [] multData(?)) {
+    proc makeSparseMat(parentDom, const spsData: [] multData(?)) {
       use ArkoudaSparseMatrixCompat;
       use Sort;
       const total = + reduce spsData.count;
