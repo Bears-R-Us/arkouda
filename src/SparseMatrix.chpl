@@ -374,7 +374,7 @@ module SparseMatrix {
   // sparse, outer, matrix-matrix multiplication algorithm; A is assumed
   // CSC and B CSR
   proc sparseMatMatMult(A, B) {
-    var spsData: sparseMatDat(A.eltType);
+    var spsData : [0..<here.maxTaskPar] multData(A.eltType);
 
     sparseMatMatMult(A, B, spsData);
 
@@ -386,11 +386,14 @@ module SparseMatrix {
   // of nonzeroes to be passed in and updated rather than assuming that
   // the multiplication is the first/only step.
   //
-  proc sparseMatMatMult(A, B, ref spsData) {
-    forall ac_br in A.cols() with (merge(sparseMatDat(A.eltType)) reduce spsData) do
+  proc sparseMatMatMult(A, B, ref spsData : [] multData(?)) {
+    var counter : atomic int;
+    forall ac_br in A.cols() with (ref spsData, const tid = counter.fetchAdd(1)) {
+      ref tls = spsData[tid];
       for (ar, a) in A.rowsAndVals(ac_br) do
         for (bc, b) in B.colsAndVals(ac_br) do
-          spsData.add((ar, bc), a * b);
+          tls.add((ar, bc), a * b);
+    }
   }
 
   proc sparseMatMatMult(A, B) where (!A.chpl_isNonDistributedArray() &&
@@ -401,7 +404,7 @@ module SparseMatrix {
     ref targLocs = A.targetLocales();
     coforall (locRow, locCol) in targLocs.domain {
       on targLocs[locRow, locCol] {
-        var spsData: sparseMatDat(A.eltType);
+        var spsData : [0..<here.maxTaskPar] multData(A.eltType);
 
         for srcloc in targLocs.dim(0) {
           // Make a local copy of the remote blocks of A and B; on my branch
@@ -433,33 +436,6 @@ module SparseMatrix {
       }
     }
 
-    return C;
-  }
-
-
-  // dense, simple matrix-matrix multiplication algorithm; this is
-  // wildly inefficient, both because it ignores the sparsity and
-  // because it uses random access of the sparse arrays which tends to
-  // be expensive.
-  //
-  proc denseMatMatMult(A, B) {
-    const n = A.dim(0).size;
-
-    var spsData: sparseMatDat;
-
-    for i in 1..n {
-      for j in 1..n {
-        var prod = 0;
-
-        forall k in 1..n with (+ reduce prod) do
-          prod += A[i,k] * B[k,j];
-
-        if prod != 0 then
-          spsData.add((i,j), prod);
-      }
-    }
-
-    var C = makeSparseMat(A.domain.parentDom, spsData);
     return C;
   }
 
@@ -540,7 +516,6 @@ module SparseMatrix {
   }
 
   use ChplConfig;
-  config param bufSize = 1024;
 
   class DestinationHandler {
     var domVal;
@@ -560,9 +535,8 @@ module SparseMatrix {
 
       const (_, locid) = this.domVal.dist.chpl__locToLocIdx(here);
       var locDomVal = this.domVal.locDoms[locid]!.mySparseBlock._value;
-      var locIdxBuf = locDomVal.dsiCreateIndexBuffer(bufSize,false,false);
+      var locIdxBuf = locDomVal.dsiCreateIndexBuffer(rBuffer.size,false,true);
       for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
-        assert(dstAddr == nil);
         var (i,j,_) = srcVal;
         locIdxBuf.add((i, j));
       }
@@ -575,11 +549,11 @@ module SparseMatrix {
       // TODO:
       // - try 'forall' loop here
       // - can we create a version of bulkAdd that handles the values as well?
+      ref elems = this.arrVal.locArr[locid]!.myElems._value.data;
       for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
-        assert(dstAddr == nil);
         var (i,j,v) = srcVal;
         var (_,loc) = locDomVal.find((i,j));
-        this.arrVal.locArr[locid]!.myElems._value.data[loc] = v;
+        elems[loc] = v;
       }
     }
   }
@@ -670,17 +644,21 @@ module SparseMatrix {
     var rands = if seed == 0 then new randomStream(real)
                           else new randomStream(real, seed);
 
-    record sparseMatDat {
+    record multData {
       type eltType;
-      forwarding var m: map(2*int, eltType);
+      var dom : domain(1);
+      // should these be separate arrays?
+      var vals : [dom] (2*int, eltType);
+      var count : int;
 
       proc ref add(idx: 2*int, val: eltType) {
         if val != 0 {
-          if m.contains(idx) {
-            m[idx] += val;
-          } else {
-            m.add(idx, val);
+          if count == vals.size {
+            const n = max(10, vals.size*2);
+            dom = {0..#n};
           }
+          vals[count] = (idx, val);
+          count += 1;
         }
       }
     }
@@ -709,26 +687,33 @@ module SparseMatrix {
       writeln();
     }
 
-
-    // create a new sparse matrix from a map from sparse indices to values
-    //
-    proc makeSparseMat(parentDom, spsData) {
+    // Create a new sparse matrix from an array of lists of nonzero indices
+    // and values (multData).
+    proc makeSparseMat(parentDom, const spsData: [] multData(?)) {
       use ArkoudaSparseMatrixCompat;
       use Sort;
+      const total = + reduce spsData.count;
 
       var CDom: sparse subdomain(parentDom) dmapped getSparseDom(Layout.CSR);
-      var inds: [0..<spsData.size] 2*int;
-      for (idx, i) in zip(spsData.keys(), 0..) do
-        inds[i] = idx;
+      var inds: [0..<total] 2*int;
+      var start = 0;
+      for dat in spsData {
+        for (idx, i) in zip(dat.vals[0..<dat.count], start..) do
+          inds[i] = idx(0);
+        start += dat.count;
+      }
 
       sort(inds);
 
-      CDom.bulkAdd(inds, true, true);
+      CDom.bulkAdd(inds, true, false);
 
-      var C: [CDom] spsData.eltType;
+      var C: [CDom] spsData[0].eltType;
       // TODO: can this be parallel?
-      for ij in inds do
-        try! C[ij] = spsData[ij];  // TODO: Should this really throw?
+      // not while we have duplicate indices, unless we somehow shift the
+      // indices around so all duplicates are contained within a single multData?
+      for dat in spsData do
+        for (idx, val) in dat.vals[0..<dat.count] do
+          try! C[idx] += val;  // TODO: Should this really throw?
 
       return C;
     }
@@ -745,47 +730,6 @@ module SparseMatrix {
       for (ij, c) in zip(nnzs, vals) do
         C[ij] += c;
       return C;
-    }
-
-
-    // This is a custom reduction, and a good case study for why our custom
-    // reduction interface needs a refresh
-    //
-    class merge: ReduceScanOp {
-      type eltType = sparseMatDat;
-      var value: eltType;  // TODO: lots of deep copying here to avoid
-
-      proc identity {
-        var ident: eltType;
-        return ident;
-      }
-
-      proc accumulate(x) {
-        // Why is this ever called with a sparseMatDat as the argument?!?
-        for (k,v) in zip(x.keys(), x.values()) {
-          if value.contains(k) {
-            value[k] += v;
-          } else {
-            value.add(k, v);
-          }
-        }
-      }
-
-      proc accumulateOntoState(ref state, x) {
-        halt("Error, shouldn't call merge.accumulateOntoState()");
-      }
-
-      proc combine(x) {
-        accumulate(x.value);
-      }
-
-      proc generate() {
-        return value;
-      }
-
-      inline proc clone() {
-        return new unmanaged merge(eltType=eltType);
-      }
     }
   }
 }
