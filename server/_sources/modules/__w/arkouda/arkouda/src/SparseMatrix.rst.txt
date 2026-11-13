@@ -56,11 +56,9 @@ or
 
 .. function:: proc sparseMatMatMult(A, B)
 
-.. function:: proc sparseMatMatMult(A, B, ref spsData)
+.. function:: proc sparseMatMatMult(A, B, ref spsData: [] multData(?))
 
 .. function:: proc sparseMatMatMult(A, B) where !A.chpl_isNonDistributedArray() && !B.chpl_isNonDistributedArray()
-
-.. function:: proc denseMatMatMult(A, B)
 
 .. function:: proc randSparseMatrix(shape: 2*(int), density, param layout, type eltType)
 
@@ -71,8 +69,6 @@ or
 .. class:: LockHelper
 
    .. attribute:: var data: [PrivateSpace] chpl_LocalSpinlock
-
-.. data:: config param bufSize = 1024
 
 .. class:: DestinationHandler
 

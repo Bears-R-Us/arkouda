@@ -27,9 +27,15 @@ or
 
 .. data:: var rands = if seed == 0 then new randomStream(real) else new randomStream(real, seed)
 
-.. record:: sparseMatDat
+.. record:: multData
 
    .. attribute:: type eltType
+
+   .. attribute:: var dom: domain(1)
+
+   .. attribute:: var vals: [dom] (2*(int), eltType)
+
+   .. attribute:: var count: int
 
    .. method:: proc ref add(idx: 2*(int), val: eltType)
 
@@ -37,25 +43,7 @@ or
 
 .. function:: proc writeSparseMatrix(msg, Arr)
 
-.. function:: proc makeSparseMat(parentDom, spsData)
+.. function:: proc makeSparseMat(parentDom, const spsData: [] multData(?))
 
 .. function:: proc makeSparseMat(parentDom, nnzs, vals)
-
-.. class:: merge : ReduceScanOp
-
-   .. attribute:: type eltType = sparseMatDat
-
-   .. attribute:: var value: eltType
-
-   .. method:: proc identity
-
-   .. method:: proc accumulate(x)
-
-   .. method:: proc accumulateOntoState(ref state, x)
-
-   .. method:: proc combine(x)
-
-   .. method:: proc generate()
-
-   .. method:: proc clone()
 

@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
@@ -500,7 +500,7 @@
 
 
 <div class="viewcode-block" id="geterr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.geterr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.geterr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">geterr</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the current Arkouda floating-point error handling settings.</span>
@@ -516,7 +516,7 @@
 
 
 <div class="viewcode-block" id="seterr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.seterr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.seterr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">_ErrorMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Set how Arkouda handles floating-point errors.</span>
@@ -552,7 +552,7 @@
 
 
 <div class="viewcode-block" id="geterrcall">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.geterrcall">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.geterrcall">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">geterrcall</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the current callable used when error mode is 'call'.</span>
@@ -567,7 +567,7 @@
 
 
 <div class="viewcode-block" id="seterrcall">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.seterrcall">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.seterrcall">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">seterrcall</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Set the callable invoked when an error category is set to 'call'.</span>
@@ -598,7 +598,7 @@
 
 
 <div class="viewcode-block" id="errstate">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.errstate">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.errstate">[docs]</a>
 <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">errstate</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
@@ -701,6 +701,6 @@
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>

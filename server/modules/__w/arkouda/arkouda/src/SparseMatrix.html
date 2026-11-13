@@ -203,17 +203,12 @@ from the sparse matrix in row-major order.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">spsData</span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">spsData:</span> <span class="pre">[]</span> <span class="pre">multData(?)</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sparseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">!A.chpl_isNonDistributedArray()</span> <span class="pre">&amp;&amp;</span> <span class="pre">!B.chpl_isNonDistributedArray()</span></em></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="SparseMatrix.denseMatMatMult">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">denseMatMatMult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">B</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SparseMatrix.denseMatMatMult" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -240,11 +235,6 @@ from the sparse matrix in row-major order.</p>
 <dd></dd></dl>
 
 </dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="SparseMatrix.bufSize">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">bufSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">1024</span></em><a class="headerlink" href="#SparseMatrix.bufSize" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="SparseMatrix.DestinationHandler">

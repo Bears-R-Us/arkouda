@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_autodoc_typehints.css?v=057ac668" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
@@ -391,8 +391,8 @@
 <li><p><strong>initialdata</strong> (<em>list</em><em> or </em><em>dict</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list or dictionary entry corresponds to one column of data and
 should be a homogeneous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>list</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>columns</strong> (<em>list</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to a stringified integer range.</p></li>
 </ul>
 </dd>
@@ -512,7 +512,7 @@ be strings. Defaults to a stringified integer range.</p></li>
 <li><p><strong>datalimit</strong> (<em>int</em><em>, </em><em>default=arkouda.core.client.maxTransferBytes</em>) – The maximum number size, in megabytes to transfer. The requested
 DataFrame will be converted to a pandas DataFrame only if the
 estimated size of the DataFrame does not exceed this value.</p></li>
-<li><p><strong>retain_index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Normally, to_pandas() creates a new range index object. If you want
+<li><p><strong>retain_index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Normally, to_pandas() creates a new range index object. If you want
 to keep the index column, set this to True.</p></li>
 </ul>
 </dd>
@@ -613,11 +613,11 @@ If <code class="docutils literal notranslate"><span class="pre">False</span></co
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+<li><p><strong>use_series</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
 Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</p></li>
-<li><p><strong>as_index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
+<li><p><strong>as_index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
 otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
-<li><p><strong>dropna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
+<li><p><strong>dropna</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
 the NaN values together with the corresponding row will be dropped.
 Otherwise, the rows corresponding to NaN values will be kept.</p></li>
 </ul>
@@ -682,13 +682,13 @@ calling object’s data. Any changes to the data of the original object will
 be reflected in the shallow copy, and vice versa.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>deep</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – When True, return a deep copy. Otherwise, return a shallow copy.</p>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – When True, return a deep copy. Otherwise, return a shallow copy.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A deep or shallow copy according to caller specification.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -734,7 +734,7 @@ apply an arbitrary permutation such as the inverse of a sorting
 permutation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – A permutation array. Should be the same size as the data
+<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A permutation array. Should be the same size as the data
 arrays, and should consist of the integers [0,size-1] in
 some order. Very minimal testing is done to ensure this
 is a permutation.</p>
@@ -776,7 +776,7 @@ is a permutation.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The key to sort on.</p></li>
-<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – If true, sort the key in ascending order.
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – If true, sort the key in ascending order.
 Otherwise, sort the key in descending order.</p></li>
 </ul>
 </dd>
@@ -789,7 +789,7 @@ Otherwise, sort the key in descending order.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">coargsort</span></code></p>
+<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.coargsort" title="arkouda.DataFrame.coargsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coargsort</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -866,13 +866,13 @@ Otherwise, sort the key in descending order.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>by</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>list/tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default = None</em>) – The name(s) of the column(s) to sort by.</p></li>
-<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Sort values in ascending (default) or descending order.</p></li>
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Sort values in ascending (default) or descending order.</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_permutation</span></code></p>
+<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.apply_permutation" title="arkouda.DataFrame.apply_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_permutation</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -918,7 +918,7 @@ it.</p>
 <dd class="field-even"><p>The last <cite>n</cite> rows of the DataFrame.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -974,12 +974,12 @@ appending rows.</p>
 <dd class="field-even"><p>The first <cite>n</cite> rows of the DataFrame.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tail</span></code></p>
+<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.tail" title="arkouda.DataFrame.tail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tail</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1178,7 +1178,7 @@ duplicated row will be returned (keep determines which row).</p>
 <dd class="field-even"><p>DataFrame with duplicates removed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1275,6 +1275,6 @@ duplicated row will be returned (keep determines which row).</p>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>

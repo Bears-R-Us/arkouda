@@ -155,16 +155,31 @@
 <dd></dd></dl>
 
 <dl class="chpl record">
-<dt class="sig sig-object chpl" id="SpsMatUtil.sparseMatDat">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">sparseMatDat</span></span><a class="headerlink" href="#SpsMatUtil.sparseMatDat" title="Link to this definition"></a></dt>
+<dt class="sig sig-object chpl" id="SpsMatUtil.multData">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">multData</span></span><a class="headerlink" href="#SpsMatUtil.multData" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="SpsMatUtil.sparseMatDat.eltType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">eltType</span></span><a class="headerlink" href="#SpsMatUtil.sparseMatDat.eltType" title="Link to this definition"></a></dt>
+<dt class="sig sig-object chpl" id="SpsMatUtil.multData.eltType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">eltType</span></span><a class="headerlink" href="#SpsMatUtil.multData.eltType" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SpsMatUtil.multData.dom">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dom</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(1)</span></em><a class="headerlink" href="#SpsMatUtil.multData.dom" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SpsMatUtil.multData.vals">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">vals</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[dom]</span> <span class="pre">(2*(int),</span> <span class="pre">eltType)</span></em><a class="headerlink" href="#SpsMatUtil.multData.vals" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="SpsMatUtil.multData.count">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">count</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SpsMatUtil.multData.count" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.sparseMatDat.add">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">2*(int)</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.sparseMatDat.add" title="Link to this definition"></a></dt>
+<dt class="sig sig-object chpl" id="SpsMatUtil.multData.add">
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">2*(int)</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.multData.add" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -181,58 +196,13 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SpsMatUtil.makeSparseMat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseMat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">parentDom</span></em>, <em class="sig-param"><span class="pre">spsData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.makeSparseMat" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseMat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">parentDom</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">spsData:</span> <span class="pre">[]</span> <span class="pre">multData(?)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.makeSparseMat" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseMat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">parentDom</span></em>, <em class="sig-param"><span class="pre">nnzs</span></em>, <em class="sig-param"><span class="pre">vals</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
-
-<dl class="chpl class">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">merge</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ReduceScanOp</span></em><a class="headerlink" href="#SpsMatUtil.merge" title="Link to this definition"></a></dt>
-<dd><dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.eltType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">eltType</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">sparseMatDat</span></em><a class="headerlink" href="#SpsMatUtil.merge.eltType" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.value">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">value</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">eltType</span></em><a class="headerlink" href="#SpsMatUtil.merge.value" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.identity">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">identity</span></span><a class="headerlink" href="#SpsMatUtil.merge.identity" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.accumulate">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.merge.accumulate" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.accumulateOntoState">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulateOntoState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">state</span></em>, <em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.merge.accumulateOntoState" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.combine">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.merge.combine" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.generate">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.merge.generate" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SpsMatUtil.merge.clone">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SpsMatUtil.merge.clone" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
 
 </section>
 
