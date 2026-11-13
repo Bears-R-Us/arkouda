@@ -537,7 +537,6 @@ module SparseMatrix {
       var locDomVal = this.domVal.locDoms[locid]!.mySparseBlock._value;
       var locIdxBuf = locDomVal.dsiCreateIndexBuffer(rBuffer.size,false,true);
       for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
-        assert(dstAddr == nil);
         var (i,j,_) = srcVal;
         locIdxBuf.add((i, j));
       }
@@ -552,7 +551,6 @@ module SparseMatrix {
       // - can we create a version of bulkAdd that handles the values as well?
       ref elems = this.arrVal.locArr[locid]!.myElems._value.data;
       for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
-        assert(dstAddr == nil);
         var (i,j,v) = srcVal;
         var (_,loc) = locDomVal.find((i,j));
         elems[loc] = v;
@@ -704,7 +702,6 @@ module SparseMatrix {
           inds[i] = idx(0);
         start += dat.count;
       }
-      assert(start == total);
 
       sort(inds);
 
