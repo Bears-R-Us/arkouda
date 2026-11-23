@@ -524,7 +524,7 @@
 
 
 <div class="viewcode-block" id="unique">
-<a class="viewcode-back" href="../../../usage/setops.html#arkouda.pandas.groupbyclass.unique">[docs]</a>
+<a class="viewcode-back" href="../../../usage/setops.html#arkouda.unique">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
     <span class="n">return_groups</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -683,7 +683,7 @@
 
 
 <div class="viewcode-block" id="GroupBy">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GroupBy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Group an array or list of arrays by value.</span>
@@ -838,7 +838,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ngroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span>
 
 <div class="viewcode-block" id="GroupBy.from_return_msg">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.from_return_msg">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -887,7 +887,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.to_hdf">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -968,7 +968,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.update_hdf">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1057,7 +1057,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.size">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.size">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Count the number of elements in each group, i.e. the number of times each key appears.</span>
@@ -1101,7 +1101,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.count">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.count">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Count the number of elements in each group.</span>
@@ -1143,7 +1143,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.aggregate">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.aggregate">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.aggregate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">aggregate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">pd_Series</span> <span class="o">|</span> <span class="s2">"ArkoudaExtensionArray"</span><span class="p">],</span>
@@ -1248,7 +1248,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.sum">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.sum">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and sum each group's values.</span>
@@ -1304,7 +1304,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.prod">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.prod">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.prod">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and compute the product of each group's values.</span>
@@ -1362,7 +1362,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.var">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.var">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.var">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -1431,7 +1431,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.std">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.std">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.std">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -1503,7 +1503,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.mean">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.mean">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and compute the mean of each group's values.</span>
@@ -1559,7 +1559,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.median">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.median">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.median">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and compute the median of each group's values.</span>
@@ -1615,7 +1615,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.min">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.min">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and return the minimum of each group's values.</span>
@@ -1671,7 +1671,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.max">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.max">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">skipna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and return the maximum of each group's values.</span>
@@ -1727,7 +1727,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.argmin">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.argmin">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.argmin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and return the location of the first minimum of each group.</span>
@@ -1784,7 +1784,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.argmax">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.argmax">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and return the location of the first maximum of each group.</span>
@@ -1860,7 +1860,7 @@
         <span class="k">return</span> <span class="n">togroup</span>
 
 <div class="viewcode-block" id="GroupBy.nunique">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.nunique">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.nunique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">nunique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and return the number of unique values in each group.</span>
@@ -1944,7 +1944,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.any">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.any">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and perform an "or" reduction on each group.</span>
@@ -1980,7 +1980,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.all">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.all">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group another array of values and perform an "and" reduction on each group.</span>
@@ -2019,7 +2019,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.OR">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.OR">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.OR">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">OR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Bitwise OR of values in each segment.</span>
@@ -2060,7 +2060,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.AND">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.AND">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.AND">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">AND</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Bitwise AND of values in each segment.</span>
@@ -2101,7 +2101,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.XOR">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.XOR">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.XOR">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">XOR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Bitwise XOR of values in each segment.</span>
@@ -2142,7 +2142,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.head">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.head">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.head">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">groupable_element_type</span><span class="p">,</span>
@@ -2227,7 +2227,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.tail">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.tail">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.tail">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">groupable_element_type</span><span class="p">,</span>
@@ -2312,7 +2312,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.first">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.first">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.first">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">groupable_element_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        First value in each group.</span>
@@ -2337,7 +2337,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.mode">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.mode">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.mode">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">groupable</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the most common value in each group.</span>
@@ -2389,7 +2389,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.sample">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.sample">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
@@ -2555,7 +2555,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.unique">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.unique">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.unique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">groupable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the set of unique values in each group, as a SegArray.</span>
@@ -2619,7 +2619,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.broadcast">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.broadcast">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.broadcast">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broadcast</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">],</span> <span class="n">permute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2716,7 +2716,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.build_from_components">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.build_from_components">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.build_from_components">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">build_from_components</span><span class="p">(</span><span class="n">user_defined_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroupBy</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -2775,7 +2775,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">piece_name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">piece_name</span> <span class="ow">in</span> <span class="n">required_pieces</span><span class="p">}</span>
 
 <div class="viewcode-block" id="GroupBy.register">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.register">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.register">[docs]</a>
     <span class="nd">@no_type_check</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroupBy</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -2883,7 +2883,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.unregister">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.unregister">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Unregister this GroupBy object.</span>
@@ -2920,7 +2920,7 @@
 
 
 <div class="viewcode-block" id="GroupBy.is_registered">
-<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.GroupBy.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return True if the object is contained in the registry.</span>
@@ -2955,7 +2955,7 @@
 
 
 <div class="viewcode-block" id="broadcast">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.broadcast">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.broadcast">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">broadcast</span><span class="p">(</span>
     <span class="n">segments</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">],</span>
