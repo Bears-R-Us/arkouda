@@ -40,12 +40,12 @@ jobs:
       run: |
         make doc
     - name: Install rsync (needed by deploy action)
-      if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
+      if: github.repository_owner == 'Bears-R-Us' && github.event_name == 'push'
       run: |
         apt-get update
         apt-get install -y rsync
     - name: publish-docs
-      if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
+      if: github.repository_owner == 'Bears-R-Us' && github.event_name == 'push'
       uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4
       with:
         branch: gh-pages # This is the branch we'll deploy to
